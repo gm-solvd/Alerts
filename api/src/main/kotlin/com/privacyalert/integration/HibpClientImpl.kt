@@ -5,10 +5,12 @@ import com.privacyalert.domain.model.AppException
 import com.privacyalert.domain.service.BreachResult
 import com.privacyalert.domain.service.BreachScanner
 import org.springframework.http.HttpStatus
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
 
+@ConditionalOnProperty(name = ["app.hibp.enabled"], havingValue = "true", matchIfMissing = false)
 @Component
 class HibpClientImpl(
     private val appProperties: AppProperties,
@@ -39,6 +41,8 @@ class HibpClientImpl(
         } catch (e: RestClientException) {
             throw AppException.ExternalServiceException("HIBP", e.message ?: "Unknown error")
         }
+
+    override fun scanPhone(phone: String): List<BreachResult> = emptyList()
 }
 
 private data class HibpBreachResponse(

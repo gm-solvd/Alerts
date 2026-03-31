@@ -9,4 +9,5 @@ data class BreachResult(
 
 interface BreachScanner {
     fun scanEmail(email: String): List<BreachResult>
+    fun scanPhone(phone: String): List<BreachResult>
 }
