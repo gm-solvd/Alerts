@@ -33,13 +33,13 @@ docker run -e POSTGRES_DB=privacyalert \
            -p 5432:5432 postgres:16
 
 # Run API
-./gradlew :api:bootRun
+cd api && ./gradlew bootRun
 ```
 
 ### Mobile
 ```bash
 # Android
-./gradlew :mobile:androidApp:installDebug
+cd mobile && ./gradlew :androidApp:installDebug
 
 # iOS — open in Xcode
 open mobile/iosApp/iosApp.xcodeproj
@@ -58,7 +58,7 @@ GOOGLE_CLIENT_SECRET=<from Google Cloud Console>
 ```
 
 ## Before Opening a PR
-- [ ] Tests pass locally: `./gradlew test`
-- [ ] No lint warnings: `./gradlew ktlintCheck`
+- [ ] Tests pass locally: `cd api && ./gradlew test`
+- [ ] No lint warnings: `cd api && ./gradlew ktlintCheck`
 - [ ] API contract unchanged (or updated DTO docs)
 - [ ] Migration script added if DB schema changed

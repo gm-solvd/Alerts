@@ -10,6 +10,10 @@ plugins {
 group = "com.privacyalert"
 version = "0.1.0"
 
+repositories {
+    mavenCentral()
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)

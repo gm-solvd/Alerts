@@ -17,8 +17,8 @@ sealed class AppException(message: String) : RuntimeException(message) {
 
     class ExternalServiceException(
         val service: String,
-        val cause: String,
-    ) : AppException("External service '$service' failed: $cause")
+        val reason: String,
+    ) : AppException("External service '$service' failed: $reason")
 
     class UnauthorizedException(
         override val message: String,
