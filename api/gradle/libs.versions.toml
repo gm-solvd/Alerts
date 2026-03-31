@@ -7,7 +7,7 @@ mockk = "1.13.16"
 springmockk = "4.0.2"
 testcontainers = "1.20.6"
 wiremock = "3.12.1"
-ktlint = "12.1.2"
+ktlint = "12.3.0"
 jsoup = "1.18.3"
 
 [libraries]

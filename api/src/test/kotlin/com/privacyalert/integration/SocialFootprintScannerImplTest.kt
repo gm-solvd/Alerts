@@ -14,17 +14,18 @@ import org.junit.jupiter.api.Test
 import org.springframework.web.client.RestClient
 
 class SocialFootprintScannerImplTest {
-
     private val httpClient = mockk<RateLimitedHttpClient>()
 
-    private val appProperties = AppProperties(
-        jwt = AppProperties.JwtProperties(secret = "test-secret-key-that-is-long-enough-for-hs256"),
-        hibp = AppProperties.HibpProperties(),
-        scanning = AppProperties.ScanningProperties(
-            socialEnabledPlatforms = listOf("github", "stackoverflow", "reddit", "mastodon"),
-            rateLimitPerDomainDelayMs = 0,
-        ),
-    )
+    private val appProperties =
+        AppProperties(
+            jwt = AppProperties.JwtProperties(secret = "test-secret-key-that-is-long-enough-for-hs256"),
+            hibp = AppProperties.HibpProperties(),
+            scanning =
+                AppProperties.ScanningProperties(
+                    socialEnabledPlatforms = listOf("github", "stackoverflow", "reddit", "mastodon"),
+                    rateLimitPerDomainDelayMs = 0,
+                ),
+        )
 
     private val mockRestClient = mockk<RestClient>()
     private val mockRequestSpec = mockk<RestClient.RequestHeadersUriSpec<*>>(relaxed = true)
@@ -70,14 +71,16 @@ class SocialFootprintScannerImplTest {
 
     @Test
     fun `scan only checks enabled platforms`() {
-        val limitedAppProperties = AppProperties(
-            jwt = AppProperties.JwtProperties(secret = "test-secret-key-that-is-long-enough-for-hs256"),
-            hibp = AppProperties.HibpProperties(),
-            scanning = AppProperties.ScanningProperties(
-                socialEnabledPlatforms = emptyList(),
-                rateLimitPerDomainDelayMs = 0,
-            ),
-        )
+        val limitedAppProperties =
+            AppProperties(
+                jwt = AppProperties.JwtProperties(secret = "test-secret-key-that-is-long-enough-for-hs256"),
+                hibp = AppProperties.HibpProperties(),
+                scanning =
+                    AppProperties.ScanningProperties(
+                        socialEnabledPlatforms = emptyList(),
+                        rateLimitPerDomainDelayMs = 0,
+                    ),
+            )
 
         every { httpClient.fetch(any()) } returns null
 
@@ -101,14 +104,16 @@ class SocialFootprintScannerImplTest {
 
     @Test
     fun `scan with no enabled platforms returns empty`() {
-        val noSocialProps = AppProperties(
-            jwt = AppProperties.JwtProperties(secret = "test-secret-key-that-is-long-enough-for-hs256"),
-            hibp = AppProperties.HibpProperties(),
-            scanning = AppProperties.ScanningProperties(
-                socialEnabledPlatforms = emptyList(),
-                rateLimitPerDomainDelayMs = 0,
-            ),
-        )
+        val noSocialProps =
+            AppProperties(
+                jwt = AppProperties.JwtProperties(secret = "test-secret-key-that-is-long-enough-for-hs256"),
+                hibp = AppProperties.HibpProperties(),
+                scanning =
+                    AppProperties.ScanningProperties(
+                        socialEnabledPlatforms = emptyList(),
+                        rateLimitPerDomainDelayMs = 0,
+                    ),
+            )
 
         every { httpClient.fetch(any()) } returns null
 

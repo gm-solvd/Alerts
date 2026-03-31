@@ -64,6 +64,10 @@ dependencies {
     testImplementation(libs.wiremock)
 }
 
+ktlint {
+    version.set("1.5.0")
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
