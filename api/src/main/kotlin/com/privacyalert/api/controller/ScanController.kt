@@ -1,9 +1,9 @@
 package com.privacyalert.api.controller
 
 import com.privacyalert.api.dto.AlertResponse
-import com.privacyalert.api.dto.BreachScanRequest
-import com.privacyalert.api.dto.IdentityScanRequest
+import com.privacyalert.api.dto.ScanProfileRequest
 import com.privacyalert.api.dto.toResponse
+import com.privacyalert.domain.model.UserScanProfile
 import com.privacyalert.domain.service.ScanService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
@@ -19,14 +19,40 @@ class ScanController(
 ) {
 
     @PostMapping("/breach")
-    fun breachScan(@Valid @RequestBody request: BreachScanRequest): ResponseEntity<List<AlertResponse>> {
-        val alerts = scanService.breachScan(authenticatedUserId(), request.email)
+    fun breachScan(@Valid @RequestBody request: ScanProfileRequest): ResponseEntity<List<AlertResponse>> {
+        val alerts = scanService.breachScan(authenticatedUserId(), request.toProfile())
         return ResponseEntity.ok(alerts.map { it.toResponse() })
     }
 
     @PostMapping("/identity")
-    fun identityScan(@Valid @RequestBody request: IdentityScanRequest): ResponseEntity<List<AlertResponse>> {
-        val alerts = scanService.identityScan(authenticatedUserId(), request.email)
+    fun identityScan(@Valid @RequestBody request: ScanProfileRequest): ResponseEntity<List<AlertResponse>> {
+        val alerts = scanService.identityScan(authenticatedUserId(), request.toProfile())
         return ResponseEntity.ok(alerts.map { it.toResponse() })
     }
+
+    @PostMapping("/pii")
+    fun piiExposureScan(@Valid @RequestBody request: ScanProfileRequest): ResponseEntity<List<AlertResponse>> {
+        val alerts = scanService.piiExposureScan(authenticatedUserId(), request.toProfile())
+        return ResponseEntity.ok(alerts.map { it.toResponse() })
+    }
+
+    @PostMapping("/social")
+    fun socialFootprintScan(@Valid @RequestBody request: ScanProfileRequest): ResponseEntity<List<AlertResponse>> {
+        val alerts = scanService.socialFootprintScan(authenticatedUserId(), request.toProfile(), request.username)
+        return ResponseEntity.ok(alerts.map { it.toResponse() })
+    }
+
+    @PostMapping("/full")
+    fun fullScan(@Valid @RequestBody request: ScanProfileRequest): ResponseEntity<List<AlertResponse>> {
+        val alerts = scanService.fullScan(authenticatedUserId(), request.toProfile(), request.username)
+        return ResponseEntity.ok(alerts.map { it.toResponse() })
+    }
+
+    private fun ScanProfileRequest.toProfile() = UserScanProfile(
+        email = email,
+        phoneNumber = phoneNumber,
+        fullName = fullName,
+        homeAddress = homeAddress,
+        dateOfBirth = dateOfBirth,
+    )
 }
