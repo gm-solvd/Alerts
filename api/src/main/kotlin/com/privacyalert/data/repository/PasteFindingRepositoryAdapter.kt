@@ -10,10 +10,7 @@ import org.springframework.stereotype.Repository
 class PasteFindingRepositoryAdapter(
     private val jpa: PasteFindingJpaRepository,
 ) : PasteFindingRepository {
+    override fun existsByPasteUrl(pasteUrl: String): Boolean = jpa.existsByPasteUrl(pasteUrl)
 
-    override fun existsByPasteUrl(pasteUrl: String): Boolean =
-        jpa.existsByPasteUrl(pasteUrl)
-
-    override fun save(finding: PasteFinding): PasteFinding =
-        jpa.save(finding.toEntity()).toDomain()
+    override fun save(finding: PasteFinding): PasteFinding = jpa.save(finding.toEntity()).toDomain()
 }

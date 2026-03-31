@@ -1,7 +1,8 @@
 package com.privacyalert.domain.model
 
-sealed class AppException(message: String) : RuntimeException(message) {
-
+sealed class AppException(
+    message: String,
+) : RuntimeException(message) {
     class ResourceNotFoundException(
         val resource: String,
         val id: Any,

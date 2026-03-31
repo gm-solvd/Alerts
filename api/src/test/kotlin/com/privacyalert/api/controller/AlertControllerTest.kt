@@ -27,8 +27,9 @@ import java.util.UUID
 
 @WebMvcTest(AlertController::class)
 @Import(SecurityConfig::class, JwtAuthFilter::class)
-class AlertControllerTest(@Autowired val mockMvc: MockMvc) {
-
+class AlertControllerTest(
+    @Autowired val mockMvc: MockMvc,
+) {
     @MockkBean
     lateinit var alertService: AlertService
 
@@ -38,15 +39,16 @@ class AlertControllerTest(@Autowired val mockMvc: MockMvc) {
     private val userId = UUID.randomUUID()
     private val alertId = UUID.randomUUID()
 
-    private val testAlert = Alert(
-        id = alertId,
-        userId = userId,
-        category = ThreatCategory.DATA_BREACH,
-        severity = Severity.CRITICAL,
-        title = "Data breach: LinkedIn",
-        description = "Your email was found in the LinkedIn breach",
-        createdAt = Instant.parse("2026-01-01T00:00:00Z"),
-    )
+    private val testAlert =
+        Alert(
+            id = alertId,
+            userId = userId,
+            category = ThreatCategory.DATA_BREACH,
+            severity = Severity.CRITICAL,
+            title = "Data breach: LinkedIn",
+            description = "Your email was found in the LinkedIn breach",
+            createdAt = Instant.parse("2026-01-01T00:00:00Z"),
+        )
 
     private fun authenticateAs(userId: UUID) {
         every { jwtProvider.validateAndExtractUserId("test-token") } returns userId
@@ -58,14 +60,15 @@ class AlertControllerTest(@Autowired val mockMvc: MockMvc) {
         val page = PageImpl(listOf(testAlert), PageRequest.of(0, 20), 1)
         every { alertService.findAll(userId, null, null, any()) } returns page
 
-        mockMvc.get("/api/v1/alerts") {
-            header("Authorization", "Bearer test-token")
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$.content[0].id") { value(alertId.toString()) }
-            jsonPath("$.content[0].severity") { value("CRITICAL") }
-            jsonPath("$.totalElements") { value(1) }
-        }
+        mockMvc
+            .get("/api/v1/alerts") {
+                header("Authorization", "Bearer test-token")
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$.content[0].id") { value(alertId.toString()) }
+                jsonPath("$.content[0].severity") { value("CRITICAL") }
+                jsonPath("$.totalElements") { value(1) }
+            }
     }
 
     @Test
@@ -74,19 +77,21 @@ class AlertControllerTest(@Autowired val mockMvc: MockMvc) {
         val page = PageImpl(listOf(testAlert), PageRequest.of(0, 20), 1)
         every { alertService.findAll(userId, ThreatCategory.DATA_BREACH, Severity.CRITICAL, any()) } returns page
 
-        mockMvc.get("/api/v1/alerts?category=DATA_BREACH&severity=CRITICAL") {
-            header("Authorization", "Bearer test-token")
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$.content[0].category") { value("DATA_BREACH") }
-        }
+        mockMvc
+            .get("/api/v1/alerts?category=DATA_BREACH&severity=CRITICAL") {
+                header("Authorization", "Bearer test-token")
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$.content[0].category") { value("DATA_BREACH") }
+            }
     }
 
     @Test
     fun `GET alerts returns 403 without authentication`() {
         every { jwtProvider.validateAndExtractUserId(any()) } returns null
 
-        mockMvc.get("/api/v1/alerts")
+        mockMvc
+            .get("/api/v1/alerts")
             .andExpect {
                 status { isForbidden() }
             }
@@ -97,13 +102,14 @@ class AlertControllerTest(@Autowired val mockMvc: MockMvc) {
         authenticateAs(userId)
         every { alertService.findById(alertId, userId) } returns testAlert
 
-        mockMvc.get("/api/v1/alerts/$alertId") {
-            header("Authorization", "Bearer test-token")
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$.id") { value(alertId.toString()) }
-            jsonPath("$.title") { value("Data breach: LinkedIn") }
-        }
+        mockMvc
+            .get("/api/v1/alerts/$alertId") {
+                header("Authorization", "Bearer test-token")
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$.id") { value(alertId.toString()) }
+                jsonPath("$.title") { value("Data breach: LinkedIn") }
+            }
     }
 
     @Test
@@ -112,12 +118,13 @@ class AlertControllerTest(@Autowired val mockMvc: MockMvc) {
         every { alertService.findById(alertId, userId) } throws
             AppException.ResourceNotFoundException("Alert", alertId)
 
-        mockMvc.get("/api/v1/alerts/$alertId") {
-            header("Authorization", "Bearer test-token")
-        }.andExpect {
-            status { isNotFound() }
-            jsonPath("$.code") { value("RESOURCE_NOT_FOUND") }
-        }
+        mockMvc
+            .get("/api/v1/alerts/$alertId") {
+                header("Authorization", "Bearer test-token")
+            }.andExpect {
+                status { isNotFound() }
+                jsonPath("$.code") { value("RESOURCE_NOT_FOUND") }
+            }
     }
 
     @Test
@@ -126,12 +133,13 @@ class AlertControllerTest(@Autowired val mockMvc: MockMvc) {
         val resolvedAlert = testAlert.copy(resolved = true, resolvedAt = Instant.now())
         every { alertService.resolve(alertId, userId) } returns resolvedAlert
 
-        mockMvc.patch("/api/v1/alerts/$alertId/resolve") {
-            header("Authorization", "Bearer test-token")
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$.resolved") { value(true) }
-        }
+        mockMvc
+            .patch("/api/v1/alerts/$alertId/resolve") {
+                header("Authorization", "Bearer test-token")
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$.resolved") { value(true) }
+            }
     }
 
     @Test
@@ -139,10 +147,11 @@ class AlertControllerTest(@Autowired val mockMvc: MockMvc) {
         authenticateAs(userId)
         every { alertService.delete(alertId, userId) } just Runs
 
-        mockMvc.delete("/api/v1/alerts/$alertId") {
-            header("Authorization", "Bearer test-token")
-        }.andExpect {
-            status { isNoContent() }
-        }
+        mockMvc
+            .delete("/api/v1/alerts/$alertId") {
+                header("Authorization", "Bearer test-token")
+            }.andExpect {
+                status { isNoContent() }
+            }
     }
 }

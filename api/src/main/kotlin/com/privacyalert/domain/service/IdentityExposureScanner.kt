@@ -8,5 +8,8 @@ data class IdentityExposureResult(
 )
 
 interface IdentityExposureScanner {
-    fun scan(email: String, fullName: String?): List<IdentityExposureResult>
+    fun scan(
+        email: String,
+        fullName: String?,
+    ): List<IdentityExposureResult>
 }

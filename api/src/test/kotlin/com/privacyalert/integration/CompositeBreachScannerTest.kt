@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test
 import java.util.Optional
 
 class CompositeBreachScannerTest {
-
     private val localBreachScanner = mockk<LocalBreachScannerImpl>()
     private val pasteMonitorClient = mockk<PasteMonitorClient>()
     private val hibpClient = mockk<HibpClientImpl>()

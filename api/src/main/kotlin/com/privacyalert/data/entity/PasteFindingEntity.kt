@@ -16,35 +16,32 @@ class PasteFindingEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID = UUID.randomUUID(),
-
     @Column(nullable = false)
     val source: String = "",
-
     @Column(nullable = false)
     val pasteUrl: String = "",
-
     val title: String? = null,
-
     val snippet: String? = null,
-
     @Column(nullable = false)
     val discoveredAt: Instant = Instant.now(),
 )
 
-fun PasteFindingEntity.toDomain(): PasteFinding = PasteFinding(
-    id = id,
-    source = source,
-    pasteUrl = pasteUrl,
-    title = title,
-    snippet = snippet,
-    discoveredAt = discoveredAt,
-)
+fun PasteFindingEntity.toDomain(): PasteFinding =
+    PasteFinding(
+        id = id,
+        source = source,
+        pasteUrl = pasteUrl,
+        title = title,
+        snippet = snippet,
+        discoveredAt = discoveredAt,
+    )
 
-fun PasteFinding.toEntity(): PasteFindingEntity = PasteFindingEntity(
-    id = id,
-    source = source,
-    pasteUrl = pasteUrl,
-    title = title,
-    snippet = snippet,
-    discoveredAt = discoveredAt,
-)
+fun PasteFinding.toEntity(): PasteFindingEntity =
+    PasteFindingEntity(
+        id = id,
+        source = source,
+        pasteUrl = pasteUrl,
+        title = title,
+        snippet = snippet,
+        discoveredAt = discoveredAt,
+    )

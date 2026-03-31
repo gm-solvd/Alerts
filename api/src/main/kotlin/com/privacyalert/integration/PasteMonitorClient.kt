@@ -17,7 +17,6 @@ class PasteMonitorClient(
     private val pasteFindingRepository: PasteFindingRepository,
     private val appProperties: AppProperties,
 ) : BreachScanner {
-
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun scanEmail(email: String): List<BreachResult> {
@@ -40,10 +39,12 @@ class PasteMonitorClient(
 
         try {
             val doc = httpClient.fetch(searchUrl) ?: return emptyList()
-            val links = doc.select("a.result__a")
-                .mapNotNull { it.attr("href") }
-                .filter { it.contains("pastebin.com") }
-                .take(5)
+            val links =
+                doc
+                    .select("a.result__a")
+                    .mapNotNull { it.attr("href") }
+                    .filter { it.contains("pastebin.com") }
+                    .take(5)
 
             for (link in links) {
                 if (pasteFindingRepository.existsByPasteUrl(link)) continue
@@ -60,7 +61,10 @@ class PasteMonitorClient(
                     BreachResult(
                         name = "Paste exposure",
                         domain = "pastebin.com",
-                        breachDate = java.time.LocalDate.now().toString(),
+                        breachDate =
+                            java.time.LocalDate
+                                .now()
+                                .toString(),
                         dataClasses = listOf("Email addresses"),
                     ),
                 )

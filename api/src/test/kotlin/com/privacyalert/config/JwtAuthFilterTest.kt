@@ -14,7 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder
 import java.util.UUID
 
 class JwtAuthFilterTest {
-
     private val jwtProvider = mockk<JwtProvider>()
     private val filter = JwtAuthFilter(jwtProvider)
 
@@ -28,9 +27,10 @@ class JwtAuthFilterTest {
         val userId = UUID.randomUUID()
         every { jwtProvider.validateAndExtractUserId("valid-token") } returns userId
 
-        val request = MockHttpServletRequest().apply {
-            addHeader("Authorization", "Bearer valid-token")
-        }
+        val request =
+            MockHttpServletRequest().apply {
+                addHeader("Authorization", "Bearer valid-token")
+            }
 
         filter.doFilter(request, MockHttpServletResponse(), MockFilterChain())
 
@@ -51,9 +51,10 @@ class JwtAuthFilterTest {
     fun `does not set authentication when token is invalid`() {
         every { jwtProvider.validateAndExtractUserId("bad-token") } returns null
 
-        val request = MockHttpServletRequest().apply {
-            addHeader("Authorization", "Bearer bad-token")
-        }
+        val request =
+            MockHttpServletRequest().apply {
+                addHeader("Authorization", "Bearer bad-token")
+            }
 
         filter.doFilter(request, MockHttpServletResponse(), MockFilterChain())
 
@@ -62,9 +63,10 @@ class JwtAuthFilterTest {
 
     @Test
     fun `does not set authentication when header is not Bearer`() {
-        val request = MockHttpServletRequest().apply {
-            addHeader("Authorization", "Basic dXNlcjpwYXNz")
-        }
+        val request =
+            MockHttpServletRequest().apply {
+                addHeader("Authorization", "Basic dXNlcjpwYXNz")
+            }
 
         filter.doFilter(request, MockHttpServletResponse(), MockFilterChain())
 

@@ -13,7 +13,6 @@ import org.junit.jupiter.api.assertThrows
 import java.util.UUID
 
 class MitigationServiceTest {
-
     private val mitigationRepository = mockk<MitigationRepository>()
     private val service = MitigationService(mitigationRepository)
 

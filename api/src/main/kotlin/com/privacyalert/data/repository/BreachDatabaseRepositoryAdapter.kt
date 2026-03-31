@@ -11,7 +11,6 @@ class BreachDatabaseRepositoryAdapter(
     private val knownBreachJpa: KnownBreachJpaRepository,
     private val breachedCredentialJpa: BreachedCredentialJpaRepository,
 ) : BreachDatabaseRepository {
-
     override fun findBreachesByEmailHash(emailSha256: String): List<KnownBreach> {
         val credentials = breachedCredentialJpa.findAllByEmailSha256(emailSha256)
         val breachIds = credentials.map { it.breachId }.distinct()
@@ -24,6 +23,5 @@ class BreachDatabaseRepositoryAdapter(
         return knownBreachJpa.findAllById(breachIds).map { it.toDomain() }
     }
 
-    override fun save(breach: KnownBreach): KnownBreach =
-        knownBreachJpa.save(breach.toEntity()).toDomain()
+    override fun save(breach: KnownBreach): KnownBreach = knownBreachJpa.save(breach.toEntity()).toDomain()
 }

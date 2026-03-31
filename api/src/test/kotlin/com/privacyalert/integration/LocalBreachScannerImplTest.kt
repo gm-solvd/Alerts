@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 class LocalBreachScannerImplTest {
-
     private val breachDatabaseRepository = mockk<BreachDatabaseRepository>()
     private val scanner = LocalBreachScannerImpl(breachDatabaseRepository)
 
@@ -27,12 +26,13 @@ class LocalBreachScannerImplTest {
 
     @Test
     fun `scanEmail maps KnownBreach to BreachResult correctly`() {
-        val breach = KnownBreach(
-            name = "LinkedIn",
-            domain = "linkedin.com",
-            breachDate = LocalDate.of(2012, 5, 5),
-            dataClasses = listOf("Emails", "Passwords"),
-        )
+        val breach =
+            KnownBreach(
+                name = "LinkedIn",
+                domain = "linkedin.com",
+                breachDate = LocalDate.of(2012, 5, 5),
+                dataClasses = listOf("Emails", "Passwords"),
+            )
         every { breachDatabaseRepository.findBreachesByEmailHash(any()) } returns listOf(breach)
 
         val results = scanner.scanEmail("test@example.com")
@@ -46,12 +46,13 @@ class LocalBreachScannerImplTest {
 
     @Test
     fun `scanEmail maps null domain to empty string and null breachDate to Unknown`() {
-        val breach = KnownBreach(
-            name = "UnknownBreach",
-            domain = null,
-            breachDate = null,
-            dataClasses = emptyList(),
-        )
+        val breach =
+            KnownBreach(
+                name = "UnknownBreach",
+                domain = null,
+                breachDate = null,
+                dataClasses = emptyList(),
+            )
         every { breachDatabaseRepository.findBreachesByEmailHash(any()) } returns listOf(breach)
 
         val results = scanner.scanEmail("test@example.com")
@@ -80,12 +81,13 @@ class LocalBreachScannerImplTest {
 
     @Test
     fun `scanPhone returns mapped results when breaches found`() {
-        val breach = KnownBreach(
-            name = "Facebook",
-            domain = "facebook.com",
-            breachDate = LocalDate.of(2019, 4, 1),
-            dataClasses = listOf("Phone numbers"),
-        )
+        val breach =
+            KnownBreach(
+                name = "Facebook",
+                domain = "facebook.com",
+                breachDate = LocalDate.of(2019, 4, 1),
+                dataClasses = listOf("Phone numbers"),
+            )
         every { breachDatabaseRepository.findBreachesByPhoneHash(any()) } returns listOf(breach)
 
         val results = scanner.scanPhone("+1234567890")

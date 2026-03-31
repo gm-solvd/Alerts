@@ -16,7 +16,6 @@ import org.springframework.data.domain.PageRequest
 import java.util.UUID
 
 class ScoreServiceTest {
-
     private val alertRepository = mockk<AlertRepository>()
     private val scoreRepository = mockk<ScoreRepository>()
     private val service = ScoreService(alertRepository, scoreRepository)
@@ -71,10 +70,11 @@ class ScoreServiceTest {
 
     @Test
     fun `recalculate saves new score based on unresolved alerts`() {
-        val alerts = listOf(
-            alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL),
-            alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL),
-        )
+        val alerts =
+            listOf(
+                alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL),
+                alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL),
+            )
 
         every { alertRepository.findAllUnresolvedByUserId(userId) } returns alerts
         every { scoreRepository.save(any()) } answers { firstArg() }
@@ -101,25 +101,27 @@ class ScoreServiceTest {
 
     @Test
     fun `calculate applies diminishing returns for multiple alerts in same category`() {
-        val alerts = listOf(
-            alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL),
-            alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL),
-        )
+        val alerts =
+            listOf(
+                alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL),
+                alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL),
+            )
         // 15 * 1.0 * (1 + ln(2)) = 15 * 1.693 = 25.4 → score = 75
         assertEquals(75, ScoreService.calculate(alerts))
     }
 
     @Test
     fun `calculate handles multiple categories correctly`() {
-        val alerts = listOf(
-            alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL),
-            alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL),
-            alert(ThreatCategory.NETWORK_VULNERABILITY, Severity.HIGH),
-            alert(ThreatCategory.TRACKER_EXPOSURE, Severity.MEDIUM),
-            alert(ThreatCategory.TRACKER_EXPOSURE, Severity.MEDIUM),
-            alert(ThreatCategory.TRACKER_EXPOSURE, Severity.MEDIUM),
-            alert(ThreatCategory.DEVICE_HYGIENE, Severity.MEDIUM),
-        )
+        val alerts =
+            listOf(
+                alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL),
+                alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL),
+                alert(ThreatCategory.NETWORK_VULNERABILITY, Severity.HIGH),
+                alert(ThreatCategory.TRACKER_EXPOSURE, Severity.MEDIUM),
+                alert(ThreatCategory.TRACKER_EXPOSURE, Severity.MEDIUM),
+                alert(ThreatCategory.TRACKER_EXPOSURE, Severity.MEDIUM),
+                alert(ThreatCategory.DEVICE_HYGIENE, Severity.MEDIUM),
+            )
         // Data breach:   15 * 1.0 * (1 + ln(2)) = 25.4
         // Network vuln:  10 * 0.9 * (1 + ln(1)) = 9.0
         // Tracker:         5 * 0.6 * (1 + ln(3)) = 6.3
@@ -131,9 +133,10 @@ class ScoreServiceTest {
     @Test
     fun `calculate floors score at 0`() {
         // Many critical alerts across multiple categories should drive score to 0
-        val alerts = (1..10).map { alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL) } +
-            (1..10).map { alert(ThreatCategory.NETWORK_VULNERABILITY, Severity.HIGH) } +
-            (1..10).map { alert(ThreatCategory.IDENTITY_EXPOSURE, Severity.HIGH) }
+        val alerts =
+            (1..10).map { alert(ThreatCategory.DATA_BREACH, Severity.CRITICAL) } +
+                (1..10).map { alert(ThreatCategory.NETWORK_VULNERABILITY, Severity.HIGH) } +
+                (1..10).map { alert(ThreatCategory.IDENTITY_EXPOSURE, Severity.HIGH) }
         val score = ScoreService.calculate(alerts)
         assertEquals(0, score)
     }

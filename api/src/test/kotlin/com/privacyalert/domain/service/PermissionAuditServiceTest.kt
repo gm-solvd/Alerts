@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test
 import java.util.UUID
 
 class PermissionAuditServiceTest {
-
     private val alertRepository = mockk<AlertRepository>()
     private val scoreService = mockk<ScoreService>()
     private val service = PermissionAuditService(alertRepository, scoreService)
@@ -21,10 +20,11 @@ class PermissionAuditServiceTest {
 
     @Test
     fun `submitAudit creates alerts for granted risky permissions`() {
-        val permissions = listOf(
-            PermissionEntry("android.permission.CAMERA", granted = true),
-            PermissionEntry("android.permission.READ_SMS", granted = true),
-        )
+        val permissions =
+            listOf(
+                PermissionEntry("android.permission.CAMERA", granted = true),
+                PermissionEntry("android.permission.READ_SMS", granted = true),
+            )
 
         every { alertRepository.save(any()) } answers { firstArg() }
         every { scoreService.recalculate(userId) } returns mockk()
@@ -39,10 +39,11 @@ class PermissionAuditServiceTest {
 
     @Test
     fun `submitAudit ignores non-risky permissions`() {
-        val permissions = listOf(
-            PermissionEntry("android.permission.INTERNET", granted = true),
-            PermissionEntry("android.permission.VIBRATE", granted = true),
-        )
+        val permissions =
+            listOf(
+                PermissionEntry("android.permission.INTERNET", granted = true),
+                PermissionEntry("android.permission.VIBRATE", granted = true),
+            )
 
         val alerts = service.submitAudit(userId, permissions)
 
@@ -52,10 +53,11 @@ class PermissionAuditServiceTest {
 
     @Test
     fun `submitAudit ignores risky permissions that are not granted`() {
-        val permissions = listOf(
-            PermissionEntry("android.permission.CAMERA", granted = false),
-            PermissionEntry("android.permission.READ_SMS", granted = false),
-        )
+        val permissions =
+            listOf(
+                PermissionEntry("android.permission.CAMERA", granted = false),
+                PermissionEntry("android.permission.READ_SMS", granted = false),
+            )
 
         val alerts = service.submitAudit(userId, permissions)
 
@@ -65,12 +67,13 @@ class PermissionAuditServiceTest {
 
     @Test
     fun `submitAudit creates alerts only for granted risky permissions in mixed list`() {
-        val permissions = listOf(
-            PermissionEntry("android.permission.CAMERA", granted = true),
-            PermissionEntry("android.permission.INTERNET", granted = true),
-            PermissionEntry("android.permission.READ_SMS", granted = false),
-            PermissionEntry("android.permission.RECORD_AUDIO", granted = true),
-        )
+        val permissions =
+            listOf(
+                PermissionEntry("android.permission.CAMERA", granted = true),
+                PermissionEntry("android.permission.INTERNET", granted = true),
+                PermissionEntry("android.permission.READ_SMS", granted = false),
+                PermissionEntry("android.permission.RECORD_AUDIO", granted = true),
+            )
 
         every { alertRepository.save(any()) } answers { firstArg() }
         every { scoreService.recalculate(userId) } returns mockk()

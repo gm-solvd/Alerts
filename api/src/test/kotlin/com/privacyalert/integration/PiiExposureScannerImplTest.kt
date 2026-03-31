@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class PiiExposureScannerImplTest {
-
     private val dataBrokerSiteRepository = mockk<DataBrokerSiteRepository>()
     private val httpClient = mockk<RateLimitedHttpClient>()
     private val robotsTxtChecker = mockk<RobotsTxtChecker>()
@@ -35,17 +34,19 @@ class PiiExposureScannerImplTest {
 
     @Test
     fun `scan returns empty when robots txt blocks data broker URL`() {
-        val profile = UserScanProfile(
-            email = "test@example.com",
-            fullName = "John Doe",
-        )
-        val site = DataBrokerSite(
-            name = "TestBroker",
-            baseUrl = "https://testbroker.com",
-            searchUrlTemplate = "https://testbroker.com/search?name={name}",
-            resultSelector = "div.result",
-            piiFields = listOf("name", "phone"),
-        )
+        val profile =
+            UserScanProfile(
+                email = "test@example.com",
+                fullName = "John Doe",
+            )
+        val site =
+            DataBrokerSite(
+                name = "TestBroker",
+                baseUrl = "https://testbroker.com",
+                searchUrlTemplate = "https://testbroker.com/search?name={name}",
+                resultSelector = "div.result",
+                piiFields = listOf("name", "phone"),
+            )
 
         every { dataBrokerSiteRepository.findAllActive() } returns listOf(site)
         every { robotsTxtChecker.isAllowed(any()) } returns false
@@ -58,17 +59,19 @@ class PiiExposureScannerImplTest {
 
     @Test
     fun `scan returns results when data broker site returns matching content`() {
-        val profile = UserScanProfile(
-            email = "test@example.com",
-            fullName = "John Doe",
-        )
-        val site = DataBrokerSite(
-            name = "TestBroker",
-            baseUrl = "https://testbroker.com",
-            searchUrlTemplate = "https://testbroker.com/search?name={name}",
-            resultSelector = "div.result",
-            piiFields = listOf("name", "phone"),
-        )
+        val profile =
+            UserScanProfile(
+                email = "test@example.com",
+                fullName = "John Doe",
+            )
+        val site =
+            DataBrokerSite(
+                name = "TestBroker",
+                baseUrl = "https://testbroker.com",
+                searchUrlTemplate = "https://testbroker.com/search?name={name}",
+                resultSelector = "div.result",
+                piiFields = listOf("name", "phone"),
+            )
 
         val html = "<html><body><div class=\"result\">John Doe, age 35, located in Springfield</div></body></html>"
         val doc = Jsoup.parse(html)

@@ -19,26 +19,27 @@ import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 class AuthServiceTest {
-
     private val userRepository = mockk<UserRepository>()
     private val refreshTokenRepository = mockk<RefreshTokenRepository>()
     private val passwordEncoder = mockk<PasswordEncoder>()
     private val jwtProvider = mockk<JwtProvider>()
     private val oAuthVerifier = mockk<OAuthVerifier>()
 
-    private val service = AuthService(
-        userRepository,
-        refreshTokenRepository,
-        passwordEncoder,
-        jwtProvider,
-        oAuthVerifier,
-    )
+    private val service =
+        AuthService(
+            userRepository,
+            refreshTokenRepository,
+            passwordEncoder,
+            jwtProvider,
+            oAuthVerifier,
+        )
 
-    private val testUser = User(
-        id = UUID.randomUUID(),
-        email = "test@example.com",
-        passwordHash = "hashed-password",
-    )
+    private val testUser =
+        User(
+            id = UUID.randomUUID(),
+            email = "test@example.com",
+            passwordHash = "hashed-password",
+        )
 
     @Test
     fun `register creates user and returns tokens`() {
@@ -110,11 +111,12 @@ class AuthServiceTest {
 
     @Test
     fun `refreshToken rotates tokens for valid refresh token`() {
-        val storedToken = RefreshToken(
-            userId = testUser.id,
-            tokenHash = "hashed-refresh",
-            expiresAt = Instant.now().plus(29, ChronoUnit.DAYS),
-        )
+        val storedToken =
+            RefreshToken(
+                userId = testUser.id,
+                tokenHash = "hashed-refresh",
+                expiresAt = Instant.now().plus(29, ChronoUnit.DAYS),
+            )
 
         every { refreshTokenRepository.findByTokenHash(any()) } returns storedToken
         every { refreshTokenRepository.revokeAllByUserId(testUser.id) } just Runs
@@ -141,12 +143,13 @@ class AuthServiceTest {
 
     @Test
     fun `refreshToken throws UnauthorizedException when token is revoked`() {
-        val revokedToken = RefreshToken(
-            userId = testUser.id,
-            tokenHash = "hashed",
-            expiresAt = Instant.now().plus(29, ChronoUnit.DAYS),
-            revoked = true,
-        )
+        val revokedToken =
+            RefreshToken(
+                userId = testUser.id,
+                tokenHash = "hashed",
+                expiresAt = Instant.now().plus(29, ChronoUnit.DAYS),
+                revoked = true,
+            )
 
         every { refreshTokenRepository.findByTokenHash(any()) } returns revokedToken
 
@@ -157,11 +160,12 @@ class AuthServiceTest {
 
     @Test
     fun `refreshToken throws UnauthorizedException when token is expired`() {
-        val expiredToken = RefreshToken(
-            userId = testUser.id,
-            tokenHash = "hashed",
-            expiresAt = Instant.now().minus(1, ChronoUnit.DAYS),
-        )
+        val expiredToken =
+            RefreshToken(
+                userId = testUser.id,
+                tokenHash = "hashed",
+                expiresAt = Instant.now().minus(1, ChronoUnit.DAYS),
+            )
 
         every { refreshTokenRepository.findByTokenHash(any()) } returns expiredToken
 

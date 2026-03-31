@@ -8,5 +8,9 @@ data class SocialFootprintResult(
 )
 
 interface SocialFootprintScanner {
-    fun scan(email: String, fullName: String?, username: String?): List<SocialFootprintResult>
+    fun scan(
+        email: String,
+        fullName: String?,
+        username: String?,
+    ): List<SocialFootprintResult>
 }

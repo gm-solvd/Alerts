@@ -16,7 +16,6 @@ class AlertService(
     private val alertRepository: AlertRepository,
     private val scoreService: ScoreService,
 ) {
-
     fun findAll(
         userId: UUID,
         category: ThreatCategory?,
@@ -24,9 +23,13 @@ class AlertService(
         pageable: Pageable,
     ): Page<Alert> = alertRepository.findAllByUserIdAndCategoryAndSeverity(userId, category, severity, pageable)
 
-    fun findById(id: UUID, userId: UUID): Alert {
-        val alert = alertRepository.findById(id)
-            ?: throw AppException.ResourceNotFoundException("Alert", id)
+    fun findById(
+        id: UUID,
+        userId: UUID,
+    ): Alert {
+        val alert =
+            alertRepository.findById(id)
+                ?: throw AppException.ResourceNotFoundException("Alert", id)
 
         if (alert.userId != userId) {
             throw AppException.ResourceNotFoundException("Alert", id)
@@ -35,20 +38,27 @@ class AlertService(
         return alert
     }
 
-    fun resolve(id: UUID, userId: UUID): Alert {
+    fun resolve(
+        id: UUID,
+        userId: UUID,
+    ): Alert {
         val alert = findById(id, userId)
 
-        val resolved = alert.copy(
-            resolved = true,
-            resolvedAt = Instant.now(),
-        )
+        val resolved =
+            alert.copy(
+                resolved = true,
+                resolvedAt = Instant.now(),
+            )
 
         val saved = alertRepository.save(resolved)
         scoreService.recalculate(userId)
         return saved
     }
 
-    fun delete(id: UUID, userId: UUID) {
+    fun delete(
+        id: UUID,
+        userId: UUID,
+    ) {
         findById(id, userId)
         alertRepository.deleteById(id)
         scoreService.recalculate(userId)

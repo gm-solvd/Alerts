@@ -10,9 +10,9 @@ import io.mockk.every
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import org.springframework.context.annotation.Import
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import java.time.Instant
@@ -20,8 +20,9 @@ import java.util.UUID
 
 @WebMvcTest(ScoreController::class)
 @Import(SecurityConfig::class, JwtAuthFilter::class)
-class ScoreControllerTest(@Autowired val mockMvc: MockMvc) {
-
+class ScoreControllerTest(
+    @Autowired val mockMvc: MockMvc,
+) {
     @MockkBean
     lateinit var scoreService: ScoreService
 
@@ -40,38 +41,42 @@ class ScoreControllerTest(@Autowired val mockMvc: MockMvc) {
         val record = ScoreRecord(userId = userId, score = 85, recordedAt = Instant.parse("2026-01-01T00:00:00Z"))
         every { scoreService.getCurrent(userId) } returns record
 
-        mockMvc.get("/api/v1/score") {
-            header("Authorization", "Bearer test-token")
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$.score") { value(85) }
-        }
+        mockMvc
+            .get("/api/v1/score") {
+                header("Authorization", "Bearer test-token")
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$.score") { value(85) }
+            }
     }
 
     @Test
     fun `GET score history returns 200 with paginated scores`() {
         authenticateAs(userId)
-        val records = listOf(
-            ScoreRecord(userId = userId, score = 85, recordedAt = Instant.parse("2026-01-02T00:00:00Z")),
-            ScoreRecord(userId = userId, score = 90, recordedAt = Instant.parse("2026-01-01T00:00:00Z")),
-        )
+        val records =
+            listOf(
+                ScoreRecord(userId = userId, score = 85, recordedAt = Instant.parse("2026-01-02T00:00:00Z")),
+                ScoreRecord(userId = userId, score = 90, recordedAt = Instant.parse("2026-01-01T00:00:00Z")),
+            )
         val page = PageImpl(records, PageRequest.of(0, 20), 2)
         every { scoreService.getHistory(userId, any()) } returns page
 
-        mockMvc.get("/api/v1/score/history") {
-            header("Authorization", "Bearer test-token")
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$.content[0].score") { value(85) }
-            jsonPath("$.totalElements") { value(2) }
-        }
+        mockMvc
+            .get("/api/v1/score/history") {
+                header("Authorization", "Bearer test-token")
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$.content[0].score") { value(85) }
+                jsonPath("$.totalElements") { value(2) }
+            }
     }
 
     @Test
     fun `GET score returns 403 without authentication`() {
         every { jwtProvider.validateAndExtractUserId(any()) } returns null
 
-        mockMvc.get("/api/v1/score")
+        mockMvc
+            .get("/api/v1/score")
             .andExpect {
                 status { isForbidden() }
             }

@@ -8,15 +8,16 @@ import java.time.Duration
 import java.util.UUID
 
 class JwtProviderImplTest {
-
-    private val properties = AppProperties(
-        jwt = AppProperties.JwtProperties(
-            secret = "this-is-a-very-long-secret-key-for-hs256-at-least-32-bytes",
-            accessTokenTtl = Duration.ofMinutes(15),
-            refreshTokenTtl = Duration.ofDays(30),
-        ),
-        hibp = AppProperties.HibpProperties(),
-    )
+    private val properties =
+        AppProperties(
+            jwt =
+                AppProperties.JwtProperties(
+                    secret = "this-is-a-very-long-secret-key-for-hs256-at-least-32-bytes",
+                    accessTokenTtl = Duration.ofMinutes(15),
+                    refreshTokenTtl = Duration.ofDays(30),
+                ),
+            hibp = AppProperties.HibpProperties(),
+        )
 
     private val jwtProvider = JwtProviderImpl(properties)
 
@@ -38,9 +39,10 @@ class JwtProviderImplTest {
 
     @Test
     fun `validateAndExtractUserId returns null for token signed with different key`() {
-        val otherProperties = properties.copy(
-            jwt = properties.jwt.copy(secret = "different-secret-key-that-is-also-at-least-32-bytes-long"),
-        )
+        val otherProperties =
+            properties.copy(
+                jwt = properties.jwt.copy(secret = "different-secret-key-that-is-also-at-least-32-bytes-long"),
+            )
         val otherProvider = JwtProviderImpl(otherProperties)
 
         val userId = UUID.randomUUID()
@@ -62,6 +64,7 @@ class JwtProviderImplTest {
     fun `generateAccessToken produces unique tokens for different users`() {
         val token1 = jwtProvider.generateAccessToken(UUID.randomUUID(), "user1@example.com")
         val token2 = jwtProvider.generateAccessToken(UUID.randomUUID(), "user2@example.com")
-        org.junit.jupiter.api.Assertions.assertNotEquals(token1, token2)
+        org.junit.jupiter.api.Assertions
+            .assertNotEquals(token1, token2)
     }
 }

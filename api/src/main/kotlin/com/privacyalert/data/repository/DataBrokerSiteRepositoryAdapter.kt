@@ -9,7 +9,5 @@ import org.springframework.stereotype.Repository
 class DataBrokerSiteRepositoryAdapter(
     private val jpa: DataBrokerSiteJpaRepository,
 ) : DataBrokerSiteRepository {
-
-    override fun findAllActive(): List<DataBrokerSite> =
-        jpa.findAllByActiveTrue().map { it.toDomain() }
+    override fun findAllActive(): List<DataBrokerSite> = jpa.findAllByActiveTrue().map { it.toDomain() }
 }

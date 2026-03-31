@@ -15,13 +15,14 @@ data class MitigationResponse(
     val createdAt: Instant,
 )
 
-fun Mitigation.toResponse(): MitigationResponse = MitigationResponse(
-    id = id,
-    alertId = alertId,
-    title = title,
-    description = description,
-    actionUrl = actionUrl,
-    completed = completed,
-    completedAt = completedAt,
-    createdAt = createdAt,
-)
+fun Mitigation.toResponse(): MitigationResponse =
+    MitigationResponse(
+        id = id,
+        alertId = alertId,
+        title = title,
+        description = description,
+        actionUrl = actionUrl,
+        completed = completed,
+        completedAt = completedAt,
+        createdAt = createdAt,
+    )

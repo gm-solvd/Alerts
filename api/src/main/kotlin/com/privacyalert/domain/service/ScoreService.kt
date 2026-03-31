@@ -17,14 +17,14 @@ class ScoreService(
     private val alertRepository: AlertRepository,
     private val scoreRepository: ScoreRepository,
 ) {
-
-    fun getCurrent(userId: UUID): ScoreRecord {
-        return scoreRepository.findLatestByUserId(userId)
+    fun getCurrent(userId: UUID): ScoreRecord =
+        scoreRepository.findLatestByUserId(userId)
             ?: recalculate(userId)
-    }
 
-    fun getHistory(userId: UUID, pageable: Pageable): Page<ScoreRecord> =
-        scoreRepository.findAllByUserId(userId, pageable)
+    fun getHistory(
+        userId: UUID,
+        pageable: Pageable,
+    ): Page<ScoreRecord> = scoreRepository.findAllByUserId(userId, pageable)
 
     fun recalculate(userId: UUID): ScoreRecord {
         val unresolvedAlerts = alertRepository.findAllUnresolvedByUserId(userId)
@@ -44,16 +44,17 @@ class ScoreService(
         fun calculate(unresolvedAlerts: List<Alert>): Int {
             if (unresolvedAlerts.isEmpty()) return 100
 
-            val totalDeduction = unresolvedAlerts
-                .groupBy { it.category }
-                .entries
-                .sumOf { (category, alerts) ->
-                    val penalty = alerts.first().severity.penalty
-                    val weight = category.weight
-                    val count = alerts.size
-                    val decay = 1.0 + ln(count.toDouble())
-                    penalty * weight * decay
-                }
+            val totalDeduction =
+                unresolvedAlerts
+                    .groupBy { it.category }
+                    .entries
+                    .sumOf { (category, alerts) ->
+                        val penalty = alerts.first().severity.penalty
+                        val weight = category.weight
+                        val count = alerts.size
+                        val decay = 1.0 + ln(count.toDouble())
+                        penalty * weight * decay
+                    }
 
             return max(0, (100 - totalDeduction).roundToInt())
         }

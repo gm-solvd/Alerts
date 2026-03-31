@@ -11,17 +11,17 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class PasteMonitorClientTest {
-
     private val httpClient = mockk<RateLimitedHttpClient>()
     private val robotsTxtChecker = mockk<RobotsTxtChecker>()
     private val pasteFindingRepository = mockk<PasteFindingRepository>()
 
     private fun buildClient(pasteMonitorEnabled: Boolean = true): PasteMonitorClient {
-        val appProperties = AppProperties(
-            jwt = AppProperties.JwtProperties(secret = "test-secret-key-that-is-long-enough-for-hs256"),
-            hibp = AppProperties.HibpProperties(),
-            scanning = AppProperties.ScanningProperties(pasteMonitorEnabled = pasteMonitorEnabled),
-        )
+        val appProperties =
+            AppProperties(
+                jwt = AppProperties.JwtProperties(secret = "test-secret-key-that-is-long-enough-for-hs256"),
+                hibp = AppProperties.HibpProperties(),
+                scanning = AppProperties.ScanningProperties(pasteMonitorEnabled = pasteMonitorEnabled),
+            )
         return PasteMonitorClient(httpClient, robotsTxtChecker, pasteFindingRepository, appProperties)
     }
 

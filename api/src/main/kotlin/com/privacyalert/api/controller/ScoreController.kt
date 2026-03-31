@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController
 class ScoreController(
     private val scoreService: ScoreService,
 ) {
-
     @GetMapping
     fun getCurrent(): ResponseEntity<ScoreResponse> {
         val score = scoreService.getCurrent(authenticatedUserId())

@@ -17,7 +17,6 @@ class PiiExposureScannerImpl(
     private val httpClient: RateLimitedHttpClient,
     private val robotsTxtChecker: RobotsTxtChecker,
 ) : PiiExposureScanner {
-
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun scan(profile: UserScanProfile): List<PiiExposureResult> {
@@ -109,10 +108,17 @@ class PiiExposureScannerImpl(
         return results
     }
 
-    private fun buildSearchUrl(site: DataBrokerSite, profile: UserScanProfile): String? {
+    private fun buildSearchUrl(
+        site: DataBrokerSite,
+        profile: UserScanProfile,
+    ): String? {
         val template = site.searchUrlTemplate ?: return null
         val name = profile.fullName ?: return null
-        val location = profile.homeAddress?.split(",")?.lastOrNull()?.trim() ?: ""
+        val location =
+            profile.homeAddress
+                ?.split(",")
+                ?.lastOrNull()
+                ?.trim() ?: ""
 
         return template
             .replace("{name}", URLEncoder.encode(name.replace(" ", "-"), Charsets.UTF_8))
@@ -127,7 +133,11 @@ class PiiExposureScannerImpl(
             queries.add("\"${profile.phoneNumber}\"")
         }
         if (!profile.fullName.isNullOrBlank()) {
-            val city = profile.homeAddress?.split(",")?.firstOrNull()?.trim() ?: ""
+            val city =
+                profile.homeAddress
+                    ?.split(",")
+                    ?.firstOrNull()
+                    ?.trim() ?: ""
             if (city.isNotBlank()) {
                 queries.add("\"${profile.fullName}\" \"$city\"")
             }
@@ -140,11 +150,24 @@ class PiiExposureScannerImpl(
     }
 
     private fun looksLikeDataBroker(url: String): Boolean {
-        val brokerDomains = listOf(
-            "whitepages", "spokeo", "beenverified", "truepeoplesearch", "fastpeoplesearch",
-            "thatsthem", "usphonebook", "radaris", "peoplefinder", "numlookup",
-            "intelius", "pipl", "zabasearch", "anywho", "addresses.com",
-        )
+        val brokerDomains =
+            listOf(
+                "whitepages",
+                "spokeo",
+                "beenverified",
+                "truepeoplesearch",
+                "fastpeoplesearch",
+                "thatsthem",
+                "usphonebook",
+                "radaris",
+                "peoplefinder",
+                "numlookup",
+                "intelius",
+                "pipl",
+                "zabasearch",
+                "anywho",
+                "addresses.com",
+            )
         return brokerDomains.any { url.contains(it, ignoreCase = true) }
     }
 }

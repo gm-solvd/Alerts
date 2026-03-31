@@ -10,7 +10,6 @@ import java.security.MessageDigest
 class LocalBreachScannerImpl(
     private val breachDatabaseRepository: BreachDatabaseRepository,
 ) : BreachScanner {
-
     override fun scanEmail(email: String): List<BreachResult> {
         val hash = sha256(email.lowercase())
         return breachDatabaseRepository.findBreachesByEmailHash(hash).map { breach ->

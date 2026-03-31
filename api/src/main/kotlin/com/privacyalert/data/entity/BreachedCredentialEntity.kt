@@ -15,14 +15,10 @@ class BreachedCredentialEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID = UUID.randomUUID(),
-
     @Column(nullable = false)
     val breachId: UUID = UUID.randomUUID(),
-
     val emailSha256: String? = null,
-
     val phoneSha256: String? = null,
-
     @Column(nullable = false)
     val createdAt: Instant = Instant.now(),
 )

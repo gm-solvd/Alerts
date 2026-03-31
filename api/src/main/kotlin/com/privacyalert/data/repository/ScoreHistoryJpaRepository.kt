@@ -8,5 +8,9 @@ import java.util.UUID
 
 interface ScoreHistoryJpaRepository : JpaRepository<ScoreHistoryEntity, UUID> {
     fun findFirstByUserIdOrderByRecordedAtDesc(userId: UUID): ScoreHistoryEntity?
-    fun findAllByUserId(userId: UUID, pageable: Pageable): Page<ScoreHistoryEntity>
+
+    fun findAllByUserId(
+        userId: UUID,
+        pageable: Pageable,
+    ): Page<ScoreHistoryEntity>
 }

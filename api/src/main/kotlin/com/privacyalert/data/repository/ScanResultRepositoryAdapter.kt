@@ -11,10 +11,10 @@ import java.util.UUID
 class ScanResultRepositoryAdapter(
     private val jpa: ScanResultJpaRepository,
 ) : ScanResultRepository {
+    override fun save(result: ScanResult): ScanResult = jpa.save(result.toEntity()).toDomain()
 
-    override fun save(result: ScanResult): ScanResult =
-        jpa.save(result.toEntity()).toDomain()
-
-    override fun findByUserIdAndScanType(userId: UUID, scanType: String): List<ScanResult> =
-        jpa.findAllByUserIdAndScanType(userId, scanType).map { it.toDomain() }
+    override fun findByUserIdAndScanType(
+        userId: UUID,
+        scanType: String,
+    ): List<ScanResult> = jpa.findAllByUserIdAndScanType(userId, scanType).map { it.toDomain() }
 }

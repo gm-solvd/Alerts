@@ -5,6 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface DataBrokerSiteJpaRepository : JpaRepository<DataBrokerSiteEntity, UUID> {
-
     fun findAllByActiveTrue(): List<DataBrokerSiteEntity>
 }

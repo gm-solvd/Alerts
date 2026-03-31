@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
-
     private val log = LoggerFactory.getLogger(javaClass)
 
     @ExceptionHandler(AppException.ResourceNotFoundException::class)
@@ -56,8 +55,9 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValid(ex: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
-        val message = ex.bindingResult.fieldErrors
-            .joinToString("; ") { "${it.field}: ${it.defaultMessage}" }
+        val message =
+            ex.bindingResult.fieldErrors
+                .joinToString("; ") { "${it.field}: ${it.defaultMessage}" }
         log.warn("Validation error: {}", message)
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
             ErrorResponse(code = "VALIDATION_ERROR", message = message),

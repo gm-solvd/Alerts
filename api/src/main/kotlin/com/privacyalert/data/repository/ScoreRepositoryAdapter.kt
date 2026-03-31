@@ -13,13 +13,12 @@ import java.util.UUID
 class ScoreRepositoryAdapter(
     private val jpa: ScoreHistoryJpaRepository,
 ) : ScoreRepository {
+    override fun save(record: ScoreRecord): ScoreRecord = jpa.save(record.toEntity()).toDomain()
 
-    override fun save(record: ScoreRecord): ScoreRecord =
-        jpa.save(record.toEntity()).toDomain()
+    override fun findLatestByUserId(userId: UUID): ScoreRecord? = jpa.findFirstByUserIdOrderByRecordedAtDesc(userId)?.toDomain()
 
-    override fun findLatestByUserId(userId: UUID): ScoreRecord? =
-        jpa.findFirstByUserIdOrderByRecordedAtDesc(userId)?.toDomain()
-
-    override fun findAllByUserId(userId: UUID, pageable: Pageable): Page<ScoreRecord> =
-        jpa.findAllByUserId(userId, pageable).map { it.toDomain() }
+    override fun findAllByUserId(
+        userId: UUID,
+        pageable: Pageable,
+    ): Page<ScoreRecord> = jpa.findAllByUserId(userId, pageable).map { it.toDomain() }
 }

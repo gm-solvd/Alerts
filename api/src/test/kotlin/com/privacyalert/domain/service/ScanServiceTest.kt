@@ -13,38 +13,40 @@ import org.junit.jupiter.api.Test
 import java.util.UUID
 
 class ScanServiceTest {
-
     private val alertRepository = mockk<AlertRepository>()
     private val breachScanner = mockk<BreachScanner>()
     private val piiExposureScanner = mockk<PiiExposureScanner>()
     private val identityExposureScanner = mockk<IdentityExposureScanner>()
     private val socialFootprintScanner = mockk<SocialFootprintScanner>()
     private val scoreService = mockk<ScoreService>()
-    private val service = ScanService(
-        alertRepository,
-        breachScanner,
-        piiExposureScanner,
-        identityExposureScanner,
-        socialFootprintScanner,
-        scoreService,
-    )
+    private val service =
+        ScanService(
+            alertRepository,
+            breachScanner,
+            piiExposureScanner,
+            identityExposureScanner,
+            socialFootprintScanner,
+            scoreService,
+        )
 
     private val userId = UUID.randomUUID()
-    private val profile = UserScanProfile(
-        email = "user@example.com",
-        phoneNumber = "+1234567890",
-        fullName = "John Doe",
-        homeAddress = "123 Main St",
-    )
+    private val profile =
+        UserScanProfile(
+            email = "user@example.com",
+            phoneNumber = "+1234567890",
+            fullName = "John Doe",
+            homeAddress = "123 Main St",
+        )
 
     // ── breachScan ──────────────────────────────────────────────────────
 
     @Test
     fun `breachScan creates alerts for each breach found`() {
-        val breaches = listOf(
-            BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails", "Passwords")),
-            BreachResult("Adobe", "adobe.com", "2013-10-04", listOf("Emails", "Passwords", "Usernames")),
-        )
+        val breaches =
+            listOf(
+                BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails", "Passwords")),
+                BreachResult("Adobe", "adobe.com", "2013-10-04", listOf("Emails", "Passwords", "Usernames")),
+            )
 
         every { breachScanner.scanEmail("user@example.com") } returns breaches
         every { breachScanner.scanPhone("+1234567890") } returns emptyList()
@@ -75,13 +77,15 @@ class ScanServiceTest {
 
     @Test
     fun `breachScan merges email and phone breaches and deduplicates by name`() {
-        val emailBreaches = listOf(
-            BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails")),
-        )
-        val phoneBreaches = listOf(
-            BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails")),
-            BreachResult("Facebook", "facebook.com", "2019-04-01", listOf("Phone numbers")),
-        )
+        val emailBreaches =
+            listOf(
+                BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails")),
+            )
+        val phoneBreaches =
+            listOf(
+                BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails")),
+                BreachResult("Facebook", "facebook.com", "2019-04-01", listOf("Phone numbers")),
+            )
 
         every { breachScanner.scanEmail("user@example.com") } returns emailBreaches
         every { breachScanner.scanPhone("+1234567890") } returns phoneBreaches
@@ -110,9 +114,10 @@ class ScanServiceTest {
 
     @Test
     fun `identityScan creates alerts from scanner results`() {
-        val results = listOf(
-            IdentityExposureResult("Spokeo", "https://spokeo.com/john", "John Doe", listOf("name", "email", "phone")),
-        )
+        val results =
+            listOf(
+                IdentityExposureResult("Spokeo", "https://spokeo.com/john", "John Doe", listOf("name", "email", "phone")),
+            )
 
         every { identityExposureScanner.scan("user@example.com", "John Doe") } returns results
         every { alertRepository.save(any()) } answers { firstArg() }
@@ -128,9 +133,10 @@ class ScanServiceTest {
 
     @Test
     fun `identityScan assigns HIGH severity when 3 or more fields exposed`() {
-        val results = listOf(
-            IdentityExposureResult("Spokeo", "https://spokeo.com/john", null, listOf("name", "email", "phone")),
-        )
+        val results =
+            listOf(
+                IdentityExposureResult("Spokeo", "https://spokeo.com/john", null, listOf("name", "email", "phone")),
+            )
 
         every { identityExposureScanner.scan("user@example.com", "John Doe") } returns results
         every { alertRepository.save(any()) } answers { firstArg() }
@@ -143,9 +149,10 @@ class ScanServiceTest {
 
     @Test
     fun `identityScan assigns MEDIUM severity when fewer than 3 fields exposed`() {
-        val results = listOf(
-            IdentityExposureResult("Spokeo", "https://spokeo.com/john", null, listOf("name", "email")),
-        )
+        val results =
+            listOf(
+                IdentityExposureResult("Spokeo", "https://spokeo.com/john", null, listOf("name", "email")),
+            )
 
         every { identityExposureScanner.scan("user@example.com", "John Doe") } returns results
         every { alertRepository.save(any()) } answers { firstArg() }
@@ -170,9 +177,10 @@ class ScanServiceTest {
 
     @Test
     fun `piiExposureScan creates alerts from scanner results`() {
-        val results = listOf(
-            PiiExposureResult("DataBroker", "https://databroker.com/j", listOf("phone", "address"), "John at 123 Main"),
-        )
+        val results =
+            listOf(
+                PiiExposureResult("DataBroker", "https://databroker.com/j", listOf("phone", "address"), "John at 123 Main"),
+            )
 
         every { piiExposureScanner.scan(profile) } returns results
         every { alertRepository.save(any()) } answers { firstArg() }
@@ -188,9 +196,10 @@ class ScanServiceTest {
 
     @Test
     fun `piiExposureScan assigns HIGH severity when phone and address exposed`() {
-        val results = listOf(
-            PiiExposureResult("DataBroker", "https://db.com/j", listOf("phone", "address")),
-        )
+        val results =
+            listOf(
+                PiiExposureResult("DataBroker", "https://db.com/j", listOf("phone", "address")),
+            )
 
         every { piiExposureScanner.scan(profile) } returns results
         every { alertRepository.save(any()) } answers { firstArg() }
@@ -203,9 +212,10 @@ class ScanServiceTest {
 
     @Test
     fun `piiExposureScan assigns MEDIUM severity when name and address exposed`() {
-        val results = listOf(
-            PiiExposureResult("DataBroker", "https://db.com/j", listOf("name", "address")),
-        )
+        val results =
+            listOf(
+                PiiExposureResult("DataBroker", "https://db.com/j", listOf("name", "address")),
+            )
 
         every { piiExposureScanner.scan(profile) } returns results
         every { alertRepository.save(any()) } answers { firstArg() }
@@ -218,9 +228,10 @@ class ScanServiceTest {
 
     @Test
     fun `piiExposureScan assigns LOW severity when only email exposed`() {
-        val results = listOf(
-            PiiExposureResult("DataBroker", "https://db.com/j", listOf("email")),
-        )
+        val results =
+            listOf(
+                PiiExposureResult("DataBroker", "https://db.com/j", listOf("email")),
+            )
 
         every { piiExposureScanner.scan(profile) } returns results
         every { alertRepository.save(any()) } answers { firstArg() }
@@ -245,9 +256,10 @@ class ScanServiceTest {
 
     @Test
     fun `socialFootprintScan creates alerts from scanner results`() {
-        val results = listOf(
-            SocialFootprintResult("Twitter", "https://twitter.com/johndoe", "johndoe", listOf("bio", "location", "links")),
-        )
+        val results =
+            listOf(
+                SocialFootprintResult("Twitter", "https://twitter.com/johndoe", "johndoe", listOf("bio", "location", "links")),
+            )
 
         every { socialFootprintScanner.scan("user@example.com", "John Doe", "johndoe") } returns results
         every { alertRepository.save(any()) } answers { firstArg() }
@@ -263,9 +275,10 @@ class ScanServiceTest {
 
     @Test
     fun `socialFootprintScan assigns MEDIUM severity when 3 or more public info found`() {
-        val results = listOf(
-            SocialFootprintResult("Twitter", "https://twitter.com/jd", "jd", listOf("bio", "location", "links")),
-        )
+        val results =
+            listOf(
+                SocialFootprintResult("Twitter", "https://twitter.com/jd", "jd", listOf("bio", "location", "links")),
+            )
 
         every { socialFootprintScanner.scan("user@example.com", "John Doe", "jd") } returns results
         every { alertRepository.save(any()) } answers { firstArg() }
@@ -278,9 +291,10 @@ class ScanServiceTest {
 
     @Test
     fun `socialFootprintScan assigns LOW severity when fewer than 3 public info found`() {
-        val results = listOf(
-            SocialFootprintResult("Twitter", "https://twitter.com/jd", "jd", listOf("bio")),
-        )
+        val results =
+            listOf(
+                SocialFootprintResult("Twitter", "https://twitter.com/jd", "jd", listOf("bio")),
+            )
 
         every { socialFootprintScanner.scan("user@example.com", "John Doe", null) } returns results
         every { alertRepository.save(any()) } answers { firstArg() }
@@ -305,18 +319,22 @@ class ScanServiceTest {
 
     @Test
     fun `fullScan aggregates results from all four scans`() {
-        val breaches = listOf(
-            BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails")),
-        )
-        val identityResults = listOf(
-            IdentityExposureResult("Spokeo", "https://spokeo.com/j", null, listOf("name", "email")),
-        )
-        val piiResults = listOf(
-            PiiExposureResult("DataBroker", "https://db.com/j", listOf("email")),
-        )
-        val socialResults = listOf(
-            SocialFootprintResult("Twitter", "https://twitter.com/jd", "jd", listOf("bio")),
-        )
+        val breaches =
+            listOf(
+                BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails")),
+            )
+        val identityResults =
+            listOf(
+                IdentityExposureResult("Spokeo", "https://spokeo.com/j", null, listOf("name", "email")),
+            )
+        val piiResults =
+            listOf(
+                PiiExposureResult("DataBroker", "https://db.com/j", listOf("email")),
+            )
+        val socialResults =
+            listOf(
+                SocialFootprintResult("Twitter", "https://twitter.com/jd", "jd", listOf("bio")),
+            )
 
         every { breachScanner.scanEmail("user@example.com") } returns breaches
         every { breachScanner.scanPhone("+1234567890") } returns emptyList()

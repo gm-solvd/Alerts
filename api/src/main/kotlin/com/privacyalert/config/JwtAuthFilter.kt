@@ -13,7 +13,6 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtAuthFilter(
     private val jwtProvider: JwtProvider,
 ) : OncePerRequestFilter() {
-
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,

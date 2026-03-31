@@ -20,8 +20,9 @@ import java.util.UUID
 
 @WebMvcTest(MitigationController::class)
 @Import(SecurityConfig::class, JwtAuthFilter::class)
-class MitigationControllerTest(@Autowired val mockMvc: MockMvc) {
-
+class MitigationControllerTest(
+    @Autowired val mockMvc: MockMvc,
+) {
     @MockkBean
     lateinit var mitigationService: MitigationService
 
@@ -32,14 +33,15 @@ class MitigationControllerTest(@Autowired val mockMvc: MockMvc) {
     private val alertId = UUID.randomUUID()
     private val mitigationId = UUID.randomUUID()
 
-    private val testMitigation = Mitigation(
-        id = mitigationId,
-        alertId = alertId,
-        title = "Change password",
-        description = "Change your password immediately",
-        actionUrl = "https://example.com/reset",
-        createdAt = Instant.parse("2026-01-01T00:00:00Z"),
-    )
+    private val testMitigation =
+        Mitigation(
+            id = mitigationId,
+            alertId = alertId,
+            title = "Change password",
+            description = "Change your password immediately",
+            actionUrl = "https://example.com/reset",
+            createdAt = Instant.parse("2026-01-01T00:00:00Z"),
+        )
 
     private fun authenticateAs(userId: UUID) {
         every { jwtProvider.validateAndExtractUserId("test-token") } returns userId
@@ -50,12 +52,13 @@ class MitigationControllerTest(@Autowired val mockMvc: MockMvc) {
         authenticateAs(userId)
         every { mitigationService.findAllByUserId(userId) } returns listOf(testMitigation)
 
-        mockMvc.get("/api/v1/mitigations") {
-            header("Authorization", "Bearer test-token")
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$[0].title") { value("Change password") }
-        }
+        mockMvc
+            .get("/api/v1/mitigations") {
+                header("Authorization", "Bearer test-token")
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$[0].title") { value("Change password") }
+            }
     }
 
     @Test
@@ -63,12 +66,13 @@ class MitigationControllerTest(@Autowired val mockMvc: MockMvc) {
         authenticateAs(userId)
         every { mitigationService.findByAlertId(alertId) } returns listOf(testMitigation)
 
-        mockMvc.get("/api/v1/mitigations/$alertId") {
-            header("Authorization", "Bearer test-token")
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$[0].alertId") { value(alertId.toString()) }
-        }
+        mockMvc
+            .get("/api/v1/mitigations/$alertId") {
+                header("Authorization", "Bearer test-token")
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$[0].alertId") { value(alertId.toString()) }
+            }
     }
 
     @Test
@@ -77,12 +81,13 @@ class MitigationControllerTest(@Autowired val mockMvc: MockMvc) {
         val completed = testMitigation.copy(completed = true, completedAt = Instant.now())
         every { mitigationService.complete(mitigationId) } returns completed
 
-        mockMvc.patch("/api/v1/mitigations/$mitigationId/complete") {
-            header("Authorization", "Bearer test-token")
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$.completed") { value(true) }
-        }
+        mockMvc
+            .patch("/api/v1/mitigations/$mitigationId/complete") {
+                header("Authorization", "Bearer test-token")
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$.completed") { value(true) }
+            }
     }
 
     @Test
@@ -91,19 +96,21 @@ class MitigationControllerTest(@Autowired val mockMvc: MockMvc) {
         every { mitigationService.complete(mitigationId) } throws
             AppException.ResourceNotFoundException("Mitigation", mitigationId)
 
-        mockMvc.patch("/api/v1/mitigations/$mitigationId/complete") {
-            header("Authorization", "Bearer test-token")
-        }.andExpect {
-            status { isNotFound() }
-            jsonPath("$.code") { value("RESOURCE_NOT_FOUND") }
-        }
+        mockMvc
+            .patch("/api/v1/mitigations/$mitigationId/complete") {
+                header("Authorization", "Bearer test-token")
+            }.andExpect {
+                status { isNotFound() }
+                jsonPath("$.code") { value("RESOURCE_NOT_FOUND") }
+            }
     }
 
     @Test
     fun `GET mitigations returns 403 without authentication`() {
         every { jwtProvider.validateAndExtractUserId(any()) } returns null
 
-        mockMvc.get("/api/v1/mitigations")
+        mockMvc
+            .get("/api/v1/mitigations")
             .andExpect {
                 status { isForbidden() }
             }

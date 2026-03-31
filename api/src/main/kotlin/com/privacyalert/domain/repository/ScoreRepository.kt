@@ -7,6 +7,11 @@ import java.util.UUID
 
 interface ScoreRepository {
     fun save(record: ScoreRecord): ScoreRecord
+
     fun findLatestByUserId(userId: UUID): ScoreRecord?
-    fun findAllByUserId(userId: UUID, pageable: Pageable): Page<ScoreRecord>
+
+    fun findAllByUserId(
+        userId: UUID,
+        pageable: Pageable,
+    ): Page<ScoreRecord>
 }

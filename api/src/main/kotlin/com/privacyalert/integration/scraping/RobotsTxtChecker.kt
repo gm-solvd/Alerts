@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Component
 class RobotsTxtChecker {
-
     private data class RobotsEntry(
         val disallowedPaths: List<String>,
         val fetchedAt: Long,
@@ -16,18 +15,20 @@ class RobotsTxtChecker {
     private val cacheTtlMs = 3_600_000L // 1 hour
 
     fun isAllowed(url: String): Boolean {
-        val domain = try {
-            val uri = java.net.URI(url)
-            "${uri.scheme}://${uri.host}"
-        } catch (e: Exception) {
-            return true
-        }
+        val domain =
+            try {
+                val uri = java.net.URI(url)
+                "${uri.scheme}://${uri.host}"
+            } catch (e: Exception) {
+                return true
+            }
 
-        val path = try {
-            java.net.URI(url).path ?: "/"
-        } catch (e: Exception) {
-            return true
-        }
+        val path =
+            try {
+                java.net.URI(url).path ?: "/"
+            } catch (e: Exception) {
+                return true
+            }
 
         val entry = getOrFetch(domain)
         return entry.disallowedPaths.none { path.startsWith(it) }
@@ -39,20 +40,23 @@ class RobotsTxtChecker {
             return cached
         }
 
-        val entry = try {
-            val robotsUrl = "$domain/robots.txt"
-            val body = Jsoup.connect(robotsUrl)
-                .userAgent("PrivacyAlertBot/1.0")
-                .timeout(5_000)
-                .ignoreContentType(true)
-                .execute()
-                .body()
+        val entry =
+            try {
+                val robotsUrl = "$domain/robots.txt"
+                val body =
+                    Jsoup
+                        .connect(robotsUrl)
+                        .userAgent("PrivacyAlertBot/1.0")
+                        .timeout(5_000)
+                        .ignoreContentType(true)
+                        .execute()
+                        .body()
 
-            val disallowed = parseRobotsTxt(body)
-            RobotsEntry(disallowed, System.currentTimeMillis())
-        } catch (e: Exception) {
-            RobotsEntry(emptyList(), System.currentTimeMillis())
-        }
+                val disallowed = parseRobotsTxt(body)
+                RobotsEntry(disallowed, System.currentTimeMillis())
+            } catch (e: Exception) {
+                RobotsEntry(emptyList(), System.currentTimeMillis())
+            }
 
         cache[domain] = entry
         return entry
@@ -70,8 +74,12 @@ class RobotsTxtChecker {
                     inOurSection = agent == "*" || agent == "privacyalertbot"
                 }
                 inOurSection && trimmed.startsWith("disallow:") -> {
-                    val path = line.trim().substringAfter("Disallow:").trim()
-                        .ifEmpty { line.trim().substringAfter("disallow:").trim() }
+                    val path =
+                        line
+                            .trim()
+                            .substringAfter("Disallow:")
+                            .trim()
+                            .ifEmpty { line.trim().substringAfter("disallow:").trim() }
                     if (path.isNotBlank()) {
                         disallowed.add(path)
                     }

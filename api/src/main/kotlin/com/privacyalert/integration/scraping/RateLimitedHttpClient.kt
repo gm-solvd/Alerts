@@ -10,14 +10,14 @@ import java.util.concurrent.ConcurrentHashMap
 class RateLimitedHttpClient(
     private val appProperties: AppProperties,
 ) {
-
     private val lastRequestTime = ConcurrentHashMap<String, Long>()
 
     fun fetch(url: String): Document? {
         val domain = extractDomain(url)
         throttle(domain)
         return try {
-            Jsoup.connect(url)
+            Jsoup
+                .connect(url)
                 .userAgent("PrivacyAlertBot/1.0")
                 .timeout(10_000)
                 .get()
@@ -26,9 +26,7 @@ class RateLimitedHttpClient(
         }
     }
 
-    fun fetchText(url: String): String? {
-        return fetch(url)?.text()
-    }
+    fun fetchText(url: String): String? = fetch(url)?.text()
 
     private fun throttle(domain: String) {
         val delayMs = appProperties.scanning.rateLimitPerDomainDelayMs
@@ -40,11 +38,10 @@ class RateLimitedHttpClient(
         lastRequestTime[domain] = System.currentTimeMillis()
     }
 
-    private fun extractDomain(url: String): String {
-        return try {
+    private fun extractDomain(url: String): String =
+        try {
             java.net.URI(url).host ?: url
         } catch (e: Exception) {
             url
         }
-    }
 }

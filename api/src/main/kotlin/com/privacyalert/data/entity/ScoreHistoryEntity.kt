@@ -16,27 +16,26 @@ class ScoreHistoryEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID = UUID.randomUUID(),
-
     @Column(nullable = false)
     val userId: UUID = UUID.randomUUID(),
-
     @Column(nullable = false)
     val score: Short = 100,
-
     @Column(nullable = false)
     val recordedAt: Instant = Instant.now(),
 )
 
-fun ScoreHistoryEntity.toDomain(): ScoreRecord = ScoreRecord(
-    id = id,
-    userId = userId,
-    score = score.toInt(),
-    recordedAt = recordedAt,
-)
+fun ScoreHistoryEntity.toDomain(): ScoreRecord =
+    ScoreRecord(
+        id = id,
+        userId = userId,
+        score = score.toInt(),
+        recordedAt = recordedAt,
+    )
 
-fun ScoreRecord.toEntity(): ScoreHistoryEntity = ScoreHistoryEntity(
-    id = id,
-    userId = userId,
-    score = score.toShort(),
-    recordedAt = recordedAt,
-)
+fun ScoreRecord.toEntity(): ScoreHistoryEntity =
+    ScoreHistoryEntity(
+        id = id,
+        userId = userId,
+        score = score.toShort(),
+        recordedAt = recordedAt,
+    )

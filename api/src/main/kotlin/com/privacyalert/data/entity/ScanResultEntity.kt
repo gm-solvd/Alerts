@@ -18,38 +18,35 @@ class ScanResultEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID = UUID.randomUUID(),
-
     @Column(nullable = false)
     val userId: UUID = UUID.randomUUID(),
-
     @Column(nullable = false)
     val scanType: String = "",
-
     @Column(nullable = false)
     val scanInput: String = "",
-
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = false)
     val findings: String = "[]",
-
     @Column(nullable = false)
     val createdAt: Instant = Instant.now(),
 )
 
-fun ScanResultEntity.toDomain(): ScanResult = ScanResult(
-    id = id,
-    userId = userId,
-    scanType = scanType,
-    scanInput = scanInput,
-    findings = findings,
-    createdAt = createdAt,
-)
+fun ScanResultEntity.toDomain(): ScanResult =
+    ScanResult(
+        id = id,
+        userId = userId,
+        scanType = scanType,
+        scanInput = scanInput,
+        findings = findings,
+        createdAt = createdAt,
+    )
 
-fun ScanResult.toEntity(): ScanResultEntity = ScanResultEntity(
-    id = id,
-    userId = userId,
-    scanType = scanType,
-    scanInput = scanInput,
-    findings = findings,
-    createdAt = createdAt,
-)
+fun ScanResult.toEntity(): ScanResultEntity =
+    ScanResultEntity(
+        id = id,
+        userId = userId,
+        scanType = scanType,
+        scanInput = scanInput,
+        findings = findings,
+        createdAt = createdAt,
+    )

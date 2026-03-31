@@ -10,8 +10,10 @@ import org.springframework.data.jpa.repository.Query
 import java.util.UUID
 
 interface AlertJpaRepository : JpaRepository<AlertEntity, UUID> {
-
-    fun findAllByUserId(userId: UUID, pageable: Pageable): Page<AlertEntity>
+    fun findAllByUserId(
+        userId: UUID,
+        pageable: Pageable,
+    ): Page<AlertEntity>
 
     @Query(
         """

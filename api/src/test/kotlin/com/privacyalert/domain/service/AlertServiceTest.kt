@@ -20,7 +20,6 @@ import org.springframework.data.domain.PageRequest
 import java.util.UUID
 
 class AlertServiceTest {
-
     private val alertRepository = mockk<AlertRepository>()
     private val scoreService = mockk<ScoreService>()
     private val service = AlertService(alertRepository, scoreService)
@@ -99,14 +98,15 @@ class AlertServiceTest {
     fun `findById throws ResourceNotFoundException when alert belongs to different user`() {
         val alertId = UUID.randomUUID()
         val otherUserId = UUID.randomUUID()
-        val otherAlert = Alert(
-            id = alertId,
-            userId = otherUserId,
-            category = ThreatCategory.DATA_BREACH,
-            severity = Severity.CRITICAL,
-            title = "Other",
-            description = "Other",
-        )
+        val otherAlert =
+            Alert(
+                id = alertId,
+                userId = otherUserId,
+                category = ThreatCategory.DATA_BREACH,
+                severity = Severity.CRITICAL,
+                title = "Other",
+                description = "Other",
+            )
 
         every { alertRepository.findById(alertId) } returns otherAlert
 

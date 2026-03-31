@@ -14,11 +14,14 @@ class SocialFootprintScannerImpl(
     private val httpClient: RateLimitedHttpClient,
     private val appProperties: AppProperties,
 ) : SocialFootprintScanner {
-
     private val log = LoggerFactory.getLogger(javaClass)
     private val restClient = RestClient.create()
 
-    override fun scan(email: String, fullName: String?, username: String?): List<SocialFootprintResult> {
+    override fun scan(
+        email: String,
+        fullName: String?,
+        username: String?,
+    ): List<SocialFootprintResult> {
         val usernames = deriveUsernames(email, username)
         val results = mutableListOf<SocialFootprintResult>()
         val enabledPlatforms = appProperties.scanning.socialEnabledPlatforms
@@ -43,7 +46,10 @@ class SocialFootprintScannerImpl(
         return results.distinctBy { it.profileUrl }
     }
 
-    private fun deriveUsernames(email: String, providedUsername: String?): List<String> {
+    private fun deriveUsernames(
+        email: String,
+        providedUsername: String?,
+    ): List<String> {
         val usernames = mutableListOf<String>()
         if (!providedUsername.isNullOrBlank()) {
             usernames.add(providedUsername)
@@ -59,10 +65,13 @@ class SocialFootprintScannerImpl(
     private fun checkGitHub(username: String): SocialFootprintResult? {
         return try {
             val url = "https://api.github.com/users/$username"
-            val response = restClient.get().uri(url)
-                .header("Accept", "application/vnd.github.v3+json")
-                .retrieve()
-                .body(String::class.java) ?: return null
+            val response =
+                restClient
+                    .get()
+                    .uri(url)
+                    .header("Accept", "application/vnd.github.v3+json")
+                    .retrieve()
+                    .body(String::class.java) ?: return null
 
             val publicInfo = mutableListOf<String>("username")
             if (response.contains("\"bio\"") && !response.contains("\"bio\":null")) publicInfo.add("bio")
@@ -83,10 +92,13 @@ class SocialFootprintScannerImpl(
     private fun checkReddit(username: String): SocialFootprintResult? {
         return try {
             val url = "https://www.reddit.com/user/$username/about.json"
-            val response = restClient.get().uri(url)
-                .header("User-Agent", "PrivacyAlertBot/1.0")
-                .retrieve()
-                .body(String::class.java) ?: return null
+            val response =
+                restClient
+                    .get()
+                    .uri(url)
+                    .header("User-Agent", "PrivacyAlertBot/1.0")
+                    .retrieve()
+                    .body(String::class.java) ?: return null
 
             if (response.contains("\"name\"")) {
                 SocialFootprintResult(
@@ -149,23 +161,28 @@ class SocialFootprintScannerImpl(
         return null
     }
 
-    private fun searchWebForProfiles(fullName: String?, username: String?): List<SocialFootprintResult>? {
+    private fun searchWebForProfiles(
+        fullName: String?,
+        username: String?,
+    ): List<SocialFootprintResult>? {
         val searchTerm = fullName ?: username ?: return null
         return try {
             val query = "\"$searchTerm\" site:linkedin.com OR site:twitter.com OR site:facebook.com"
             val searchUrl = "https://html.duckduckgo.com/html/?q=${URLEncoder.encode(query, Charsets.UTF_8)}"
             val doc = httpClient.fetch(searchUrl) ?: return null
 
-            doc.select("a.result__a")
+            doc
+                .select("a.result__a")
                 .take(5)
                 .mapNotNull { link ->
                     val href = link.attr("href")
-                    val platform = when {
-                        href.contains("linkedin.com") -> "LinkedIn"
-                        href.contains("twitter.com") || href.contains("x.com") -> "Twitter/X"
-                        href.contains("facebook.com") -> "Facebook"
-                        else -> null
-                    }
+                    val platform =
+                        when {
+                            href.contains("linkedin.com") -> "LinkedIn"
+                            href.contains("twitter.com") || href.contains("x.com") -> "Twitter/X"
+                            href.contains("facebook.com") -> "Facebook"
+                            else -> null
+                        }
                     if (platform != null) {
                         SocialFootprintResult(
                             platform = platform,
@@ -176,8 +193,7 @@ class SocialFootprintScannerImpl(
                     } else {
                         null
                     }
-                }
-                .takeIf { it.isNotEmpty() }
+                }.takeIf { it.isNotEmpty() }
         } catch (e: Exception) {
             log.debug("Web profile search failed: {}", e.message)
             null

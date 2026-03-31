@@ -5,5 +5,9 @@ import java.util.UUID
 
 interface ScanResultRepository {
     fun save(result: ScanResult): ScanResult
-    fun findByUserIdAndScanType(userId: UUID, scanType: String): List<ScanResult>
+
+    fun findByUserIdAndScanType(
+        userId: UUID,
+        scanType: String,
+    ): List<ScanResult>
 }
