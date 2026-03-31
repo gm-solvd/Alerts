@@ -96,6 +96,7 @@ Follow these steps **in order**. Each **STOP** point requires explicit user appr
 - After approval: create PR with `gh pr create --base develop`
 - Return the PR URL to the user
 - CI validates the PR automatically (compile, lint, test via GitHub Actions)
+- If CI fails, Claude automatically analyzes the failure and pushes a fix (via `pr-autofix.yml`)
 - PR is **not auto-merged** — it requires manual review and approval before merging
 
 ## Step 9: Update Progress

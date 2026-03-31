@@ -67,7 +67,7 @@ api/src/main/kotlin/com/privacyalert/
 5. **Validation** — Run `compileKotlin`, `ktlintCheck`, `test`. **STOP** to report results.
 6. **Human Review** — Show `git diff`, wait for user review.
 7. **Atomic Commits** — Group changes logically. Stage files by name (never `git add .`).
-8. **Push & Pull Request** — Push branch, draft PR, **STOP** for approval, then `gh pr create --base develop`. Return PR URL. CI validates automatically (compile, lint, test). PR is not auto-merged.
+8. **Push & Pull Request** — Push branch, draft PR, **STOP** for approval, then `gh pr create --base develop`. Return PR URL. CI validates automatically. If CI fails, Claude auto-fixes via `pr-autofix.yml`. PR is not auto-merged.
 9. **Update Progress** — Update `rules/general/progress.md`.
 
 ## Branching & Commits

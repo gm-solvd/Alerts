@@ -47,6 +47,7 @@ AI-assisted development workflow with explicit human checkpoints.
 - AI creates PR via `gh pr create --base develop`
 - AI returns the PR URL
 - **CI runs automatically** — GitHub Actions validates the PR (compile, lint, test)
+- **If CI fails** — Claude automatically analyzes the failure logs and pushes a fix to the PR branch (via `pr-autofix.yml`). No manual intervention needed.
 - PR is **not auto-merged** — requires manual review and approval
 
 ### 9. Update Progress
