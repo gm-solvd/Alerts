@@ -2,7 +2,7 @@
   <div>
     <div class="header">
       <router-link to="/users" class="back">Back to Users</router-link>
-      <h1 v-if="user">{{ user.email }}</h1>
+      <h1 v-if="user">{{ user.fullName || user.email }}</h1>
     </div>
 
     <div v-if="loading" class="loading">Loading...</div>
@@ -15,8 +15,16 @@
           <dl>
             <dt>Email</dt>
             <dd>{{ user.email }}</dd>
+            <dt>Full Name</dt>
+            <dd>{{ user.fullName || '-' }}</dd>
+            <dt>Phone</dt>
+            <dd>{{ user.phoneNumber || '-' }}</dd>
+            <dt>Address</dt>
+            <dd>{{ user.homeAddress || '-' }}</dd>
+            <dt>Date of Birth</dt>
+            <dd>{{ user.dateOfBirth || '-' }}</dd>
             <dt>Provider</dt>
-            <dd>{{ user.oauthProvider || 'email' }}</dd>
+            <dd>{{ user.oauthProvider || 'admin' }}</dd>
             <dt>Score</dt>
             <dd>
               <span v-if="user.score != null" class="score" :class="scoreClass(user.score)">{{ user.score }}</span>
@@ -27,7 +35,36 @@
             <dt>Total Alerts</dt>
             <dd>{{ user.alertCount }}</dd>
           </dl>
-          <button class="btn btn-danger" @click="confirmDelete">Delete User</button>
+          <div class="user-actions">
+            <button class="btn btn-primary" :disabled="scanning" @click="runScan">
+              {{ scanning ? 'Scanning...' : 'Run Scan' }}
+            </button>
+            <router-link :to="`/users/${user.id}/scans`" class="btn btn-secondary">Scan History</router-link>
+            <button class="btn btn-danger" @click="confirmDelete">Delete User</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scan Results (shown after running a scan) -->
+      <div v-if="scanResults" class="scan-results">
+        <h2>Scan Results ({{ scanResults.totalAlerts }} alerts found)</h2>
+        <div v-for="scanner in scanResults.scanners" :key="scanner.scannerName" class="card scanner-card">
+          <h3>
+            {{ scanner.scannerName }}
+            <span class="badge" :class="scanner.findingsCount > 0 ? 'badge-warn' : 'badge-ok'">
+              {{ scanner.findingsCount }} findings
+            </span>
+          </h3>
+          <div v-if="scanner.alerts.length > 0" class="scanner-alerts">
+            <div v-for="alert in scanner.alerts" :key="alert.id" class="alert-item">
+              <div class="alert-header">
+                <AlertBadge type="severity" :value="alert.severity" />
+                <strong>{{ alert.title }}</strong>
+              </div>
+              <p class="alert-desc">{{ alert.description }}</p>
+            </div>
+          </div>
+          <p v-else class="no-findings">No issues found</p>
         </div>
       </div>
 
@@ -76,6 +113,8 @@ export default {
       alertTotalPages: 0,
       loading: true,
       error: null,
+      scanning: false,
+      scanResults: null,
     }
   },
   async created() {
@@ -101,6 +140,23 @@ export default {
         this.alertTotalPages = data.totalPages
       } catch (e) {
         this.error = e.response?.data?.message || 'Failed to load alerts'
+      }
+    },
+    async runScan() {
+      this.scanning = true
+      this.scanResults = null
+      this.error = null
+      try {
+        const { data } = await api.triggerScan(this.$route.params.id)
+        this.scanResults = data
+        // Reload user and alerts to reflect new data
+        const userResp = await api.getUser(this.$route.params.id)
+        this.user = userResp.data
+        await this.loadAlerts(0)
+      } catch (e) {
+        this.error = e.response?.data?.message || 'Scan failed'
+      } finally {
+        this.scanning = false
       }
     },
     async confirmDelete() {
@@ -169,6 +225,78 @@ dt {
 
 dd {
   font-size: 0.95em;
+}
+
+.user-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.btn-primary {
+  background: #4a90d9;
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) { background: #357abd; }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-secondary {
+  background: #eee;
+  color: #333;
+  text-align: center;
+}
+.btn-secondary:hover { background: #ddd; text-decoration: none; }
+
+.scan-results {
+  margin-bottom: 24px;
+}
+
+.scanner-card {
+  margin-bottom: 12px;
+}
+
+.scanner-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge {
+  font-size: 0.75em;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.badge-warn { background: #fef3cd; color: #856404; }
+.badge-ok { background: #d4edda; color: #155724; }
+
+.alert-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.alert-item:last-child { border-bottom: none; }
+
+.alert-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.alert-desc {
+  font-size: 0.85em;
+  color: #666;
+  margin: 0;
+  padding-left: 4px;
+}
+
+.no-findings {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
 }
 
 .score { font-weight: 600; }

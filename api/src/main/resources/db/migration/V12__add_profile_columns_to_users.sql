@@ -1,0 +1,4 @@
+ALTER TABLE users ADD COLUMN full_name VARCHAR(255);
+ALTER TABLE users ADD COLUMN phone_number VARCHAR(50);
+ALTER TABLE users ADD COLUMN home_address VARCHAR(500);
+ALTER TABLE users ADD COLUMN date_of_birth DATE;

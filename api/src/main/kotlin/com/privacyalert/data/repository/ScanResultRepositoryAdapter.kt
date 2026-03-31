@@ -4,6 +4,8 @@ import com.privacyalert.data.entity.toDomain
 import com.privacyalert.data.entity.toEntity
 import com.privacyalert.domain.model.ScanResult
 import com.privacyalert.domain.repository.ScanResultRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
@@ -17,4 +19,9 @@ class ScanResultRepositoryAdapter(
         userId: UUID,
         scanType: String,
     ): List<ScanResult> = jpa.findAllByUserIdAndScanType(userId, scanType).map { it.toDomain() }
+
+    override fun findAllByUserId(
+        userId: UUID,
+        pageable: Pageable,
+    ): Page<ScanResult> = jpa.findAllByUserIdOrderByCreatedAtDesc(userId, pageable).map { it.toDomain() }
 }
