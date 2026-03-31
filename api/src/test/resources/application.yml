@@ -23,3 +23,5 @@ app:
     rate-limit-per-domain-delay-ms: 0
     social:
       enabled-platforms: github,stackoverflow,reddit,mastodon
+  admin:
+    token: test-admin-token
