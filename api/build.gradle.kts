@@ -43,6 +43,9 @@ dependencies {
     implementation(libs.flyway.core)
     implementation(libs.flyway.database.postgresql)
 
+    // HTML Parsing
+    implementation(libs.jsoup)
+
     // JWT
     implementation(libs.jjwt.api)
     runtimeOnly(libs.jjwt.impl)
