@@ -19,5 +19,9 @@ build/
 *.jar
 *.war
 
+# Node
+node_modules/
+dist/
+
 # Logs
 *.log
