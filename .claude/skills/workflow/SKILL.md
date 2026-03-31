@@ -53,7 +53,8 @@ Follow these steps **in order**. Each **STOP** point requires explicit user appr
 ## Step 5: Validation
 
 - Run: `cd api && ./gradlew compileKotlin` (or equivalent for mobile)
-- Run: `cd api && ./gradlew ktlintCheck`
+- Run: `cd api && ./gradlew ktlintFormat` to auto-fix lint issues
+- Run: `cd api && ./gradlew ktlintCheck` to verify lint passes (manually fix any remaining issues like lines exceeding 140 chars)
 - Run: `cd api && ./gradlew test`
 - If any step fails, fix the issue and re-validate
 - **STOP** — Report validation results and wait for review

@@ -31,7 +31,7 @@ This skill handles **Step 4 (Implementation)** of the workflow. A plan should al
 ## What Comes Next
 
 After implementation is approved, the remaining workflow steps are:
-- **Validation** — `./gradlew compileKotlin && ./gradlew ktlintCheck && ./gradlew test`
+- **Validation** — `./gradlew compileKotlin && ./gradlew ktlintFormat && ./gradlew ktlintCheck && ./gradlew test`
 - **Human Review** — User reviews `git diff` in IDE
 - **Atomic Commits** — Stage files by name, group logically, push to remote
 - **Pull Request** — Create PR via `gh pr create --base develop` (see `/pr` skill)

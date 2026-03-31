@@ -25,7 +25,10 @@ AI-assisted development workflow with explicit human checkpoints.
 - All changes visible in `git status` for your review
 
 ### 5. Validation
-- AI runs linting, tests, builds locally
+- AI compiles: `./gradlew compileKotlin`
+- AI auto-formats: `./gradlew ktlintFormat`
+- AI verifies lint: `./gradlew ktlintCheck` (manually fix any remaining issues)
+- AI runs tests: `./gradlew test`
 - If failures — AI fixes and re-validates
 - **STOP** — Report validation results, wait for review
 

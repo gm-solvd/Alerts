@@ -12,19 +12,27 @@ Run lint checks and report results.
 
 1. Determine target from `$ARGUMENTS` (default: `api`)
 
-2. Run lint:
+2. Auto-format first:
+   ```
+   cd api && JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home ./gradlew ktlintFormat
+   ```
+
+3. Verify lint passes:
    ```
    cd api && JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home ./gradlew ktlintCheck
    ```
 
-3. Parse the output and report:
-   - Total number of issues found
-   - File and line number for each issue
-   - Rule that was violated
+4. If `ktlintCheck` still fails after format (e.g., lines exceeding 140 chars that cannot be auto-corrected):
+   - Parse the output and report file, line, and rule for each issue
+   - Manually fix the issues (break long lines, refactor expressions)
+   - Re-run `ktlintCheck` to verify
 
-4. If issues are found, suggest fixes
+5. Report results:
+   - Number of issues auto-fixed by `ktlintFormat`
+   - Number of issues remaining (if any)
+   - PASS or FAIL
 
-5. If user approves auto-fixing:
-   ```
-   cd api && JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home ./gradlew ktlintFormat
-   ```
+## Important
+- **Always run `ktlintFormat` before `ktlintCheck`** — most violations are auto-fixable
+- Common violations: import ordering, multiline expressions, parameter newlines, blank lines after class opening, max line length (140 chars)
+- The CI pipeline runs `ktlintCheck` — code must pass before pushing

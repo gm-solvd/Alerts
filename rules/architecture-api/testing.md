@@ -90,3 +90,12 @@ findById throws ResourceNotFoundException when id does not exist
 - Services: 80%+ line coverage
 - Controllers: all endpoints covered by at least one integration test
 - Integration scenarios: at least one unhappy path per endpoint
+
+---
+
+## Linting
+
+- **Always run `./gradlew ktlintFormat` before committing** to auto-fix formatting issues
+- Run `./gradlew ktlintCheck` to verify — this is what CI runs
+- Common violations: import ordering, multiline expression formatting, parameter newlines, class body blank lines, max line length (140 chars)
+- If `ktlintFormat` cannot auto-correct an issue (e.g., line too long), manually refactor the line
