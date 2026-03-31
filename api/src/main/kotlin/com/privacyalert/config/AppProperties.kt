@@ -8,7 +8,12 @@ data class AppProperties(
     val jwt: JwtProperties,
     val hibp: HibpProperties,
     val scanning: ScanningProperties = ScanningProperties(),
+    val admin: AdminProperties = AdminProperties(),
 ) {
+    data class AdminProperties(
+        val token: String = "changeme",
+    )
+
     data class JwtProperties(
         val secret: String,
         val accessTokenTtl: Duration = Duration.ofMinutes(15),
