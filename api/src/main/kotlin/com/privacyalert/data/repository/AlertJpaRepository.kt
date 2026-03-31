@@ -31,4 +31,16 @@ interface AlertJpaRepository : JpaRepository<AlertEntity, UUID> {
     ): Page<AlertEntity>
 
     fun findAllByUserIdAndResolvedFalse(userId: UUID): List<AlertEntity>
+
+    fun countByUserId(userId: UUID): Long
+
+    @Query(
+        "SELECT a.category, COUNT(a) FROM AlertEntity a GROUP BY a.category",
+    )
+    fun countGroupByCategory(): List<Array<Any>>
+
+    @Query(
+        "SELECT a.severity, COUNT(a) FROM AlertEntity a GROUP BY a.severity",
+    )
+    fun countGroupBySeverity(): List<Array<Any>>
 }

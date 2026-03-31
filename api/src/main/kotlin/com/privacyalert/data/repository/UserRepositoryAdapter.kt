@@ -4,6 +4,8 @@ import com.privacyalert.data.entity.toDomain
 import com.privacyalert.data.entity.toEntity
 import com.privacyalert.domain.model.User
 import com.privacyalert.domain.repository.UserRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
@@ -23,4 +25,10 @@ class UserRepositoryAdapter(
     override fun save(user: User): User = jpa.save(user.toEntity()).toDomain()
 
     override fun existsByEmail(email: String): Boolean = jpa.existsByEmail(email)
+
+    override fun findAll(pageable: Pageable): Page<User> = jpa.findAll(pageable).map { it.toDomain() }
+
+    override fun count(): Long = jpa.count()
+
+    override fun deleteById(id: UUID) = jpa.deleteById(id)
 }

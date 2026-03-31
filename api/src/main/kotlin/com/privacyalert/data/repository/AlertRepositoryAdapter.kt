@@ -34,4 +34,18 @@ class AlertRepositoryAdapter(
     override fun save(alert: Alert): Alert = jpa.save(alert.toEntity()).toDomain()
 
     override fun deleteById(id: UUID) = jpa.deleteById(id)
+
+    override fun countByUserId(userId: UUID): Long = jpa.countByUserId(userId)
+
+    override fun count(): Long = jpa.count()
+
+    override fun countByCategory(): Map<ThreatCategory, Long> =
+        jpa.countGroupByCategory().associate { row ->
+            (row[0] as ThreatCategory) to (row[1] as Long)
+        }
+
+    override fun countBySeverity(): Map<Severity, Long> =
+        jpa.countGroupBySeverity().associate { row ->
+            (row[0] as Severity) to (row[1] as Long)
+        }
 }
