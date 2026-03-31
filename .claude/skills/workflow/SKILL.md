@@ -71,17 +71,34 @@ Follow these steps **in order**. Each **STOP** point requires explicit user appr
 - Each commit should be independently valid
 - Use conventional commit format with correct type and scope
 - Stage files by name (never `git add .` or `git add -A`)
+
+## Step 8: Push & Pull Request
+
 - Push to remote: `git push -u origin HEAD`
-
-## Step 8: Pull Request
-
+- Read `rules/general/pr-guidelines.md` for PR conventions
 - Draft PR title: `<type>(<scope>): <short description>` (under 70 chars)
-- Draft PR body using the project template (What/Why/How/Test plan)
+- Draft PR body using the project template:
+  ```markdown
+  ## What
+  Brief description of the change.
+
+  ## Why
+  The motivation or problem being solved.
+
+  ## How
+  Key implementation decisions, if non-obvious.
+
+  ## Test plan
+  - [ ] Unit tests added/updated
+  - [ ] Integration tests pass
+  ```
 - **STOP** — Show PR draft for approval
 - After approval: create PR with `gh pr create --base develop`
-- Return the PR URL
+- Return the PR URL to the user
+- CI validates the PR automatically (compile, lint, test via GitHub Actions)
+- PR is **not auto-merged** — it requires manual review and approval before merging
 
 ## Step 9: Update Progress
 
 - Update `rules/general/progress.md` with the completed work
-- Commit the progress update
+- Commit and push the progress update

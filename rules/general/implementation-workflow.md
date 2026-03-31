@@ -37,9 +37,18 @@ AI-assisted development workflow with explicit human checkpoints.
 ### 7. Atomic Commits
 - AI groups changes into logical, atomic commits
 - Follows commit message conventions
-- Pushes to remote
+- Stage files by name (never `git add .` or `git add -A`)
+- Each commit must be independently valid
 
-### 8. Pull Request
-- AI drafts PR title and description
+### 8. Push & Pull Request
+- AI pushes branch to remote: `git push -u origin HEAD`
+- AI drafts PR title and description following `rules/general/pr-guidelines.md`
 - **STOP** — Review PR draft
-- AI creates PR via CLI
+- AI creates PR via `gh pr create --base develop`
+- AI returns the PR URL
+- **CI runs automatically** — GitHub Actions validates the PR (compile, lint, test)
+- PR is **not auto-merged** — requires manual review and approval
+
+### 9. Update Progress
+- AI updates `rules/general/progress.md` with completed work
+- Commits and pushes the progress update

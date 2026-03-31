@@ -27,3 +27,12 @@ This skill handles **Step 4 (Implementation)** of the workflow. A plan should al
 6. **Follow existing patterns** — Read similar existing files before creating new ones to match style
 7. After implementation, run `git status` to show all changes
 8. **STOP** — Report what was implemented and wait for the user to proceed to validation
+
+## What Comes Next
+
+After implementation is approved, the remaining workflow steps are:
+- **Validation** — `./gradlew compileKotlin && ./gradlew ktlintCheck && ./gradlew test`
+- **Human Review** — User reviews `git diff` in IDE
+- **Atomic Commits** — Stage files by name, group logically, push to remote
+- **Pull Request** — Create PR via `gh pr create --base develop` (see `/pr` skill)
+- **Update Progress** — Update `rules/general/progress.md`
