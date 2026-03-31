@@ -4,6 +4,7 @@ import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.model.ThreatCategory
 import com.privacyalert.domain.model.UserScanProfile
 import com.privacyalert.domain.repository.AlertRepository
+import com.privacyalert.domain.repository.ScanResultRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -19,6 +20,7 @@ class ScanServiceTest {
     private val identityExposureScanner = mockk<IdentityExposureScanner>()
     private val socialFootprintScanner = mockk<SocialFootprintScanner>()
     private val scoreService = mockk<ScoreService>()
+    private val scanResultRepository = mockk<ScanResultRepository>(relaxed = true)
     private val service =
         ScanService(
             alertRepository,
@@ -27,6 +29,7 @@ class ScanServiceTest {
             identityExposureScanner,
             socialFootprintScanner,
             scoreService,
+            scanResultRepository,
         )
 
     private val userId = UUID.randomUUID()
