@@ -7,5 +7,8 @@ data class OAuthUserInfo(
 )
 
 interface OAuthVerifier {
-    fun verify(provider: String, idToken: String): OAuthUserInfo
+    fun verify(
+        provider: String,
+        idToken: String,
+    ): OAuthUserInfo
 }

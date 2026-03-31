@@ -52,6 +52,9 @@ Key implementation decisions, if non-obvious.
    )"
    ```
 9. Return the PR URL
+10. CI validates the PR automatically via GitHub Actions (compile, lint, test)
+11. If CI fails, Claude automatically analyzes the failure logs and pushes a fix to the PR branch
+12. PR is **not auto-merged** — requires manual review and approval
 
 ## Rules
 - **One concern per PR** — avoid mixing unrelated changes

@@ -24,7 +24,6 @@ import java.util.UUID
 class AlertController(
     private val alertService: AlertService,
 ) {
-
     @GetMapping
     fun list(
         @RequestParam(required = false) category: ThreatCategory?,
@@ -36,19 +35,25 @@ class AlertController(
     }
 
     @GetMapping("/{id}")
-    fun getById(@PathVariable id: UUID): ResponseEntity<AlertResponse> {
+    fun getById(
+        @PathVariable id: UUID,
+    ): ResponseEntity<AlertResponse> {
         val alert = alertService.findById(id, authenticatedUserId())
         return ResponseEntity.ok(alert.toResponse())
     }
 
     @PatchMapping("/{id}/resolve")
-    fun resolve(@PathVariable id: UUID): ResponseEntity<AlertResponse> {
+    fun resolve(
+        @PathVariable id: UUID,
+    ): ResponseEntity<AlertResponse> {
         val alert = alertService.resolve(id, authenticatedUserId())
         return ResponseEntity.ok(alert.toResponse())
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: UUID): ResponseEntity<Void> {
+    fun delete(
+        @PathVariable id: UUID,
+    ): ResponseEntity<Void> {
         alertService.delete(id, authenticatedUserId())
         return ResponseEntity.noContent().build()
     }

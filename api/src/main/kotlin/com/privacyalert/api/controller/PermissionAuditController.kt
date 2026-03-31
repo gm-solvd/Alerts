@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.RestController
 class PermissionAuditController(
     private val permissionAuditService: PermissionAuditService,
 ) {
-
     @PostMapping("/permissions")
-    fun submitAudit(@Valid @RequestBody request: PermissionAuditRequest): ResponseEntity<List<AlertResponse>> {
-        val permissions = request.permissions.map {
-            PermissionEntry(name = it.name, granted = it.granted)
-        }
+    fun submitAudit(
+        @Valid @RequestBody request: PermissionAuditRequest,
+    ): ResponseEntity<List<AlertResponse>> {
+        val permissions =
+            request.permissions.map {
+                PermissionEntry(name = it.name, granted = it.granted)
+            }
         val alerts = permissionAuditService.submitAudit(authenticatedUserId(), permissions)
         return ResponseEntity.ok(alerts.map { it.toResponse() })
     }

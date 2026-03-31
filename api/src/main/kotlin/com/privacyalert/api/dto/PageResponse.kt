@@ -10,10 +10,11 @@ data class PageResponse<T>(
     val totalPages: Int,
 )
 
-fun <T, R> Page<T>.toPageResponse(mapper: (T) -> R): PageResponse<R> = PageResponse(
-    content = content.map(mapper),
-    page = number,
-    size = size,
-    totalElements = totalElements,
-    totalPages = totalPages,
-)
+fun <T, R> Page<T>.toPageResponse(mapper: (T) -> R): PageResponse<R> =
+    PageResponse(
+        content = content.map(mapper),
+        page = number,
+        size = size,
+        totalElements = totalElements,
+        totalPages = totalPages,
+    )

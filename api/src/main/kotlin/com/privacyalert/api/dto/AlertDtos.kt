@@ -17,13 +17,14 @@ data class AlertResponse(
     val createdAt: Instant,
 )
 
-fun Alert.toResponse(): AlertResponse = AlertResponse(
-    id = id,
-    category = category,
-    severity = severity,
-    title = title,
-    description = description,
-    resolved = resolved,
-    resolvedAt = resolvedAt,
-    createdAt = createdAt,
-)
+fun Alert.toResponse(): AlertResponse =
+    AlertResponse(
+        id = id,
+        category = category,
+        severity = severity,
+        title = title,
+        description = description,
+        resolved = resolved,
+        resolvedAt = resolvedAt,
+        createdAt = createdAt,
+    )

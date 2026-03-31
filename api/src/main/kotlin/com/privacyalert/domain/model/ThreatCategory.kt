@@ -1,6 +1,8 @@
 package com.privacyalert.domain.model
 
-enum class ThreatCategory(val weight: Double) {
+enum class ThreatCategory(
+    val weight: Double,
+) {
     DATA_BREACH(1.0),
     NETWORK_VULNERABILITY(0.9),
     IDENTITY_EXPOSURE(0.9),

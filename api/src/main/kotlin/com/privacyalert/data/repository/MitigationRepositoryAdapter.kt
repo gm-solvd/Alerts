@@ -11,16 +11,11 @@ import java.util.UUID
 class MitigationRepositoryAdapter(
     private val jpa: MitigationJpaRepository,
 ) : MitigationRepository {
+    override fun findById(id: UUID): Mitigation? = jpa.findById(id).orElse(null)?.toDomain()
 
-    override fun findById(id: UUID): Mitigation? =
-        jpa.findById(id).orElse(null)?.toDomain()
+    override fun findAllByAlertId(alertId: UUID): List<Mitigation> = jpa.findAllByAlertId(alertId).map { it.toDomain() }
 
-    override fun findAllByAlertId(alertId: UUID): List<Mitigation> =
-        jpa.findAllByAlertId(alertId).map { it.toDomain() }
+    override fun findAllByUserId(userId: UUID): List<Mitigation> = jpa.findAllByUserId(userId).map { it.toDomain() }
 
-    override fun findAllByUserId(userId: UUID): List<Mitigation> =
-        jpa.findAllByUserId(userId).map { it.toDomain() }
-
-    override fun save(mitigation: Mitigation): Mitigation =
-        jpa.save(mitigation.toEntity()).toDomain()
+    override fun save(mitigation: Mitigation): Mitigation = jpa.save(mitigation.toEntity()).toDomain()
 }

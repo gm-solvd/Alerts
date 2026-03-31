@@ -12,15 +12,23 @@ refactor/*    → refactoring branches
 ## Feature Development Flow
 1. Branch off `develop`: `git checkout -b feat/<scope>-<description>`
 2. Implement with tests
-3. Open PR → `develop`
-4. Address review comments
-5. Squash merge into `develop`
-6. Delete feature branch
+3. Validate locally: `./gradlew compileKotlin && ./gradlew ktlintCheck && ./gradlew test`
+4. Group changes into atomic commits (stage files by name, never `git add .`)
+5. Push to remote: `git push -u origin HEAD`
+6. Create PR → `develop` via `gh pr create --base develop`
+7. CI validates automatically (compile, lint, test via GitHub Actions)
+8. If CI fails, Claude auto-fixes and pushes a commit to the PR branch
+9. Address review comments
+10. Squash merge into `develop` (manual — no auto-merge)
+11. Delete feature branch
 
 ## Hotfix Flow
 1. Branch off `main`: `git checkout -b fix/<description>`
 2. Fix + test
-3. PR → `main` and back-merge into `develop`
+3. Validate locally: `./gradlew compileKotlin && ./gradlew ktlintCheck && ./gradlew test`
+4. Atomic commits, push, create PR → `main` via `gh pr create --base main`
+5. CI validates automatically; Claude auto-fixes failures
+6. After merge, back-merge into `develop`
 
 ## Local Dev Setup
 

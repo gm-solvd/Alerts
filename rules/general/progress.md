@@ -4,17 +4,17 @@
 
 | # | Phase | Status | Date | Notes |
 |---|-------|--------|------|-------|
-| 1 | Project scaffold + Flyway | IN PROGRESS | 2026-03-31 | |
-| 2 | Domain models + enums + exceptions | - | | |
-| 3 | Data layer (entities, repos, mappers) | - | | |
-| 4 | Auth (register/login/JWT) | - | | |
-| 5 | Alerts CRUD | - | | |
-| 6 | Score calculation | - | | |
-| 7 | Breach scan (HIBP) | - | | |
-| 8 | Mitigations | - | | |
-| 9 | Permission audit | - | | |
-| 10 | Identity scan + OAuth | - | | |
-| 11 | Test coverage | - | | |
+| 1 | Project scaffold + Flyway | DONE | 2026-03-31 | |
+| 2 | Domain models + enums + exceptions | DONE | 2026-03-31 | |
+| 3 | Data layer (entities, repos, mappers) | DONE | 2026-03-31 | |
+| 4 | Auth (register/login/JWT) | DONE | 2026-03-31 | |
+| 5 | Alerts CRUD | DONE | 2026-03-31 | |
+| 6 | Score calculation | DONE | 2026-03-31 | |
+| 7 | Breach scan (HIBP) | DONE | 2026-03-31 | |
+| 8 | Mitigations | DONE | 2026-03-31 | |
+| 9 | Permission audit | DONE | 2026-03-31 | |
+| 10 | Identity scan + OAuth | DONE | 2026-03-31 | OAuth verification is a stub (TODO) |
+| 11 | Test coverage | IN PROGRESS | 2026-03-31 | Unit + controller slice tests |
 
 ## Mobile
 

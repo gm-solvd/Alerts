@@ -13,16 +13,19 @@ import javax.crypto.SecretKey
 class JwtProviderImpl(
     private val appProperties: AppProperties,
 ) : JwtProvider {
-
     private val signingKey: SecretKey by lazy {
         Keys.hmacShaKeyFor(appProperties.jwt.secret.toByteArray())
     }
 
-    override fun generateAccessToken(userId: UUID, email: String): String {
+    override fun generateAccessToken(
+        userId: UUID,
+        email: String,
+    ): String {
         val now = Date()
         val expiry = Date(now.time + appProperties.jwt.accessTokenTtl.toMillis())
 
-        return Jwts.builder()
+        return Jwts
+            .builder()
             .subject(userId.toString())
             .claim("email", email)
             .issuedAt(now)
@@ -31,16 +34,17 @@ class JwtProviderImpl(
             .compact()
     }
 
-    override fun generateRefreshToken(): String =
-        UUID.randomUUID().toString()
+    override fun generateRefreshToken(): String = UUID.randomUUID().toString()
 
     override fun validateAndExtractUserId(token: String): UUID? =
         try {
-            val claims = Jwts.parser()
-                .verifyWith(signingKey)
-                .build()
-                .parseSignedClaims(token)
-                .payload
+            val claims =
+                Jwts
+                    .parser()
+                    .verifyWith(signingKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .payload
 
             UUID.fromString(claims.subject)
         } catch (e: JwtException) {

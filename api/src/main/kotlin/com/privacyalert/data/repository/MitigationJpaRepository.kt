@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query
 import java.util.UUID
 
 interface MitigationJpaRepository : JpaRepository<MitigationEntity, UUID> {
-
     fun findAllByAlertId(alertId: UUID): List<MitigationEntity>
 
     @Query(

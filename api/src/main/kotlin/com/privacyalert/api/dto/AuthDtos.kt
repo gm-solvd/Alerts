@@ -8,7 +8,6 @@ data class RegisterRequest(
     @field:NotBlank
     @field:Email
     val email: String,
-
     @field:NotBlank
     @field:Size(min = 8, max = 128)
     val password: String,
@@ -18,7 +17,6 @@ data class LoginRequest(
     @field:NotBlank
     @field:Email
     val email: String,
-
     @field:NotBlank
     val password: String,
 )
@@ -26,7 +24,6 @@ data class LoginRequest(
 data class OAuthCallbackRequest(
     @field:NotBlank
     val provider: String,
-
     @field:NotBlank
     val idToken: String,
 )

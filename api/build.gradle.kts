@@ -43,6 +43,9 @@ dependencies {
     implementation(libs.flyway.core)
     implementation(libs.flyway.database.postgresql)
 
+    // HTML Parsing
+    implementation(libs.jsoup)
+
     // JWT
     implementation(libs.jjwt.api)
     runtimeOnly(libs.jjwt.impl)
@@ -59,6 +62,10 @@ dependencies {
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.wiremock)
+}
+
+ktlint {
+    version.set("1.5.0")
 }
 
 tasks.withType<Test> {

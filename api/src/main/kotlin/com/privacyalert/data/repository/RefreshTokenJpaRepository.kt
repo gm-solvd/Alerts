@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query
 import java.util.UUID
 
 interface RefreshTokenJpaRepository : JpaRepository<RefreshTokenEntity, UUID> {
-
     fun findByTokenHash(tokenHash: String): RefreshTokenEntity?
 
     @Modifying

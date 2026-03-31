@@ -10,8 +10,9 @@ data class ScoreResponse(
     val recordedAt: Instant,
 )
 
-fun ScoreRecord.toResponse(): ScoreResponse = ScoreResponse(
-    id = id,
-    score = score,
-    recordedAt = recordedAt,
-)
+fun ScoreRecord.toResponse(): ScoreResponse =
+    ScoreResponse(
+        id = id,
+        score = score,
+        recordedAt = recordedAt,
+    )

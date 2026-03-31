@@ -16,7 +16,6 @@ import java.util.UUID
 class MitigationController(
     private val mitigationService: MitigationService,
 ) {
-
     @GetMapping
     fun list(): ResponseEntity<List<MitigationResponse>> {
         val mitigations = mitigationService.findAllByUserId(authenticatedUserId())
@@ -24,13 +23,17 @@ class MitigationController(
     }
 
     @GetMapping("/{alertId}")
-    fun getByAlertId(@PathVariable alertId: UUID): ResponseEntity<List<MitigationResponse>> {
+    fun getByAlertId(
+        @PathVariable alertId: UUID,
+    ): ResponseEntity<List<MitigationResponse>> {
         val mitigations = mitigationService.findByAlertId(alertId)
         return ResponseEntity.ok(mitigations.map { it.toResponse() })
     }
 
     @PatchMapping("/{id}/complete")
-    fun complete(@PathVariable id: UUID): ResponseEntity<MitigationResponse> {
+    fun complete(
+        @PathVariable id: UUID,
+    ): ResponseEntity<MitigationResponse> {
         val mitigation = mitigationService.complete(id)
         return ResponseEntity.ok(mitigation.toResponse())
     }

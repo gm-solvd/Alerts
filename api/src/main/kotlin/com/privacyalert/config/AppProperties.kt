@@ -7,6 +7,7 @@ import java.time.Duration
 data class AppProperties(
     val jwt: JwtProperties,
     val hibp: HibpProperties,
+    val scanning: ScanningProperties = ScanningProperties(),
 ) {
     data class JwtProperties(
         val secret: String,
@@ -16,6 +17,14 @@ data class AppProperties(
 
     data class HibpProperties(
         val apiKey: String = "",
+        val enabled: Boolean = false,
         val baseUrl: String = "https://haveibeenpwned.com/api/v3",
+    )
+
+    data class ScanningProperties(
+        val pasteMonitorEnabled: Boolean = true,
+        val rateLimitRequestsPerSecond: Int = 2,
+        val rateLimitPerDomainDelayMs: Long = 3000,
+        val socialEnabledPlatforms: List<String> = listOf("github", "stackoverflow", "reddit", "mastodon"),
     )
 }

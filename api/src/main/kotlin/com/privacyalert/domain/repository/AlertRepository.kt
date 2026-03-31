@@ -9,14 +9,22 @@ import java.util.UUID
 
 interface AlertRepository {
     fun findById(id: UUID): Alert?
-    fun findAllByUserId(userId: UUID, pageable: Pageable): Page<Alert>
+
+    fun findAllByUserId(
+        userId: UUID,
+        pageable: Pageable,
+    ): Page<Alert>
+
     fun findAllByUserIdAndCategoryAndSeverity(
         userId: UUID,
         category: ThreatCategory?,
         severity: Severity?,
         pageable: Pageable,
     ): Page<Alert>
+
     fun findAllUnresolvedByUserId(userId: UUID): List<Alert>
+
     fun save(alert: Alert): Alert
+
     fun deleteById(id: UUID)
 }

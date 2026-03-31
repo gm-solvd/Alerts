@@ -11,16 +11,14 @@ import java.util.UUID
 class MitigationService(
     private val mitigationRepository: MitigationRepository,
 ) {
+    fun findAllByUserId(userId: UUID): List<Mitigation> = mitigationRepository.findAllByUserId(userId)
 
-    fun findAllByUserId(userId: UUID): List<Mitigation> =
-        mitigationRepository.findAllByUserId(userId)
-
-    fun findByAlertId(alertId: UUID): List<Mitigation> =
-        mitigationRepository.findAllByAlertId(alertId)
+    fun findByAlertId(alertId: UUID): List<Mitigation> = mitigationRepository.findAllByAlertId(alertId)
 
     fun complete(id: UUID): Mitigation {
-        val mitigation = mitigationRepository.findById(id)
-            ?: throw AppException.ResourceNotFoundException("Mitigation", id)
+        val mitigation =
+            mitigationRepository.findById(id)
+                ?: throw AppException.ResourceNotFoundException("Mitigation", id)
 
         return mitigationRepository.save(
             mitigation.copy(

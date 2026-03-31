@@ -12,14 +12,10 @@ import java.util.UUID
 class RefreshTokenRepositoryAdapter(
     private val jpa: RefreshTokenJpaRepository,
 ) : RefreshTokenRepository {
+    override fun save(token: RefreshToken): RefreshToken = jpa.save(token.toEntity()).toDomain()
 
-    override fun save(token: RefreshToken): RefreshToken =
-        jpa.save(token.toEntity()).toDomain()
-
-    override fun findByTokenHash(tokenHash: String): RefreshToken? =
-        jpa.findByTokenHash(tokenHash)?.toDomain()
+    override fun findByTokenHash(tokenHash: String): RefreshToken? = jpa.findByTokenHash(tokenHash)?.toDomain()
 
     @Transactional
-    override fun revokeAllByUserId(userId: UUID) =
-        jpa.revokeAllByUserId(userId)
+    override fun revokeAllByUserId(userId: UUID) = jpa.revokeAllByUserId(userId)
 }

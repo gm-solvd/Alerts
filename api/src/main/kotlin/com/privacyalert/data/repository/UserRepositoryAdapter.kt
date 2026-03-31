@@ -11,19 +11,16 @@ import java.util.UUID
 class UserRepositoryAdapter(
     private val jpa: UserJpaRepository,
 ) : UserRepository {
+    override fun findById(id: UUID): User? = jpa.findById(id).orElse(null)?.toDomain()
 
-    override fun findById(id: UUID): User? =
-        jpa.findById(id).orElse(null)?.toDomain()
+    override fun findByEmail(email: String): User? = jpa.findByEmail(email)?.toDomain()
 
-    override fun findByEmail(email: String): User? =
-        jpa.findByEmail(email)?.toDomain()
+    override fun findByOauthProviderAndOauthSubject(
+        provider: String,
+        subject: String,
+    ): User? = jpa.findByOauthProviderAndOauthSubject(provider, subject)?.toDomain()
 
-    override fun findByOauthProviderAndOauthSubject(provider: String, subject: String): User? =
-        jpa.findByOauthProviderAndOauthSubject(provider, subject)?.toDomain()
+    override fun save(user: User): User = jpa.save(user.toEntity()).toDomain()
 
-    override fun save(user: User): User =
-        jpa.save(user.toEntity()).toDomain()
-
-    override fun existsByEmail(email: String): Boolean =
-        jpa.existsByEmail(email)
+    override fun existsByEmail(email: String): Boolean = jpa.existsByEmail(email)
 }

@@ -19,12 +19,17 @@ Run full validation pipeline for the project.
    cd api && JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home ./gradlew compileKotlin
    ```
 
-3. **Lint check:**
+3. **Auto-format lint issues:**
+   ```
+   cd api && JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home ./gradlew ktlintFormat
+   ```
+
+4. **Verify lint passes:**
    ```
    cd api && JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home ./gradlew ktlintCheck
    ```
 
-4. **Tests:**
+5. **Tests:**
    ```
    cd api && JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home ./gradlew test
    ```
@@ -48,11 +53,11 @@ Run full validation pipeline for the project.
 
 ## Reporting
 
-5. For each step, report:
+6. For each step, report:
    - PASS or FAIL
    - If FAIL: show the error, identify the root cause, suggest a fix
-6. If all pass, report: **Validation passed** (compile, lint, tests)
-7. If any fail:
+7. If all pass, report: **Validation passed** (compile, lint, tests)
+8. If any fail:
    - Ask the user if you should fix the issues
    - If approved, fix and re-run the failed step
    - Repeat until all pass or user decides to stop

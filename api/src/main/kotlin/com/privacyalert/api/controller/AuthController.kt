@@ -19,9 +19,10 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(
     private val authService: AuthService,
 ) {
-
     @PostMapping("/register")
-    fun register(@Valid @RequestBody request: RegisterRequest): ResponseEntity<AuthTokensResponse> {
+    fun register(
+        @Valid @RequestBody request: RegisterRequest,
+    ): ResponseEntity<AuthTokensResponse> {
         val tokens = authService.register(request.email, request.password)
         return ResponseEntity.status(HttpStatus.CREATED).body(
             AuthTokensResponse(accessToken = tokens.accessToken, refreshToken = tokens.refreshToken),
@@ -29,7 +30,9 @@ class AuthController(
     }
 
     @PostMapping("/login")
-    fun login(@Valid @RequestBody request: LoginRequest): ResponseEntity<AuthTokensResponse> {
+    fun login(
+        @Valid @RequestBody request: LoginRequest,
+    ): ResponseEntity<AuthTokensResponse> {
         val tokens = authService.login(request.email, request.password)
         return ResponseEntity.ok(
             AuthTokensResponse(accessToken = tokens.accessToken, refreshToken = tokens.refreshToken),
@@ -37,7 +40,9 @@ class AuthController(
     }
 
     @PostMapping("/oauth2/callback")
-    fun oauthCallback(@Valid @RequestBody request: OAuthCallbackRequest): ResponseEntity<AuthTokensResponse> {
+    fun oauthCallback(
+        @Valid @RequestBody request: OAuthCallbackRequest,
+    ): ResponseEntity<AuthTokensResponse> {
         val tokens = authService.oauthCallback(request.provider, request.idToken)
         return ResponseEntity.ok(
             AuthTokensResponse(accessToken = tokens.accessToken, refreshToken = tokens.refreshToken),
@@ -45,7 +50,9 @@ class AuthController(
     }
 
     @PostMapping("/refresh")
-    fun refresh(@Valid @RequestBody request: RefreshTokenRequest): ResponseEntity<AuthTokensResponse> {
+    fun refresh(
+        @Valid @RequestBody request: RefreshTokenRequest,
+    ): ResponseEntity<AuthTokensResponse> {
         val tokens = authService.refreshToken(request.refreshToken)
         return ResponseEntity.ok(
             AuthTokensResponse(accessToken = tokens.accessToken, refreshToken = tokens.refreshToken),

@@ -31,7 +31,14 @@ app:
     refresh-token-ttl: 30d
   hibp:
     api-key: ${HIBP_API_KEY:}
+    enabled: false
     base-url: https://haveibeenpwned.com/api/v3
+  scanning:
+    paste-monitor-enabled: true
+    rate-limit-requests-per-second: 2
+    rate-limit-per-domain-delay-ms: 3000
+    social:
+      enabled-platforms: github,stackoverflow,reddit,mastodon
 
 server:
   port: 8080

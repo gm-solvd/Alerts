@@ -16,34 +16,31 @@ class UserEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID = UUID.randomUUID(),
-
     @Column(nullable = false, unique = true)
     val email: String = "",
-
     val passwordHash: String? = null,
-
     val oauthProvider: String? = null,
-
     val oauthSubject: String? = null,
-
     @Column(nullable = false)
     val createdAt: Instant = Instant.now(),
 )
 
-fun UserEntity.toDomain(): User = User(
-    id = id,
-    email = email,
-    passwordHash = passwordHash,
-    oauthProvider = oauthProvider,
-    oauthSubject = oauthSubject,
-    createdAt = createdAt,
-)
+fun UserEntity.toDomain(): User =
+    User(
+        id = id,
+        email = email,
+        passwordHash = passwordHash,
+        oauthProvider = oauthProvider,
+        oauthSubject = oauthSubject,
+        createdAt = createdAt,
+    )
 
-fun User.toEntity(): UserEntity = UserEntity(
-    id = id,
-    email = email,
-    passwordHash = passwordHash,
-    oauthProvider = oauthProvider,
-    oauthSubject = oauthSubject,
-    createdAt = createdAt,
-)
+fun User.toEntity(): UserEntity =
+    UserEntity(
+        id = id,
+        email = email,
+        passwordHash = passwordHash,
+        oauthProvider = oauthProvider,
+        oauthSubject = oauthSubject,
+        createdAt = createdAt,
+    )

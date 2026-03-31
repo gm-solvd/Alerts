@@ -19,25 +19,32 @@ class AuthService(
     private val jwtProvider: JwtProvider,
     private val oAuthVerifier: OAuthVerifier,
 ) {
-
-    fun register(email: String, password: String): AuthTokens {
+    fun register(
+        email: String,
+        password: String,
+    ): AuthTokens {
         if (userRepository.existsByEmail(email)) {
             throw AppException.ConflictException("Email '$email' is already registered")
         }
 
-        val user = userRepository.save(
-            User(
-                email = email,
-                passwordHash = passwordEncoder.hash(password),
-            ),
-        )
+        val user =
+            userRepository.save(
+                User(
+                    email = email,
+                    passwordHash = passwordEncoder.hash(password),
+                ),
+            )
 
         return issueTokens(user)
     }
 
-    fun login(email: String, password: String): AuthTokens {
-        val user = userRepository.findByEmail(email)
-            ?: throw AppException.UnauthorizedException("Invalid email or password")
+    fun login(
+        email: String,
+        password: String,
+    ): AuthTokens {
+        val user =
+            userRepository.findByEmail(email)
+                ?: throw AppException.UnauthorizedException("Invalid email or password")
 
         if (user.passwordHash == null || !passwordEncoder.matches(password, user.passwordHash)) {
             throw AppException.UnauthorizedException("Invalid email or password")
@@ -48,8 +55,9 @@ class AuthService(
 
     fun refreshToken(rawRefreshToken: String): AuthTokens {
         val tokenHash = hashToken(rawRefreshToken)
-        val stored = refreshTokenRepository.findByTokenHash(tokenHash)
-            ?: throw AppException.UnauthorizedException("Invalid refresh token")
+        val stored =
+            refreshTokenRepository.findByTokenHash(tokenHash)
+                ?: throw AppException.UnauthorizedException("Invalid refresh token")
 
         if (stored.revoked || stored.expiresAt.isBefore(Instant.now())) {
             throw AppException.UnauthorizedException("Refresh token expired or revoked")
@@ -58,23 +66,28 @@ class AuthService(
         // Rotate: revoke old, issue new
         refreshTokenRepository.revokeAllByUserId(stored.userId)
 
-        val user = userRepository.findById(stored.userId)
-            ?: throw AppException.ResourceNotFoundException("User", stored.userId)
+        val user =
+            userRepository.findById(stored.userId)
+                ?: throw AppException.ResourceNotFoundException("User", stored.userId)
 
         return issueTokens(user)
     }
 
-    fun oauthCallback(provider: String, idToken: String): AuthTokens {
+    fun oauthCallback(
+        provider: String,
+        idToken: String,
+    ): AuthTokens {
         val info = oAuthVerifier.verify(provider, idToken)
 
-        val user = userRepository.findByOauthProviderAndOauthSubject(info.provider, info.subject)
-            ?: userRepository.save(
-                User(
-                    email = info.email,
-                    oauthProvider = info.provider,
-                    oauthSubject = info.subject,
-                ),
-            )
+        val user =
+            userRepository.findByOauthProviderAndOauthSubject(info.provider, info.subject)
+                ?: userRepository.save(
+                    User(
+                        email = info.email,
+                        oauthProvider = info.provider,
+                        oauthSubject = info.subject,
+                    ),
+                )
 
         return issueTokens(user)
     }
