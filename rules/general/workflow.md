@@ -24,7 +24,7 @@ refactor/*    → refactoring branches
 
 ## Local Dev Setup
 
-### Backend
+### API
 ```bash
 # Start Postgres
 docker run -e POSTGRES_DB=privacyalert \
@@ -33,7 +33,7 @@ docker run -e POSTGRES_DB=privacyalert \
            -p 5432:5432 postgres:16
 
 # Run API
-./gradlew :backend:bootRun
+./gradlew :api:bootRun
 ```
 
 ### Mobile

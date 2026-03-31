@@ -9,11 +9,11 @@ A mobile-first app that monitors the user's digital exposure, scores their priva
 
 ```
 privacy-alert-system/
+├── api/                      # Kotlin + Spring Boot API
 ├── mobile/                   # KMP + CMP application
 │   ├── shared/               # Shared Kotlin (domain + data + viewmodels)
 │   ├── androidApp/           # Android entry point
 │   └── iosApp/               # iOS entry point
-├── backend/                  # Kotlin + Spring Boot API
 └── rules/                    # Project documentation & conventions
 ```
 
