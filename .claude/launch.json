@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "PostgreSQL (Docker)",
+      "runtimeExecutable": "docker",
+      "runtimeArgs": ["compose", "-f", "api/docker-compose.yml", "up", "-d"],
+      "port": 5432
+    },
+    {
+      "name": "API (Spring Boot)",
+      "runtimeExecutable": "./api/gradlew",
+      "runtimeArgs": ["-p", "api", "bootRun"],
+      "port": 8080
+    },
+    {
+      "name": "Admin UI (Vite)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "admin", "run", "dev"],
+      "port": 5173
+    }
+  ]
+}
