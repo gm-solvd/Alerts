@@ -64,8 +64,10 @@ privacy-alert-system/
 1. Dashboard — exposure score + top active risks
 2. Alerts feed — categorized, severity-badged
 3. Breach scan — via HaveIBeenPwned
-4. Permission audit — device-side
-5. Fix It list — prioritized mitigations
-6. Auth — email/password + Google/Apple
+4. Identity scan — social media footprint search
+5. Permission audit — device-side, synced to backend (lives under Scan tab)
+6. Fix It list — prioritized mitigations
+7. Auth — email/password + Google/Apple
+8. Exposure score — CVSS-inspired deduction model (see `rules/architecture-api/scoring.md`)
 
 > Push notifications: deferred to post-MVP.

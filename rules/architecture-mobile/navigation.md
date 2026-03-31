@@ -41,7 +41,10 @@ MainFlow (after auth)
   ├── AlertsScreen
   │   └── AlertDetailScreen    ← push on tap
   ├── ScanScreen
-  │   └── ScanResultScreen     ← push after scan
+  │   ├── BreachScanScreen     ← breach scan via HIBP
+  │   ├── IdentityScanScreen   ← social media footprint search
+  │   ├── PermissionAuditScreen ← device permission audit (synced to API)
+  │   └── ScanResultScreen     ← push after any scan
   └── MitigationsScreen
 ```
 

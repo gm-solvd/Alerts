@@ -41,3 +41,12 @@ Does this require deep analysis, multi-step reasoning, or architectural thinking
 - Debug a subtle concurrency or state bug with unclear root cause
 - Plan a multi-step refactor that touches many layers
 - Evaluate security implications of an auth design
+
+---
+
+## When to Switch Models Mid-Task
+
+- Start with the model selected previously for implementation
+- Escalate to a reasoning model if the AI is struggling after 2-3 attempts
+- Drop to a fast model for cleanup, formatting, or mechanical changes
+- Use planning/reasoning models ONLY for the planning phase, then switch to implementation models

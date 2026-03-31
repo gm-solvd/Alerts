@@ -42,8 +42,14 @@ DELETE /api/v1/alerts/{id}
 ### Scan
 ```
 POST /api/v1/scan/breach           body: { email }
-POST /api/v1/scan/identity
+POST /api/v1/scan/identity         body: { email } → social media footprint search
 GET  /api/v1/scan/history
+```
+
+### Permission Audit
+```
+POST /api/v1/audit/permissions     body: { permissions: [...] } ← mobile sends device data
+GET  /api/v1/audit/permissions/history
 ```
 
 ### Score
