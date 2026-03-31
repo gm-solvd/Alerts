@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h1>Users</h1>
+    <div class="header-row">
+      <h1>Users</h1>
+      <router-link to="/users/new" class="btn btn-primary">+ Create User</router-link>
+    </div>
 
     <div v-if="loading" class="loading">Loading...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
@@ -10,6 +13,7 @@
         <thead>
           <tr>
             <th>Email</th>
+            <th>Name</th>
             <th>Provider</th>
             <th>Alerts</th>
             <th>Score</th>
@@ -19,6 +23,7 @@
         <tbody>
           <tr v-for="user in users" :key="user.id" class="clickable" @click="$router.push('/users/' + user.id)">
             <td>{{ user.email }}</td>
+            <td>{{ user.fullName || '-' }}</td>
             <td>{{ user.oauthProvider || 'email' }}</td>
             <td>{{ user.alertCount }}</td>
             <td>
@@ -28,7 +33,7 @@
             <td>{{ formatDate(user.createdAt) }}</td>
           </tr>
           <tr v-if="users.length === 0">
-            <td colspan="5" class="empty">No users found</td>
+            <td colspan="6" class="empty">No users found</td>
           </tr>
         </tbody>
       </table>
@@ -84,10 +89,28 @@ export default {
 </script>
 
 <style scoped>
-h1 {
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
+}
+
+h1 {
   font-size: 1.5em;
 }
+
+.btn-primary {
+  background: #4a90d9;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.btn-primary:hover { background: #357abd; }
 
 .clickable {
   cursor: pointer;

@@ -23,11 +23,23 @@ export default {
     return api.get(`/users/${id}`)
   },
 
+  createUser(data) {
+    return api.post('/users', data)
+  },
+
   getUserAlerts(id, page = 0, size = 20) {
     return api.get(`/users/${id}/alerts`, { params: { page, size } })
   },
 
   deleteUser(id) {
     return api.delete(`/users/${id}`)
+  },
+
+  triggerScan(id) {
+    return api.post(`/users/${id}/scan`)
+  },
+
+  getScanHistory(id, page = 0, size = 50) {
+    return api.get(`/users/${id}/scans`, { params: { page, size } })
   },
 }
