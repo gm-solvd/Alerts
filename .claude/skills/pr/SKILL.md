@@ -56,9 +56,9 @@ Key implementation decisions, if non-obvious.
 11. If CI fails, Claude automatically analyzes the failure logs and pushes a fix to the PR branch
 12. PR is **not auto-merged** — requires manual review and approval
 
-## Dependent / Stacked PRs
+## Dependent / Stacked PRs (Tasks within a Feature)
 
-When a feature is split into phases (e.g., backend + frontend), create **stacked PRs**:
+When a **feature** is split into **tasks** (e.g., Web Backend task + Web Frontend task), create **stacked PRs**:
 
 1. **Phase 1 PR** — base: `develop` (as usual)
 2. **Phase 2 PR** — base: **Phase 1's branch** (not develop)

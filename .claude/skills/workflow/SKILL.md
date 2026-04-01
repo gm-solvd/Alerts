@@ -10,6 +10,30 @@ Execute the full implementation workflow for: $ARGUMENTS
 
 Follow these steps **in order**. Each **STOP** point requires explicit user approval before proceeding.
 
+> ⚠️ **Never commit directly to `develop` or `main`.** All commits must go to a feature/fix branch.
+
+### Terminology
+- **Feature** — the top-level goal being implemented (what `$ARGUMENTS` describes)
+- **Task** — a workstream within the feature (Web Backend, Web Frontend, Mobile UI, Mobile Business Logic)
+
+---
+
+## Step 0: Workstream Split
+
+Before any planning, divide the feature into tasks:
+
+| Workstream | Applies when |
+|------------|-------------|
+| **Web Backend** | Kotlin/Spring changes (domain, data, api, integration, config) |
+| **Web Frontend** | Vue admin dashboard changes |
+| **Mobile UI** | Compose Multiplatform UI layer |
+| **Mobile Business Logic** | KMP shared domain / use-cases |
+
+- List which workstreams are affected
+- Each active workstream becomes a separate task (branch + PR)
+- Tasks that depend on each other become stacked PRs (backend first, then frontend)
+- **STOP** — Present the task split for confirmation before proceeding
+
 ---
 
 ## Step 1: Task Intake
@@ -100,10 +124,12 @@ Follow these steps **in order**. Each **STOP** point requires explicit user appr
 - If CI fails, Claude automatically analyzes the failure and pushes a fix (via `pr-autofix.yml`)
 - PR is **not auto-merged** — it requires manual review and approval before merging
 
-## Step 9: Update Progress
+## Step 9: Update Docs & Progress
 
+- Run `/docs` to update `SUMMARY.md` files for any changed directories
+- Update `README.md` to reflect any new features, endpoints, or architectural changes
 - Update `rules/general/progress.md` with the completed work
-- Commit and push the progress update
+- Commit and push these updates on the feature branch before the PR
 
 ---
 

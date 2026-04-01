@@ -47,6 +47,12 @@ Create a git commit following the project's conventional commit format.
    ```
 9. Run `git status` after commit to verify success
 
+## Rules
+
+- **Never commit to `develop` or `main` directly** — only commit on feature/fix branches. Exception: user explicitly requests it.
+- Stage files by name — never `git add -A` or `git add .`
+- Never commit secrets (`.env`, credentials, API keys)
+
 ## Grouping
 
 If there are changes across multiple concerns, create **multiple atomic commits** — one per logical change. Each commit should be independently valid.
