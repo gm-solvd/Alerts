@@ -24,7 +24,7 @@ class CompositeBreachScannerTest {
         every { pasteMonitorClient.scanEmail("user@example.com") } returns listOf(pasteResult)
         every { hibpClient.scanEmail("user@example.com") } returns listOf(hibpResult)
 
-        val scanner = CompositeBreachScanner(localBreachScanner, pasteMonitorClient, Optional.of(hibpClient))
+        val scanner = CompositeBreachScanner(localBreachScanner, pasteMonitorClient, Optional.of(hibpClient), Optional.empty())
 
         val results = scanner.scanEmail("user@example.com")
 
@@ -41,7 +41,7 @@ class CompositeBreachScannerTest {
         every { localBreachScanner.scanEmail("user@example.com") } returns listOf(localResult)
         every { pasteMonitorClient.scanEmail("user@example.com") } returns emptyList()
 
-        val scanner = CompositeBreachScanner(localBreachScanner, pasteMonitorClient, Optional.empty())
+        val scanner = CompositeBreachScanner(localBreachScanner, pasteMonitorClient, Optional.empty(), Optional.empty())
 
         val results = scanner.scanEmail("user@example.com")
 
@@ -57,7 +57,7 @@ class CompositeBreachScannerTest {
         every { localBreachScanner.scanEmail("user@example.com") } returns listOf(localResult)
         every { pasteMonitorClient.scanEmail("user@example.com") } returns listOf(pasteResult)
 
-        val scanner = CompositeBreachScanner(localBreachScanner, pasteMonitorClient, Optional.empty())
+        val scanner = CompositeBreachScanner(localBreachScanner, pasteMonitorClient, Optional.empty(), Optional.empty())
 
         val results = scanner.scanEmail("user@example.com")
 
@@ -73,7 +73,7 @@ class CompositeBreachScannerTest {
         every { localBreachScanner.scanPhone("+1234567890") } returns listOf(localResult)
         every { pasteMonitorClient.scanPhone("+1234567890") } returns listOf(pasteResult)
 
-        val scanner = CompositeBreachScanner(localBreachScanner, pasteMonitorClient, Optional.of(hibpClient))
+        val scanner = CompositeBreachScanner(localBreachScanner, pasteMonitorClient, Optional.of(hibpClient), Optional.empty())
 
         val results = scanner.scanPhone("+1234567890")
 
@@ -89,9 +89,43 @@ class CompositeBreachScannerTest {
         every { localBreachScanner.scanPhone("+1234567890") } returns listOf(localResult)
         every { pasteMonitorClient.scanPhone("+1234567890") } returns listOf(pasteResult)
 
-        val scanner = CompositeBreachScanner(localBreachScanner, pasteMonitorClient, Optional.empty())
+        val scanner = CompositeBreachScanner(localBreachScanner, pasteMonitorClient, Optional.empty(), Optional.empty())
 
         val results = scanner.scanPhone("+1234567890")
+
+        assertEquals(1, results.size)
+    }
+
+    @Test
+    fun `scanEmail includes XON results when client is present`() {
+        val xonClient = mockk<XonEmailScannerImpl>()
+        val xonResult = BreachResult("Zynga", "zynga.com", "2019-09-01", listOf("Emails"))
+
+        every { localBreachScanner.scanEmail("user@example.com") } returns emptyList()
+        every { pasteMonitorClient.scanEmail("user@example.com") } returns emptyList()
+        every { xonClient.scanEmail("user@example.com") } returns listOf(xonResult)
+
+        val scanner = CompositeBreachScanner(localBreachScanner, pasteMonitorClient, Optional.empty(), Optional.of(xonClient))
+
+        val results = scanner.scanEmail("user@example.com")
+
+        assertEquals(1, results.size)
+        assertEquals("Zynga", results[0].name)
+    }
+
+    @Test
+    fun `scanEmail deduplicates when XON and local return same breach`() {
+        val xonClient = mockk<XonEmailScannerImpl>()
+        val localResult = BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails"))
+        val xonResult = BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails"))
+
+        every { localBreachScanner.scanEmail("user@example.com") } returns listOf(localResult)
+        every { pasteMonitorClient.scanEmail("user@example.com") } returns emptyList()
+        every { xonClient.scanEmail("user@example.com") } returns listOf(xonResult)
+
+        val scanner = CompositeBreachScanner(localBreachScanner, pasteMonitorClient, Optional.empty(), Optional.of(xonClient))
+
+        val results = scanner.scanEmail("user@example.com")
 
         assertEquals(1, results.size)
     }

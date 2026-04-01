@@ -12,6 +12,7 @@ class CompositeBreachScanner(
     private val localBreachScanner: LocalBreachScannerImpl,
     private val pasteMonitorClient: PasteMonitorClient,
     private val hibpClient: Optional<HibpClientImpl>,
+    private val xonClient: Optional<XonEmailScannerImpl>,
 ) : BreachScanner {
     override fun scanEmail(email: String): List<BreachResult> {
         val results = mutableListOf<BreachResult>()
@@ -20,6 +21,10 @@ class CompositeBreachScanner(
         results.addAll(pasteMonitorClient.scanEmail(email))
 
         hibpClient.ifPresent { client ->
+            results.addAll(client.scanEmail(email))
+        }
+
+        xonClient.ifPresent { client ->
             results.addAll(client.scanEmail(email))
         }
 

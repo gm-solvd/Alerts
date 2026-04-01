@@ -8,6 +8,9 @@ data class AppProperties(
     val jwt: JwtProperties,
     val hibp: HibpProperties,
     val scanning: ScanningProperties = ScanningProperties(),
+    val ingest: IngestProperties = IngestProperties(),
+    val xon: XonProperties = XonProperties(),
+    val catalogSync: CatalogSyncProperties = CatalogSyncProperties(),
     val admin: AdminProperties = AdminProperties(),
 ) {
     data class AdminProperties(
@@ -31,5 +34,19 @@ data class AppProperties(
         val rateLimitRequestsPerSecond: Int = 2,
         val rateLimitPerDomainDelayMs: Long = 3000,
         val socialEnabledPlatforms: List<String> = listOf("github", "stackoverflow", "reddit", "mastodon"),
+    )
+
+    data class IngestProperties(
+        val breachCsvPath: String = "",
+    )
+
+    data class XonProperties(
+        val enabled: Boolean = false,
+        val baseUrl: String = "https://api.xposedornot.com",
+    )
+
+    data class CatalogSyncProperties(
+        val enabled: Boolean = false,
+        val cron: String = "0 3 * * *",
     )
 }

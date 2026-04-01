@@ -23,5 +23,9 @@ class BreachDatabaseRepositoryAdapter(
         return knownBreachJpa.findAllById(breachIds).map { it.toDomain() }
     }
 
+    override fun findByName(name: String): KnownBreach? = knownBreachJpa.findByName(name)?.toDomain()
+
+    override fun findAllNames(): Set<String> = knownBreachJpa.findAllNames().toSet()
+
     override fun save(breach: KnownBreach): KnownBreach = knownBreachJpa.save(breach.toEntity()).toDomain()
 }

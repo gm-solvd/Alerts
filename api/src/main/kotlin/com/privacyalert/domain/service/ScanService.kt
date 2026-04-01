@@ -18,6 +18,8 @@ class ScanService(
     private val identityExposureScanner: IdentityExposureScanner,
     private val socialFootprintScanner: SocialFootprintScanner,
     private val scoreService: ScoreService,
+    private val dataTypeNormalizer: DataTypeNormalizer,
+    private val breachRiskClassifier: BreachRiskClassifier,
     private val scanResultRepository: ScanResultRepository,
 ) {
     fun breachScan(
@@ -31,15 +33,17 @@ class ScanService(
 
         val alerts =
             allBreaches.map { breach ->
+                val normalized = dataTypeNormalizer.normalize(breach.dataClasses)
+                val severity = breachRiskClassifier.classify(normalized)
                 alertRepository.save(
                     Alert(
                         userId = userId,
                         category = ThreatCategory.DATA_BREACH,
-                        severity = Severity.CRITICAL,
+                        severity = severity,
                         title = "Data breach: ${breach.name}",
                         description =
                             "Your data was found in the ${breach.name} breach (${breach.breachDate}). " +
-                                "Exposed data: ${breach.dataClasses.joinToString(", ")}.",
+                                "Exposed data: ${normalized.joinToString(", ")}.",
                     ),
                 )
             }

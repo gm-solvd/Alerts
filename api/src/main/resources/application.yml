@@ -33,6 +33,12 @@ app:
     api-key: ${HIBP_API_KEY:}
     enabled: false
     base-url: https://haveibeenpwned.com/api/v3
+  xon:
+    enabled: false
+    base-url: https://api.xposedornot.com
+  catalog-sync:
+    enabled: false
+    cron: "0 3 * * *"
   scanning:
     paste-monitor-enabled: true
     rate-limit-requests-per-second: 2

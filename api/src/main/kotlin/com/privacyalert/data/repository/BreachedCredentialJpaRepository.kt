@@ -8,4 +8,9 @@ interface BreachedCredentialJpaRepository : JpaRepository<BreachedCredentialEnti
     fun findAllByEmailSha256(emailSha256: String): List<BreachedCredentialEntity>
 
     fun findAllByPhoneSha256(phoneSha256: String): List<BreachedCredentialEntity>
+
+    fun existsByEmailSha256AndBreachId(
+        emailSha256: String,
+        breachId: UUID,
+    ): Boolean
 }
