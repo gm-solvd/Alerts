@@ -56,7 +56,13 @@ Before any planning, divide the feature into tasks:
 - Use the scopes: `mobile`, `android`, `ios`, `api`, `db`, `auth`, `alerts`, `score`, `scan`
 - Propose a branch name: `<type>/<scope>-<short-description>`
 - **STOP** — Present branch name for approval
-- After approval: `git checkout -b <branch-name>`
+- After approval, **sync develop before branching**:
+  ```bash
+  git fetch origin
+  git checkout develop
+  git pull origin develop
+  git checkout -b <branch-name>
+  ```
 
 ## Step 3: Planning
 
