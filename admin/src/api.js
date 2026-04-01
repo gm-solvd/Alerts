@@ -39,6 +39,10 @@ export default {
     return api.post(`/users/${id}/scan`)
   },
 
+  getScanJobStatus(id, jobId) {
+    return api.get(`/users/${id}/scan-jobs/${jobId}`)
+  },
+
   getScanHistory(id, page = 0, size = 50) {
     return api.get(`/users/${id}/scans`, { params: { page, size } })
   },
