@@ -2,10 +2,10 @@ package com.privacyalert.domain.service
 
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.model.AppException
+import com.privacyalert.domain.model.ScanJob
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.model.ThreatCategory
 import com.privacyalert.domain.model.User
-import com.privacyalert.domain.model.UserScanProfile
 import com.privacyalert.domain.repository.AlertRepository
 import com.privacyalert.domain.repository.ScanResultRepository
 import com.privacyalert.domain.repository.ScoreRepository
@@ -36,23 +36,12 @@ data class AdminStats(
     val alertsBySeverity: Map<Severity, Long>,
 )
 
-data class ScanExecution(
-    val totalAlerts: Int,
-    val scanners: List<ScannerResult>,
-)
-
-data class ScannerResult(
-    val scannerName: String,
-    val findingsCount: Int,
-    val alerts: List<Alert>,
-)
-
 @Service
 class AdminService(
     private val userRepository: UserRepository,
     private val alertRepository: AlertRepository,
     private val scoreRepository: ScoreRepository,
-    private val scanService: ScanService,
+    private val asyncScanService: AsyncScanService,
     private val scanResultRepository: ScanResultRepository,
 ) {
     fun createUser(
@@ -124,35 +113,14 @@ class AdminService(
             alertsBySeverity = alertRepository.countBySeverity(),
         )
 
-    fun triggerScan(userId: UUID): ScanExecution {
-        val user = userRepository.findById(userId) ?: throw AppException.ResourceNotFoundException("User", userId)
-        val profile =
-            UserScanProfile(
-                email = user.email,
-                phoneNumber = user.phoneNumber,
-                fullName = user.fullName,
-                homeAddress = user.homeAddress,
-                dateOfBirth = user.dateOfBirth,
-            )
+    fun triggerScan(userId: UUID): ScanJob = asyncScanService.startScan(userId)
 
-        val scanners = mutableListOf<ScannerResult>()
-
-        val breachAlerts = scanService.breachScan(userId, profile)
-        scanners += ScannerResult("breach", breachAlerts.size, breachAlerts)
-
-        val identityAlerts = scanService.identityScan(userId, profile)
-        scanners += ScannerResult("identity", identityAlerts.size, identityAlerts)
-
-        val piiAlerts = scanService.piiExposureScan(userId, profile)
-        scanners += ScannerResult("pii", piiAlerts.size, piiAlerts)
-
-        val socialAlerts = scanService.socialFootprintScan(userId, profile, null)
-        scanners += ScannerResult("social", socialAlerts.size, socialAlerts)
-
-        return ScanExecution(
-            totalAlerts = scanners.sumOf { it.findingsCount },
-            scanners = scanners,
-        )
+    fun getScanJobStatus(
+        userId: UUID,
+        jobId: UUID,
+    ): ScanJob {
+        userRepository.findById(userId) ?: throw AppException.ResourceNotFoundException("User", userId)
+        return asyncScanService.getJobStatus(jobId)
     }
 
     fun getScanHistory(

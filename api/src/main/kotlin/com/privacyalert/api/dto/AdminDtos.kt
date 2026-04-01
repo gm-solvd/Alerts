@@ -45,20 +45,31 @@ data class AdminStatsResponse(
     val alertsBySeverity: Map<Severity, Long>,
 )
 
-data class ScanExecutionResponse(
-    val totalAlerts: Int,
-    val scanners: List<ScannerResultResponse>,
+data class ScanJobResponse(
+    val jobId: UUID,
+    val status: String,
+    val progress: String?,
+    val totalAlerts: Int?,
+    val errorMessage: String?,
+    val startedAt: Instant?,
+    val completedAt: Instant?,
 )
 
-data class ScannerResultResponse(
-    val scannerName: String,
-    val findingsCount: Int,
-    val alerts: List<AlertResponse>,
+data class StructuredFindingResponse(
+    val type: String,
+    val name: String,
+    val sourceUrl: String?,
+    val date: String?,
+    val dataClasses: List<String>,
+    val severity: String?,
+    val recordCount: Long?,
+    val exposedFields: List<String>,
 )
 
 data class ScanResultResponse(
     val id: UUID,
     val scanType: String,
     val findings: String,
+    val details: List<StructuredFindingResponse>,
     val createdAt: Instant,
 )
