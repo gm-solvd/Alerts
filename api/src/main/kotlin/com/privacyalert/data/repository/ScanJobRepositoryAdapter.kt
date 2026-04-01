@@ -13,9 +13,7 @@ class ScanJobRepositoryAdapter(
 ) : ScanJobRepository {
     override fun save(job: ScanJob): ScanJob = jpa.save(job.toEntity()).toDomain()
 
-    override fun findById(id: UUID): ScanJob? =
-        jpa.findById(id).map { it.toDomain() }.orElse(null)
+    override fun findById(id: UUID): ScanJob? = jpa.findById(id).map { it.toDomain() }.orElse(null)
 
-    override fun findLatestByUserId(userId: UUID): ScanJob? =
-        jpa.findFirstByUserIdOrderByCreatedAtDesc(userId)?.toDomain()
+    override fun findLatestByUserId(userId: UUID): ScanJob? = jpa.findFirstByUserIdOrderByCreatedAtDesc(userId)?.toDomain()
 }
