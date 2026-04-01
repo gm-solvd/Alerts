@@ -11,7 +11,13 @@ import java.util.UUID
 class ScanJobRepositoryAdapter(
     private val jpa: ScanJobJpaRepository,
 ) : ScanJobRepository {
-    override fun save(job: ScanJob): ScanJob = jpa.save(job.toEntity()).toDomain()
+    override fun save(job: ScanJob): ScanJob {
+        val entity = job.toEntity()
+        if (jpa.existsById(job.id)) {
+            entity.markNotNew()
+        }
+        return jpa.save(entity).toDomain()
+    }
 
     override fun findById(id: UUID): ScanJob? = jpa.findById(id).map { it.toDomain() }.orElse(null)
 
