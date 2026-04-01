@@ -104,3 +104,17 @@ Follow these steps **in order**. Each **STOP** point requires explicit user appr
 
 - Update `rules/general/progress.md` with the completed work
 - Commit and push the progress update
+
+---
+
+## Multi-Phase / Parallel Workflows
+
+When a feature is split into independent phases (e.g., backend + frontend):
+
+1. **Phase 1 branch** — created from `develop` as usual
+2. **Phase 2 branch** — created from **Phase 1's branch** (not develop)
+3. Both phases can be **implemented in parallel** (using worktrees or agents)
+4. **Phase 1 PR** → base: `develop`
+5. **Phase 2 PR** → base: Phase 1's branch (dependent PR)
+6. Add `## Dependencies` section in Phase 2's PR body linking to Phase 1's PR number
+7. **Merge order**: Phase 1 first, then rebase Phase 2 onto develop, update base, merge

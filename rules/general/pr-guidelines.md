@@ -41,6 +41,32 @@ fix/api-hibp-null-response
 refactor/mobile-score-usecase
 ```
 
+## Dependent / Stacked PRs
+
+When a feature is split into phases (e.g., backend then frontend), use **stacked PRs**:
+
+| PR | Base Branch | Example |
+|---|---|---|
+| Phase 1 (backend) | `develop` | `feat/scan-async-backend` → `develop` |
+| Phase 2 (frontend) | Phase 1's branch | `feat/scan-async-frontend` → `feat/scan-async-backend` |
+
+### Creating a dependent PR
+
+1. Create Phase 2 branch **from Phase 1's branch** (not from develop)
+2. Set `gh pr create --base <phase-1-branch>`
+3. Add a **Dependencies** section in the PR body:
+   ```markdown
+   ## Dependencies
+   - Depends on #<PR-number> — must be merged first
+   ```
+
+### Merging stacked PRs
+
+1. Merge Phase 1 into `develop` (squash merge)
+2. Rebase Phase 2 onto `develop`: `git rebase develop`
+3. Change Phase 2 base to `develop`: `gh pr edit <number> --base develop`
+4. Merge Phase 2 into `develop`
+
 ## Review Checklist
 - [ ] Code follows clean architecture layer rules
 - [ ] No business logic in Composables or Controllers
