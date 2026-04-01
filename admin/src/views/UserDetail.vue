@@ -37,7 +37,7 @@
           </dl>
           <div class="user-actions">
             <button class="btn btn-primary" :disabled="scanning" @click="runScan">
-              {{ scanning ? 'Scanning...' : 'Run Scan' }}
+              {{ scanning ? scanProgressLabel : 'Run Scan' }}
             </button>
             <router-link :to="`/users/${user.id}/scans`" class="btn btn-secondary">Scan History</router-link>
             <button class="btn btn-danger" @click="confirmDelete">Delete User</button>
@@ -46,26 +46,8 @@
       </div>
 
       <!-- Scan Results (shown after running a scan) -->
-      <div v-if="scanResults" class="scan-results">
-        <h2>Scan Results ({{ scanResults.totalAlerts }} alerts found)</h2>
-        <div v-for="scanner in scanResults.scanners" :key="scanner.scannerName" class="card scanner-card">
-          <h3>
-            {{ scanner.scannerName }}
-            <span class="badge" :class="scanner.findingsCount > 0 ? 'badge-warn' : 'badge-ok'">
-              {{ scanner.findingsCount }} findings
-            </span>
-          </h3>
-          <div v-if="scanner.alerts.length > 0" class="scanner-alerts">
-            <div v-for="alert in scanner.alerts" :key="alert.id" class="alert-item">
-              <div class="alert-header">
-                <AlertBadge type="severity" :value="alert.severity" />
-                <strong>{{ alert.title }}</strong>
-              </div>
-              <p class="alert-desc">{{ alert.description }}</p>
-            </div>
-          </div>
-          <p v-else class="no-findings">No issues found</p>
-        </div>
+      <div v-if="scanResults" class="scan-results card">
+        <h3>Scan complete — {{ scanResults.totalAlerts }} alerts found</h3>
       </div>
 
       <h2>Alerts</h2>
@@ -115,10 +97,27 @@ export default {
       error: null,
       scanning: false,
       scanResults: null,
+      scanJobId: null,
+      scanProgress: null,
+      pollInterval: null,
     }
+  },
+  computed: {
+    scanProgressLabel() {
+      switch (this.scanProgress) {
+        case 'breach': return 'Scanning breaches...'
+        case 'identity': return 'Scanning identity...'
+        case 'pii': return 'Scanning PII...'
+        case 'social': return 'Scanning social...'
+        default: return 'Starting scan...'
+      }
+    },
   },
   async created() {
     await this.loadUser()
+  },
+  beforeUnmount() {
+    this.stopPolling()
   },
   methods: {
     async loadUser() {
@@ -148,15 +147,43 @@ export default {
       this.error = null
       try {
         const { data } = await api.triggerScan(this.$route.params.id)
-        this.scanResults = data
-        // Reload user and alerts to reflect new data
-        const userResp = await api.getUser(this.$route.params.id)
-        this.user = userResp.data
-        await this.loadAlerts(0)
+        this.scanJobId = data.jobId
+        this.scanProgress = data.progress
+        this.startPolling()
       } catch (e) {
-        this.error = e.response?.data?.message || 'Scan failed'
-      } finally {
+        this.error = e.response?.data?.message || 'Failed to start scan'
         this.scanning = false
+      }
+    },
+    startPolling() {
+      this.pollInterval = setInterval(async () => {
+        try {
+          const { data } = await api.getScanJobStatus(this.$route.params.id, this.scanJobId)
+          this.scanProgress = data.progress
+          if (data.status === 'COMPLETED') {
+            this.stopPolling()
+            this.scanning = false
+            this.scanResults = { totalAlerts: data.totalAlerts }
+            // Reload user and alerts to reflect new data
+            const userResp = await api.getUser(this.$route.params.id)
+            this.user = userResp.data
+            await this.loadAlerts(0)
+          } else if (data.status === 'FAILED') {
+            this.stopPolling()
+            this.scanning = false
+            this.error = data.errorMessage || 'Scan failed'
+          }
+        } catch (e) {
+          this.stopPolling()
+          this.scanning = false
+          this.error = 'Lost connection to scan job'
+        }
+      }, 2000)
+    },
+    stopPolling() {
+      if (this.pollInterval) {
+        clearInterval(this.pollInterval)
+        this.pollInterval = null
       }
     },
     async confirmDelete() {
@@ -252,51 +279,10 @@ dd {
   margin-bottom: 24px;
 }
 
-.scanner-card {
-  margin-bottom: 12px;
-}
-
-.scanner-card h3 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.badge {
-  font-size: 0.75em;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-.badge-warn { background: #fef3cd; color: #856404; }
-.badge-ok { background: #d4edda; color: #155724; }
-
-.alert-item {
-  padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.alert-item:last-child { border-bottom: none; }
-
-.alert-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.alert-desc {
-  font-size: 0.85em;
-  color: #666;
+.scan-results h3 {
+  font-size: 1em;
+  color: #27ae60;
   margin: 0;
-  padding-left: 4px;
-}
-
-.no-findings {
-  color: #999;
-  font-size: 0.9em;
-  font-style: italic;
 }
 
 .score { font-weight: 600; }
