@@ -1,6 +1,9 @@
 package com.privacyalert.data.entity
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.privacyalert.domain.model.ScanResult
+import com.privacyalert.domain.model.StructuredFinding
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
@@ -11,6 +14,8 @@ import jakarta.persistence.Transient
 import org.springframework.data.domain.Persistable
 import java.time.Instant
 import java.util.UUID
+
+private val objectMapper = jacksonObjectMapper()
 
 @Entity
 @Table(name = "scan_results")
@@ -26,6 +31,8 @@ class ScanResultEntity(
     val scanInput: String = "",
     @Column(nullable = false)
     val findings: String = "",
+    @Column(nullable = false)
+    val findingsJson: String = "[]",
     @Column(nullable = false)
     val createdAt: Instant = Instant.now(),
 ) : Persistable<UUID> {
@@ -50,6 +57,7 @@ fun ScanResultEntity.toDomain(): ScanResult =
         scanType = scanType,
         scanInput = scanInput,
         findings = findings,
+        findingsJson = objectMapper.readValue<List<StructuredFinding>>(findingsJson),
         createdAt = createdAt,
     )
 
@@ -60,5 +68,6 @@ fun ScanResult.toEntity(): ScanResultEntity =
         scanType = scanType,
         scanInput = scanInput,
         findings = findings,
+        findingsJson = objectMapper.writeValueAsString(findingsJson),
         createdAt = createdAt,
     )
