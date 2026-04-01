@@ -45,6 +45,8 @@ app:
     rate-limit-per-domain-delay-ms: 3000
     social:
       enabled-platforms: github,stackoverflow,reddit,mastodon
+  admin:
+    token: ${ADMIN_TOKEN:changeme}
 
 server:
   port: 8080

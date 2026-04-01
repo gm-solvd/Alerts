@@ -1,10 +1,12 @@
 package com.privacyalert.domain.service
 
 import com.privacyalert.domain.model.Alert
+import com.privacyalert.domain.model.ScanResult
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.model.ThreatCategory
 import com.privacyalert.domain.model.UserScanProfile
 import com.privacyalert.domain.repository.AlertRepository
+import com.privacyalert.domain.repository.ScanResultRepository
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -18,6 +20,7 @@ class ScanService(
     private val scoreService: ScoreService,
     private val dataTypeNormalizer: DataTypeNormalizer,
     private val breachRiskClassifier: BreachRiskClassifier,
+    private val scanResultRepository: ScanResultRepository,
 ) {
     fun breachScan(
         userId: UUID,
@@ -44,6 +47,19 @@ class ScanService(
                     ),
                 )
             }
+
+        scanResultRepository.save(
+            ScanResult(
+                userId = userId,
+                scanType = "breach",
+                scanInput = profile.email,
+                findings =
+                    allBreaches
+                        .joinToString("; ") {
+                            "${it.name} (${it.domain}, ${it.breachDate}) - ${it.dataClasses.joinToString(", ")}"
+                        }.ifEmpty { "No breaches found" },
+            ),
+        )
 
         if (alerts.isNotEmpty()) {
             scoreService.recalculate(userId)
@@ -72,6 +88,19 @@ class ScanService(
                     ),
                 )
             }
+
+        scanResultRepository.save(
+            ScanResult(
+                userId = userId,
+                scanType = "identity",
+                scanInput = profile.email,
+                findings =
+                    results
+                        .joinToString("; ") {
+                            "${it.source}: ${it.profileUrl} - ${it.exposedFields.joinToString(", ")}"
+                        }.ifEmpty { "No identity exposures found" },
+            ),
+        )
 
         if (alerts.isNotEmpty()) {
             scoreService.recalculate(userId)
@@ -107,6 +136,19 @@ class ScanService(
                 )
             }
 
+        scanResultRepository.save(
+            ScanResult(
+                userId = userId,
+                scanType = "pii",
+                scanInput = profile.email,
+                findings =
+                    results
+                        .joinToString("; ") {
+                            "${it.source} (${it.sourceUrl}) - fields: ${it.exposedFields.joinToString(", ")}"
+                        }.ifEmpty { "No PII exposures found" },
+            ),
+        )
+
         if (alerts.isNotEmpty()) {
             scoreService.recalculate(userId)
         }
@@ -135,6 +177,19 @@ class ScanService(
                     ),
                 )
             }
+
+        scanResultRepository.save(
+            ScanResult(
+                userId = userId,
+                scanType = "social",
+                scanInput = profile.email,
+                findings =
+                    results
+                        .joinToString("; ") {
+                            "${it.platform}: ${it.username} (${it.profileUrl}) - ${it.publicInfoFound.joinToString(", ")}"
+                        }.ifEmpty { "No social profiles found" },
+            ),
+        )
 
         if (alerts.isNotEmpty()) {
             scoreService.recalculate(userId)

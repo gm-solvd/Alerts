@@ -11,7 +11,12 @@ data class AppProperties(
     val ingest: IngestProperties = IngestProperties(),
     val xon: XonProperties = XonProperties(),
     val catalogSync: CatalogSyncProperties = CatalogSyncProperties(),
+    val admin: AdminProperties = AdminProperties(),
 ) {
+    data class AdminProperties(
+        val token: String = "changeme",
+    )
+
     data class JwtProperties(
         val secret: String,
         val accessTokenTtl: Duration = Duration.ofMinutes(15),

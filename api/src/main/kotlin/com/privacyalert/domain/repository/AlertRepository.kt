@@ -27,4 +27,12 @@ interface AlertRepository {
     fun save(alert: Alert): Alert
 
     fun deleteById(id: UUID)
+
+    fun countByUserId(userId: UUID): Long
+
+    fun count(): Long
+
+    fun countByCategory(): Map<ThreatCategory, Long>
+
+    fun countBySeverity(): Map<Severity, Long>
 }

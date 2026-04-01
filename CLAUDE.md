@@ -68,7 +68,8 @@ api/src/main/kotlin/com/privacyalert/
 6. **Human Review** — Show `git diff`, wait for user review.
 7. **Atomic Commits** — Group changes logically. Stage files by name (never `git add .`).
 8. **Push & Pull Request** — Push branch, draft PR, **STOP** for approval, then `gh pr create --base develop`. Return PR URL. CI validates automatically. If CI fails, Claude auto-fixes via `pr-autofix.yml`. PR is not auto-merged.
-9. **Update Progress** — Update `rules/general/progress.md`.
+9. **Update Docs** — Run `/docs` to update `SUMMARY.md` files for any changed directories and refresh `README.md`.
+10. **Update Progress** — Update `rules/general/progress.md`.
 
 ## Branching & Commits
 
@@ -109,4 +110,8 @@ Detailed architecture, convention, and workflow rules are in `rules/`:
 - `rules/architecture-api/` — clean architecture, API conventions, database, auth, scoring, testing, error handling, DI
 - `rules/architecture-mobile/` — KMP architecture, components, navigation, styling, testing
 
-Custom automation skills are in `.claude/skills/` — `workflow`, `branch`, `commit`, `pr`, `validate`, `test`, `lint`, `push`, `implement`, `progress`.
+Custom automation skills are in `.claude/skills/` — `workflow`, `branch`, `commit`, `pr`, `validate`, `test`, `lint`, `push`, `implement`, `progress`, `docs`.
+
+## Documentation Summaries
+
+Every directory has a `SUMMARY.md` describing its files and business logic. Run `/docs` after any code change to keep them in sync. The `README.md` links to all summaries and rule documents.
