@@ -56,13 +56,31 @@ api/src/main/kotlin/com/privacyalert/
 
 **Key constraint**: Domain services receive/return domain models only. DTOs stay in `api/`, entities stay in `data/`. Controllers are thin — no business logic.
 
+## Terminology
+
+- **Feature** — the top-level goal (e.g., "Async scan + structured findings"). Maps to a plan.
+- **Task** — a discrete workstream within a feature (e.g., "Web Backend: async scan execution", "Web Frontend: polling UI").
+
+## Task Split
+
+Every feature must be divided into tasks by workstream before implementation:
+
+- **Web Backend** — Kotlin/Spring Boot changes (domain, data, api, integration, config layers)
+- **Web Frontend** — Vue admin dashboard changes
+- **Mobile UI** — Compose Multiplatform UI layer changes
+- **Mobile Business Logic** — KMP shared domain/use-case changes
+
+Each task becomes its own branch and PR. Tasks that depend on each other use stacked PRs.
+
 ## Implementation Workflow
 
-**Every feature/fix must follow these steps with STOP checkpoints:**
+> ⚠️ **Never commit directly to `develop` or `main`.** Always work on a feature/fix branch. The only exception is when the user explicitly instructs a direct commit.
+
+**Every feature must follow these steps with STOP checkpoints:**
 
 1. **Task Intake** — Summarize understanding. **STOP** for confirmation.
 2. **Branch Creation** — `git checkout develop && git checkout -b <type>/<scope>-<description>`. **STOP** for approval.
-3. **Planning** — Create implementation plan. **STOP** for approval.
+3. **Planning** — Create implementation plan with tasks split by workstream. **STOP** for approval.
 4. **Implementation** — Implement step by step. **NO COMMITS** yet.
 5. **Validation** — Run `compileKotlin`, `ktlintFormat`, `ktlintCheck`, `test`. **STOP** to report results.
 6. **Human Review** — Show `git diff`, wait for user review.
@@ -74,10 +92,12 @@ api/src/main/kotlin/com/privacyalert/
 ## Branching & Commits
 
 ```
-main     → production-ready, protected
-develop  → integration branch
+main     → production-ready, protected — no direct commits
+develop  → integration branch — no direct commits
 feat/*   → off develop     fix/*    → off develop (or main for hotfixes)
 ```
+
+> All commits must go to a feature/fix branch. Merging to `develop` or `main` happens only via PR.
 
 Branch naming: `<type>/<scope>-<short-description>` (e.g., `feat/scan-pii-exposure`).
 

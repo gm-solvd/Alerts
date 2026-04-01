@@ -9,6 +9,21 @@ fix/*         → bug fix branches off develop (or main for hotfixes)
 refactor/*    → refactoring branches
 ```
 
+### Protected Branches
+
+- `main` and `develop` must **never** receive direct commits
+- All work happens on feature/fix/refactor branches, merged via PR
+- Exception: only when the user explicitly instructs a direct commit
+
+### Terminology
+
+- **Feature** — top-level goal that may contain multiple tasks (e.g., "Async scan + structured findings")
+- **Task** — a discrete workstream within a feature, one branch + PR per task:
+  - `Web Backend` — Kotlin/Spring changes
+  - `Web Frontend` — Vue admin changes
+  - `Mobile UI` — Compose Multiplatform UI
+  - `Mobile Business Logic` — KMP shared domain/use-cases
+
 ## Feature Development Flow
 1. Branch off `develop`: `git checkout -b feat/<scope>-<description>`
 2. Implement with tests
