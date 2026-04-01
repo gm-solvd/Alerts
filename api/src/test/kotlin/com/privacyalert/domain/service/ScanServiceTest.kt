@@ -19,6 +19,8 @@ class ScanServiceTest {
     private val identityExposureScanner = mockk<IdentityExposureScanner>()
     private val socialFootprintScanner = mockk<SocialFootprintScanner>()
     private val scoreService = mockk<ScoreService>()
+    private val dataTypeNormalizer = DataTypeNormalizer()
+    private val breachRiskClassifier = BreachRiskClassifier()
     private val service =
         ScanService(
             alertRepository,
@@ -27,6 +29,8 @@ class ScanServiceTest {
             identityExposureScanner,
             socialFootprintScanner,
             scoreService,
+            dataTypeNormalizer,
+            breachRiskClassifier,
         )
 
     private val userId = UUID.randomUUID()
@@ -41,11 +45,11 @@ class ScanServiceTest {
     // ── breachScan ──────────────────────────────────────────────────────
 
     @Test
-    fun `breachScan creates alerts for each breach found`() {
+    fun `breachScan creates alerts for each breach found with dynamic severity`() {
         val breaches =
             listOf(
-                BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails", "Passwords")),
-                BreachResult("Adobe", "adobe.com", "2013-10-04", listOf("Emails", "Passwords", "Usernames")),
+                BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Email addresses", "Passwords", "Phone numbers")),
+                BreachResult("Adobe", "adobe.com", "2013-10-04", listOf("Email addresses", "Passwords", "Phone numbers")),
             )
 
         every { breachScanner.scanEmail("user@example.com") } returns breaches
@@ -57,10 +61,47 @@ class ScanServiceTest {
 
         assertEquals(2, alerts.size)
         assertTrue(alerts.all { it.category == ThreatCategory.DATA_BREACH })
-        assertTrue(alerts.all { it.severity == Severity.CRITICAL })
+        // Passwords(10) + Email addresses(4) + Phone numbers(7) = 21 → HIGH
+        assertTrue(alerts.all { it.severity == Severity.HIGH })
         assertTrue(alerts[0].title.contains("LinkedIn"))
         assertTrue(alerts[1].title.contains("Adobe"))
         verify { scoreService.recalculate(userId) }
+    }
+
+    @Test
+    fun `breachScan assigns CRITICAL severity when critical-tier data exposed`() {
+        val breaches =
+            listOf(
+                BreachResult("MegaBreach", "mega.com", "2024-01-01", listOf("Passwords", "Social security numbers", "Credit cards")),
+            )
+
+        every { breachScanner.scanEmail("user@example.com") } returns breaches
+        every { breachScanner.scanPhone("+1234567890") } returns emptyList()
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+
+        val alerts = service.breachScan(userId, profile)
+
+        assertEquals(1, alerts.size)
+        assertEquals(Severity.CRITICAL, alerts[0].severity)
+    }
+
+    @Test
+    fun `breachScan assigns LOW severity when only low-tier data exposed`() {
+        val breaches =
+            listOf(
+                BreachResult("MinorBreach", "minor.com", "2024-01-01", listOf("Genders", "Photos")),
+            )
+
+        every { breachScanner.scanEmail("user@example.com") } returns breaches
+        every { breachScanner.scanPhone("+1234567890") } returns emptyList()
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+
+        val alerts = service.breachScan(userId, profile)
+
+        assertEquals(1, alerts.size)
+        assertEquals(Severity.LOW, alerts[0].severity)
     }
 
     @Test
