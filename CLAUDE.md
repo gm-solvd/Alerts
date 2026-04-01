@@ -79,7 +79,7 @@ Each task becomes its own branch and PR. Tasks that depend on each other use sta
 **Every feature must follow these steps with STOP checkpoints:**
 
 1. **Task Intake** — Summarize understanding. **STOP** for confirmation.
-2. **Branch Creation** — `git checkout develop && git checkout -b <type>/<scope>-<description>`. **STOP** for approval.
+2. **Branch Creation** — `git fetch origin && git checkout develop && git pull origin develop && git checkout -b <type>/<scope>-<description>`. **STOP** for approval.
 3. **Planning** — Create implementation plan with tasks split by workstream. **STOP** for approval.
 4. **Implementation** — Implement step by step. **NO COMMITS** yet.
 5. **Validation** — Run `compileKotlin`, `ktlintFormat`, `ktlintCheck`, `test`. **STOP** to report results.

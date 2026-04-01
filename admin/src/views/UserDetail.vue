@@ -6,7 +6,7 @@
     </div>
 
     <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-else-if="error && !user" class="error">{{ error }}</div>
 
     <template v-else-if="user">
       <div class="info-grid">
@@ -42,6 +42,7 @@
             <router-link :to="`/users/${user.id}/scans`" class="btn btn-secondary">Scan History</router-link>
             <button class="btn btn-danger" @click="confirmDelete">Delete User</button>
           </div>
+          <div v-if="scanError" class="scan-error">{{ scanError }}</div>
         </div>
       </div>
 
@@ -97,6 +98,7 @@ export default {
       error: null,
       scanning: false,
       scanResults: null,
+      scanError: null,
       scanJobId: null,
       scanProgress: null,
       pollInterval: null,
@@ -144,14 +146,14 @@ export default {
     async runScan() {
       this.scanning = true
       this.scanResults = null
-      this.error = null
+      this.scanError = null
       try {
         const { data } = await api.triggerScan(this.$route.params.id)
         this.scanJobId = data.jobId
         this.scanProgress = data.progress
         this.startPolling()
       } catch (e) {
-        this.error = e.response?.data?.message || 'Failed to start scan'
+        this.scanError = e.response?.data?.message || 'Failed to start scan'
         this.scanning = false
       }
     },
@@ -171,12 +173,12 @@ export default {
           } else if (data.status === 'FAILED') {
             this.stopPolling()
             this.scanning = false
-            this.error = data.errorMessage || 'Scan failed'
+            this.scanError = data.errorMessage || 'Scan failed'
           }
         } catch (e) {
           this.stopPolling()
           this.scanning = false
-          this.error = 'Lost connection to scan job'
+          this.scanError = 'Lost connection to scan job'
         }
       }, 2000)
     },
@@ -259,6 +261,16 @@ dd {
   gap: 12px;
   padding-top: 8px;
   border-top: 1px solid #eee;
+}
+
+.scan-error {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #fdecea;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  color: #c0392b;
+  font-size: 0.9em;
 }
 
 .btn-primary {
