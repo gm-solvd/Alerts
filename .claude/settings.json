@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(./gradlew *)",
+      "Bash(export JAVA_HOME=* && ./gradlew *)",
+      "Bash(export PATH=* && ./gradlew *)",
+      "Bash(cd api && *)",
+      "Bash(cd admin && *)",
+      "Bash(export PATH=* && gh *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(docker *)",
+      "Bash(docker-compose *)",
+      "Bash(gh *)",
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(cat *)",
+      "Bash(rm *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(pwd)",
+      "Bash(which *)"
+    ]
+  }
+}
