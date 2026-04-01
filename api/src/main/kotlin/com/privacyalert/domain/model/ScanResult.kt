@@ -8,6 +8,6 @@ data class ScanResult(
     val userId: UUID,
     val scanType: String,
     val scanInput: String,
-    val findings: String = "[]",
+    val findings: String = "",
     val createdAt: Instant = Instant.now(),
 )
