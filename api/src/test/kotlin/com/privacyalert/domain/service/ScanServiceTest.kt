@@ -1,5 +1,6 @@
 package com.privacyalert.domain.service
 
+import com.privacyalert.domain.model.ScanResult
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.model.ThreatCategory
 import com.privacyalert.domain.model.UserScanProfile
@@ -7,8 +8,10 @@ import com.privacyalert.domain.repository.AlertRepository
 import com.privacyalert.domain.repository.ScanResultRepository
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.UUID
@@ -154,6 +157,31 @@ class ScanServiceTest {
         verify(exactly = 0) { breachScanner.scanPhone(any()) }
     }
 
+    @Test
+    fun `breachScan populates findingsJson with structured findings`() {
+        val breaches =
+            listOf(
+                BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Email addresses", "Passwords")),
+            )
+        val scanResultSlot = slot<ScanResult>()
+
+        every { breachScanner.scanEmail("user@example.com") } returns breaches
+        every { breachScanner.scanPhone("+1234567890") } returns emptyList()
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+        every { scanResultRepository.save(capture(scanResultSlot)) } answers { firstArg() }
+
+        service.breachScan(userId, profile)
+
+        val saved = scanResultSlot.captured
+        assertEquals(1, saved.findingsJson.size)
+        assertEquals("breach", saved.findingsJson[0].type)
+        assertEquals("LinkedIn", saved.findingsJson[0].name)
+        assertEquals("2012-05-05", saved.findingsJson[0].date)
+        assertTrue(saved.findingsJson[0].dataClasses.isNotEmpty())
+        assertNotNull(saved.findingsJson[0].severity)
+    }
+
     // ── identityScan ────────────────────────────────────────────────────
 
     @Test
@@ -215,6 +243,30 @@ class ScanServiceTest {
 
         assertTrue(alerts.isEmpty())
         verify(exactly = 0) { scoreService.recalculate(any()) }
+    }
+
+    @Test
+    fun `identityScan populates findingsJson with structured findings`() {
+        val results =
+            listOf(
+                IdentityExposureResult("Spokeo", "https://spokeo.com/john", "John Doe", listOf("name", "email", "phone")),
+            )
+        val scanResultSlot = slot<ScanResult>()
+
+        every { identityExposureScanner.scan("user@example.com", "John Doe") } returns results
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+        every { scanResultRepository.save(capture(scanResultSlot)) } answers { firstArg() }
+
+        service.identityScan(userId, profile)
+
+        val saved = scanResultSlot.captured
+        assertEquals(1, saved.findingsJson.size)
+        assertEquals("identity", saved.findingsJson[0].type)
+        assertEquals("Spokeo", saved.findingsJson[0].name)
+        assertEquals("https://spokeo.com/john", saved.findingsJson[0].sourceUrl)
+        assertEquals("HIGH", saved.findingsJson[0].severity)
+        assertEquals(listOf("name", "email", "phone"), saved.findingsJson[0].exposedFields)
     }
 
     // ── piiExposureScan ─────────────────────────────────────────────────
@@ -296,6 +348,30 @@ class ScanServiceTest {
         verify(exactly = 0) { scoreService.recalculate(any()) }
     }
 
+    @Test
+    fun `piiExposureScan populates findingsJson with structured findings`() {
+        val results =
+            listOf(
+                PiiExposureResult("DataBroker", "https://databroker.com/j", listOf("phone", "address"), "John at 123 Main"),
+            )
+        val scanResultSlot = slot<ScanResult>()
+
+        every { piiExposureScanner.scan(profile) } returns results
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+        every { scanResultRepository.save(capture(scanResultSlot)) } answers { firstArg() }
+
+        service.piiExposureScan(userId, profile)
+
+        val saved = scanResultSlot.captured
+        assertEquals(1, saved.findingsJson.size)
+        assertEquals("pii", saved.findingsJson[0].type)
+        assertEquals("DataBroker", saved.findingsJson[0].name)
+        assertEquals("https://databroker.com/j", saved.findingsJson[0].sourceUrl)
+        assertEquals("HIGH", saved.findingsJson[0].severity)
+        assertEquals(listOf("phone", "address"), saved.findingsJson[0].exposedFields)
+    }
+
     // ── socialFootprintScan ─────────────────────────────────────────────
 
     @Test
@@ -357,6 +433,30 @@ class ScanServiceTest {
 
         assertTrue(alerts.isEmpty())
         verify(exactly = 0) { scoreService.recalculate(any()) }
+    }
+
+    @Test
+    fun `socialFootprintScan populates findingsJson with structured findings`() {
+        val results =
+            listOf(
+                SocialFootprintResult("Twitter", "https://twitter.com/johndoe", "johndoe", listOf("bio", "location", "links")),
+            )
+        val scanResultSlot = slot<ScanResult>()
+
+        every { socialFootprintScanner.scan("user@example.com", "John Doe", "johndoe") } returns results
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+        every { scanResultRepository.save(capture(scanResultSlot)) } answers { firstArg() }
+
+        service.socialFootprintScan(userId, profile, "johndoe")
+
+        val saved = scanResultSlot.captured
+        assertEquals(1, saved.findingsJson.size)
+        assertEquals("social", saved.findingsJson[0].type)
+        assertEquals("Twitter", saved.findingsJson[0].name)
+        assertEquals("https://twitter.com/johndoe", saved.findingsJson[0].sourceUrl)
+        assertEquals("MEDIUM", saved.findingsJson[0].severity)
+        assertEquals(listOf("bio", "location", "links"), saved.findingsJson[0].exposedFields)
     }
 
     // ── fullScan ────────────────────────────────────────────────────────
