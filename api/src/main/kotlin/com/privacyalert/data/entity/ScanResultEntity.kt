@@ -31,7 +31,7 @@ class ScanResultEntity(
     val scanInput: String = "",
     @Column(nullable = false)
     val findings: String = "",
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "jsonb")
     val findingsJson: String = "[]",
     @Column(nullable = false)
     val createdAt: Instant = Instant.now(),
