@@ -6,11 +6,12 @@ import com.privacyalert.api.dto.AdminUserResponse
 import com.privacyalert.api.dto.AlertResponse
 import com.privacyalert.api.dto.CreateUserRequest
 import com.privacyalert.api.dto.PageResponse
-import com.privacyalert.api.dto.ScanExecutionResponse
+import com.privacyalert.api.dto.ScanJobResponse
 import com.privacyalert.api.dto.ScanResultResponse
-import com.privacyalert.api.dto.ScannerResultResponse
+import com.privacyalert.api.dto.StructuredFindingResponse
 import com.privacyalert.api.dto.toPageResponse
 import com.privacyalert.api.dto.toResponse
+import com.privacyalert.domain.model.ScanJob
 import com.privacyalert.domain.service.AdminService
 import com.privacyalert.domain.service.AdminUserDetail
 import com.privacyalert.domain.service.AdminUserView
@@ -93,21 +94,18 @@ class AdminController(
     @PostMapping("/users/{id}/scan")
     fun triggerScan(
         @PathVariable id: UUID,
-    ): ResponseEntity<ScanExecutionResponse> {
-        val execution = adminService.triggerScan(id)
-        return ResponseEntity.ok(
-            ScanExecutionResponse(
-                totalAlerts = execution.totalAlerts,
-                scanners =
-                    execution.scanners.map { scanner ->
-                        ScannerResultResponse(
-                            scannerName = scanner.scannerName,
-                            findingsCount = scanner.findingsCount,
-                            alerts = scanner.alerts.map { it.toResponse() },
-                        )
-                    },
-            ),
-        )
+    ): ResponseEntity<ScanJobResponse> {
+        val job = adminService.triggerScan(id)
+        return ResponseEntity.accepted().body(job.toResponse())
+    }
+
+    @GetMapping("/users/{id}/scan-jobs/{jobId}")
+    fun getScanJobStatus(
+        @PathVariable id: UUID,
+        @PathVariable jobId: UUID,
+    ): ResponseEntity<ScanJobResponse> {
+        val job = adminService.getScanJobStatus(id, jobId)
+        return ResponseEntity.ok(job.toResponse())
     }
 
     @GetMapping("/users/{id}/scans")
@@ -122,6 +120,19 @@ class AdminController(
                     id = result.id,
                     scanType = result.scanType,
                     findings = result.findings,
+                    details =
+                        result.findingsJson.map { f ->
+                            StructuredFindingResponse(
+                                type = f.type,
+                                name = f.name,
+                                sourceUrl = f.sourceUrl,
+                                date = f.date,
+                                dataClasses = f.dataClasses,
+                                severity = f.severity,
+                                recordCount = f.recordCount,
+                                exposedFields = f.exposedFields,
+                            )
+                        },
                     createdAt = result.createdAt,
                 )
             },
@@ -166,4 +177,15 @@ private fun AdminUserDetail.toResponse(): AdminUserDetailResponse =
         score = score,
         recentAlerts = recentAlerts.map { it.toResponse() },
         createdAt = user.createdAt,
+    )
+
+private fun ScanJob.toResponse(): ScanJobResponse =
+    ScanJobResponse(
+        jobId = id,
+        status = status.name,
+        progress = progress,
+        totalAlerts = totalAlerts,
+        errorMessage = errorMessage,
+        startedAt = startedAt,
+        completedAt = completedAt,
     )

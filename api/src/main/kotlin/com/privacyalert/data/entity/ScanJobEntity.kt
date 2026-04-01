@@ -1,11 +1,11 @@
 package com.privacyalert.data.entity
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.privacyalert.domain.model.ScanResult
-import com.privacyalert.domain.model.StructuredFinding
+import com.privacyalert.domain.model.ScanJob
+import com.privacyalert.domain.model.ScanJobStatus
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.PostLoad
 import jakarta.persistence.PostPersist
@@ -15,24 +15,22 @@ import org.springframework.data.domain.Persistable
 import java.time.Instant
 import java.util.UUID
 
-private val objectMapper = jacksonObjectMapper()
-
 @Entity
-@Table(name = "scan_results")
-class ScanResultEntity(
+@Table(name = "scan_jobs")
+class ScanJobEntity(
     @Id
     @get:JvmName("getEntityId")
     val id: UUID = UUID.randomUUID(),
     @Column(nullable = false)
     val userId: UUID = UUID.randomUUID(),
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val scanType: String = "",
-    @Column(nullable = false)
-    val scanInput: String = "",
-    @Column(nullable = false)
-    val findings: String = "",
-    @Column(nullable = false)
-    val findingsJson: String = "[]",
+    val status: ScanJobStatus = ScanJobStatus.PENDING,
+    val progress: String? = null,
+    val totalAlerts: Int? = null,
+    val errorMessage: String? = null,
+    val startedAt: Instant? = null,
+    val completedAt: Instant? = null,
     @Column(nullable = false)
     val createdAt: Instant = Instant.now(),
 ) : Persistable<UUID> {
@@ -50,24 +48,28 @@ class ScanResultEntity(
     }
 }
 
-fun ScanResultEntity.toDomain(): ScanResult =
-    ScanResult(
+fun ScanJobEntity.toDomain(): ScanJob =
+    ScanJob(
         id = id,
         userId = userId,
-        scanType = scanType,
-        scanInput = scanInput,
-        findings = findings,
-        findingsJson = objectMapper.readValue<List<StructuredFinding>>(findingsJson),
+        status = status,
+        progress = progress,
+        totalAlerts = totalAlerts,
+        errorMessage = errorMessage,
+        startedAt = startedAt,
+        completedAt = completedAt,
         createdAt = createdAt,
     )
 
-fun ScanResult.toEntity(): ScanResultEntity =
-    ScanResultEntity(
+fun ScanJob.toEntity(): ScanJobEntity =
+    ScanJobEntity(
         id = id,
         userId = userId,
-        scanType = scanType,
-        scanInput = scanInput,
-        findings = findings,
-        findingsJson = objectMapper.writeValueAsString(findingsJson),
+        status = status,
+        progress = progress,
+        totalAlerts = totalAlerts,
+        errorMessage = errorMessage,
+        startedAt = startedAt,
+        completedAt = completedAt,
         createdAt = createdAt,
     )

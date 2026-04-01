@@ -3,6 +3,7 @@ package com.privacyalert.domain.service
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.model.ScanResult
 import com.privacyalert.domain.model.Severity
+import com.privacyalert.domain.model.StructuredFinding
 import com.privacyalert.domain.model.ThreatCategory
 import com.privacyalert.domain.model.UserScanProfile
 import com.privacyalert.domain.repository.AlertRepository
@@ -31,10 +32,21 @@ class ScanService(
 
         val allBreaches = (emailBreaches + phoneBreaches).distinctBy { it.name }
 
+        val structuredFindings = mutableListOf<StructuredFinding>()
+
         val alerts =
             allBreaches.map { breach ->
                 val normalized = dataTypeNormalizer.normalize(breach.dataClasses)
                 val severity = breachRiskClassifier.classify(normalized)
+                structuredFindings +=
+                    StructuredFinding(
+                        type = "breach",
+                        name = breach.name,
+                        sourceUrl = null,
+                        date = breach.breachDate,
+                        dataClasses = normalized,
+                        severity = severity.name,
+                    )
                 alertRepository.save(
                     Alert(
                         userId = userId,
@@ -58,6 +70,7 @@ class ScanService(
                         .joinToString("; ") {
                             "${it.name} (${it.domain}, ${it.breachDate}) - ${it.dataClasses.joinToString(", ")}"
                         }.ifEmpty { "No breaches found" },
+                findingsJson = structuredFindings,
             ),
         )
 
@@ -74,13 +87,24 @@ class ScanService(
     ): List<Alert> {
         val results = identityExposureScanner.scan(profile.email, profile.fullName)
 
+        val structuredFindings = mutableListOf<StructuredFinding>()
+
         val alerts =
             results.map { result ->
+                val severity = if (result.exposedFields.size >= 3) Severity.HIGH else Severity.MEDIUM
+                structuredFindings +=
+                    StructuredFinding(
+                        type = "identity",
+                        name = result.source,
+                        sourceUrl = result.profileUrl,
+                        exposedFields = result.exposedFields,
+                        severity = severity.name,
+                    )
                 alertRepository.save(
                     Alert(
                         userId = userId,
                         category = ThreatCategory.IDENTITY_EXPOSURE,
-                        severity = if (result.exposedFields.size >= 3) Severity.HIGH else Severity.MEDIUM,
+                        severity = severity,
                         title = "Identity exposed on ${result.source}",
                         description =
                             "Your profile was found on ${result.source} (${result.profileUrl}). " +
@@ -99,6 +123,7 @@ class ScanService(
                         .joinToString("; ") {
                             "${it.source}: ${it.profileUrl} - ${it.exposedFields.joinToString(", ")}"
                         }.ifEmpty { "No identity exposures found" },
+                findingsJson = structuredFindings,
             ),
         )
 
@@ -115,6 +140,8 @@ class ScanService(
     ): List<Alert> {
         val results = piiExposureScanner.scan(profile)
 
+        val structuredFindings = mutableListOf<StructuredFinding>()
+
         val alerts =
             results.map { result ->
                 val severity =
@@ -123,6 +150,14 @@ class ScanService(
                         result.exposedFields.containsAll(listOf("name", "address")) -> Severity.MEDIUM
                         else -> Severity.LOW
                     }
+                structuredFindings +=
+                    StructuredFinding(
+                        type = "pii",
+                        name = result.source,
+                        sourceUrl = result.sourceUrl,
+                        exposedFields = result.exposedFields,
+                        severity = severity.name,
+                    )
                 alertRepository.save(
                     Alert(
                         userId = userId,
@@ -146,6 +181,7 @@ class ScanService(
                         .joinToString("; ") {
                             "${it.source} (${it.sourceUrl}) - fields: ${it.exposedFields.joinToString(", ")}"
                         }.ifEmpty { "No PII exposures found" },
+                findingsJson = structuredFindings,
             ),
         )
 
@@ -163,13 +199,24 @@ class ScanService(
     ): List<Alert> {
         val results = socialFootprintScanner.scan(profile.email, profile.fullName, username)
 
+        val structuredFindings = mutableListOf<StructuredFinding>()
+
         val alerts =
             results.map { result ->
+                val severity = if (result.publicInfoFound.size >= 3) Severity.MEDIUM else Severity.LOW
+                structuredFindings +=
+                    StructuredFinding(
+                        type = "social",
+                        name = result.platform,
+                        sourceUrl = result.profileUrl,
+                        exposedFields = result.publicInfoFound,
+                        severity = severity.name,
+                    )
                 alertRepository.save(
                     Alert(
                         userId = userId,
                         category = ThreatCategory.SOCIAL_FOOTPRINT,
-                        severity = if (result.publicInfoFound.size >= 3) Severity.MEDIUM else Severity.LOW,
+                        severity = severity,
                         title = "Profile found on ${result.platform}",
                         description =
                             "Your profile '${result.username}' was found on ${result.platform} (${result.profileUrl}). " +
@@ -188,6 +235,7 @@ class ScanService(
                         .joinToString("; ") {
                             "${it.platform}: ${it.username} (${it.profileUrl}) - ${it.publicInfoFound.joinToString(", ")}"
                         }.ifEmpty { "No social profiles found" },
+                findingsJson = structuredFindings,
             ),
         )
 
