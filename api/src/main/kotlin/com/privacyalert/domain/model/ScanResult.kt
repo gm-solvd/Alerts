@@ -9,5 +9,6 @@ data class ScanResult(
     val scanType: String,
     val scanInput: String,
     val findings: String = "",
+    val findingsJson: List<StructuredFinding> = emptyList(),
     val createdAt: Instant = Instant.now(),
 )
