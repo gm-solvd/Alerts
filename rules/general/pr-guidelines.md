@@ -32,6 +32,12 @@ Key implementation decisions, if non-obvious.
 - **Self-review** before requesting review — read your own diff first
 - **No force-push** to shared branches (main, develop)
 - **Squash merge** preferred to keep history clean
+- **Never push directly to `develop` or `main`** — all changes go through a PR. Exception: only when explicitly instructed by the user.
+
+## Terminology
+
+- **Feature** — the top-level implementation goal (e.g., "Async scan + structured findings")
+- **Task** — a workstream PR within a feature (e.g., "Web Backend task", "Web Frontend task")
 
 ## Branch Naming
 ```
