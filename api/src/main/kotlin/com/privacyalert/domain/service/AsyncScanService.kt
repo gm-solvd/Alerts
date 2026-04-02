@@ -84,7 +84,7 @@ class AsyncScanService(
             scanJobRepository.save(
                 scanJobRepository.findById(jobId)!!.copy(
                     status = ScanJobStatus.FAILED,
-                    errorMessage = e.message ?: "Unknown error",
+                    errorMessage = "Scan could not be completed. Please try again.",
                     completedAt = Instant.now(),
                     progress = null,
                 ),
