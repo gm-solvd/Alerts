@@ -7,6 +7,7 @@ mockk = "1.13.16"
 springmockk = "4.0.2"
 testcontainers = "1.20.6"
 wiremock = "3.12.1"
+awaitility = "4.2.0"
 ktlint = "12.3.0"
 jsoup = "1.18.3"
 
@@ -43,6 +44,7 @@ springmockk = { module = "com.ninja-squad:springmockk", version.ref = "springmoc
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 wiremock = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
+awaitility-kotlin = { module = "org.awaitility:awaitility-kotlin", version.ref = "awaitility" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

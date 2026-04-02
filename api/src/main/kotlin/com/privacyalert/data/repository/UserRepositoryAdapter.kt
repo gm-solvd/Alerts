@@ -22,7 +22,13 @@ class UserRepositoryAdapter(
         subject: String,
     ): User? = jpa.findByOauthProviderAndOauthSubject(provider, subject)?.toDomain()
 
-    override fun save(user: User): User = jpa.save(user.toEntity()).toDomain()
+    override fun save(user: User): User {
+        val entity = user.toEntity()
+        if (jpa.existsById(user.id)) {
+            entity.markNotNew()
+        }
+        return jpa.save(entity).toDomain()
+    }
 
     override fun existsByEmail(email: String): Boolean = jpa.existsByEmail(email)
 

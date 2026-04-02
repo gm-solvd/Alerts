@@ -31,7 +31,13 @@ class AlertRepositoryAdapter(
 
     override fun findAllUnresolvedByUserId(userId: UUID): List<Alert> = jpa.findAllByUserIdAndResolvedFalse(userId).map { it.toDomain() }
 
-    override fun save(alert: Alert): Alert = jpa.save(alert.toEntity()).toDomain()
+    override fun save(alert: Alert): Alert {
+        val entity = alert.toEntity()
+        if (jpa.existsById(alert.id)) {
+            entity.markNotNew()
+        }
+        return jpa.save(entity).toDomain()
+    }
 
     override fun deleteById(id: UUID) = jpa.deleteById(id)
 

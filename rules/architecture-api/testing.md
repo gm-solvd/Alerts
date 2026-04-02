@@ -42,26 +42,64 @@ class AlertServiceTest {
 
 ---
 
-## Integration Tests (Controllers + DB)
+## Integration Tests (Full Stack — HTTP → Controller → DB)
 
-- Use `@SpringBootTest` + `@AutoConfigureMockMvc`
-- Use **Testcontainers** for a real PostgreSQL instance
-- Annotate with `@Transactional` to roll back after each test
+- Use `@SpringBootTest(webEnvironment = RANDOM_PORT)` + `TestRestTemplate` — tests real Tomcat and the full security filter chain
+- Use **Testcontainers** singleton pattern: start the container once in a static initializer (`also { it.start() }`), never stop it between test classes — prevents Spring context cache invalidation
+- **Do NOT use `@Transactional`** — it does not work with `RANDOM_PORT` (HTTP requests run in a different thread from the test context)
+- Use `@Sql` for fixtures: `BEFORE_TEST_METHOD` to seed data, `AFTER_TEST_METHOD` for cleanup
+- `@MockkBean` only for external scanner interfaces; all other beans run real
+- All integration tests extend `BaseIntegrationTest`
+
+### Infrastructure files
+
+| File | Purpose |
+|------|---------|
+| `src/test/kotlin/.../integration/BaseIntegrationTest.kt` | Singleton PostgreSQL container, `@MockkBean` for scanners, HTTP helpers |
+| `src/test/resources/application-integration.yml` | Overrides H2 driver with PostgreSQL, enables Flyway |
+| `src/test/resources/sql/cleanup.sql` | TRUNCATE all tables in FK-safe order |
+| `src/test/resources/sql/common-fixtures.sql` | 2 users with known bcrypt hashes |
+| `src/test/resources/sql/alerts-fixtures.sql` | 6 alerts + mitigations + score history for user1 |
+| `src/test/resources/sql/scan-fixtures.sql` | scan_results with JSONB findings |
+| `src/test/resources/sql/admin-fixtures.sql` | 3 extra users + alerts for admin/stats tests |
 
 ```kotlin
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
-class AlertControllerTest(@Autowired val mockMvc: MockMvc) {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("integration")
+abstract class BaseIntegrationTest {
+    companion object {
+        @JvmStatic
+        val postgres: PostgreSQLContainer<*> =
+            PostgreSQLContainer("postgres:16").also { it.start() }
+
+        @DynamicPropertySource
+        @JvmStatic
+        fun configureProperties(registry: DynamicPropertyRegistry) {
+            registry.add("spring.datasource.url", postgres::getJdbcUrl)
+            registry.add("spring.datasource.username", postgres::getUsername)
+            registry.add("spring.datasource.password", postgres::getPassword)
+        }
+    }
+
+    @Autowired lateinit var restTemplate: TestRestTemplate
+    @MockkBean lateinit var breachScanner: BreachScanner
+    // ... other external scanner mocks
+}
+
+@Sql(scripts = ["/sql/cleanup.sql", "/sql/common-fixtures.sql", "/sql/alerts-fixtures.sql"],
+     executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = ["/sql/cleanup.sql"], executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+class AlertIntegrationTest : BaseIntegrationTest() {
 
     @Test
-    fun `GET api-alerts returns 200 with alert list`() {
-        mockMvc.get("/api/alerts") {
-            header("Authorization", "Bearer $testJwt")
-        }.andExpect {
-            status { isOk() }
-            jsonPath("$[0].severity") { exists() }
-        }
+    fun `resolve alert marks it resolved and updates timestamp`() {
+        val tokens = loginUser("user@test.com", "password123")
+        val response = patch(
+            "/api/v1/alerts/aaaa1111-0000-0000-0000-000000000001/resolve",
+            userHeaders(tokens.accessToken),
+            String::class.java,
+        )
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     }
 }
 ```

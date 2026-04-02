@@ -12,5 +12,11 @@ class PasteFindingRepositoryAdapter(
 ) : PasteFindingRepository {
     override fun existsByPasteUrl(pasteUrl: String): Boolean = jpa.existsByPasteUrl(pasteUrl)
 
-    override fun save(finding: PasteFinding): PasteFinding = jpa.save(finding.toEntity()).toDomain()
+    override fun save(finding: PasteFinding): PasteFinding {
+        val entity = finding.toEntity()
+        if (jpa.existsById(finding.id)) {
+            entity.markNotNew()
+        }
+        return jpa.save(entity).toDomain()
+    }
 }
