@@ -62,6 +62,7 @@ dependencies {
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.wiremock)
+    testImplementation(libs.awaitility.kotlin)
 }
 
 ktlint {
