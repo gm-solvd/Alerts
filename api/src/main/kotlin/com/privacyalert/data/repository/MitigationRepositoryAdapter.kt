@@ -17,5 +17,11 @@ class MitigationRepositoryAdapter(
 
     override fun findAllByUserId(userId: UUID): List<Mitigation> = jpa.findAllByUserId(userId).map { it.toDomain() }
 
-    override fun save(mitigation: Mitigation): Mitigation = jpa.save(mitigation.toEntity()).toDomain()
+    override fun save(mitigation: Mitigation): Mitigation {
+        val entity = mitigation.toEntity()
+        if (jpa.existsById(mitigation.id)) {
+            entity.markNotNew()
+        }
+        return jpa.save(entity).toDomain()
+    }
 }

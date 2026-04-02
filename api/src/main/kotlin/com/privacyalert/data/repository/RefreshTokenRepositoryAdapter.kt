@@ -12,7 +12,13 @@ import java.util.UUID
 class RefreshTokenRepositoryAdapter(
     private val jpa: RefreshTokenJpaRepository,
 ) : RefreshTokenRepository {
-    override fun save(token: RefreshToken): RefreshToken = jpa.save(token.toEntity()).toDomain()
+    override fun save(token: RefreshToken): RefreshToken {
+        val entity = token.toEntity()
+        if (jpa.existsById(token.id)) {
+            entity.markNotNew()
+        }
+        return jpa.save(entity).toDomain()
+    }
 
     override fun findByTokenHash(tokenHash: String): RefreshToken? = jpa.findByTokenHash(tokenHash)?.toDomain()
 

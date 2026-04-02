@@ -13,7 +13,13 @@ import java.util.UUID
 class ScanResultRepositoryAdapter(
     private val jpa: ScanResultJpaRepository,
 ) : ScanResultRepository {
-    override fun save(result: ScanResult): ScanResult = jpa.save(result.toEntity()).toDomain()
+    override fun save(result: ScanResult): ScanResult {
+        val entity = result.toEntity()
+        if (jpa.existsById(result.id)) {
+            entity.markNotNew()
+        }
+        return jpa.save(entity).toDomain()
+    }
 
     override fun findByUserIdAndScanType(
         userId: UUID,
