@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Privacy Alert System — a mobile-first app that monitors digital exposure, scores privacy health, and sends categorized threat alerts with actionable mitigations. Monorepo with `api/` (Kotlin + Spring Boot) and `mobile/` (KMP + Compose Multiplatform, not yet started).
+Privacy Alert System — a mobile-first app that monitors digital exposure, scores privacy health, and sends categorized threat alerts with actionable mitigations. Monorepo with `api/` (Kotlin + Spring Boot) and `mobile/` (KMP + Compose Multiplatform).
 
 ## Build & Development Commands
 
@@ -31,6 +31,19 @@ docker-compose up -d
 
 # Lint check
 ./gradlew ktlintCheck
+```
+
+All mobile commands run from the `mobile/` directory. Android SDK is required (`export ANDROID_HOME=~/Library/Android/sdk`).
+
+```bash
+# Compile shared KMP module
+./gradlew :shared:compileKotlinMetadata
+
+# Build Android debug APK
+./gradlew :androidApp:assembleDebug
+
+# Run all shared tests
+./gradlew :shared:allTests
 ```
 
 ## Architecture

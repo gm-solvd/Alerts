@@ -82,11 +82,16 @@ Before any planning, divide the feature into tasks:
 
 ## Step 5: Validation
 
-- Run: `cd api && ./gradlew compileKotlin` (or equivalent for mobile)
-- Run: `cd api && ./gradlew ktlintFormat` to auto-fix lint issues
-- Run: `cd api && ./gradlew ktlintCheck` to verify lint passes (manually fix any remaining issues like lines exceeding 140 chars)
-- Run: `cd api && ./gradlew test` — this runs **all tests** including unit tests and integration tests (Testcontainers PostgreSQL)
-- If any integration test was added or modified, update `api/TEST_REPORT.md`
+- **API changes:**
+  - Run: `cd api && ./gradlew compileKotlin`
+  - Run: `cd api && ./gradlew ktlintFormat` to auto-fix lint issues
+  - Run: `cd api && ./gradlew ktlintCheck` to verify lint passes (manually fix any remaining issues like lines exceeding 140 chars)
+  - Run: `cd api && ./gradlew test` — this runs **all tests** including unit tests and integration tests (Testcontainers PostgreSQL)
+  - If any integration test was added or modified, update `api/TEST_REPORT.md`
+- **Mobile changes:**
+  - Run: `cd mobile && export JAVA_HOME=/opt/homebrew/opt/openjdk@21 && export ANDROID_HOME=~/Library/Android/sdk && ./gradlew :shared:compileKotlinMetadata`
+  - Run: `cd mobile && ./gradlew :androidApp:assembleDebug`
+  - Run: `cd mobile && ./gradlew :shared:allTests` (if tests exist)
 - If any step fails, fix the issue and re-validate
 - **STOP** — Report validation results (unit pass count, integration pass count) and wait for review
 
