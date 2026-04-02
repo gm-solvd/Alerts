@@ -24,5 +24,14 @@ node_modules/
 dist/
 .vite/
 
+# Android
+local.properties
+
+# iOS
+*.xcworkspace/
+*.xcuserdata/
+Pods/
+DerivedData/
+
 # Logs
 *.log
