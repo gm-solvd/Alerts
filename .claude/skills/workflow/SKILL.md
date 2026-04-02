@@ -85,9 +85,10 @@ Before any planning, divide the feature into tasks:
 - Run: `cd api && ./gradlew compileKotlin` (or equivalent for mobile)
 - Run: `cd api && ./gradlew ktlintFormat` to auto-fix lint issues
 - Run: `cd api && ./gradlew ktlintCheck` to verify lint passes (manually fix any remaining issues like lines exceeding 140 chars)
-- Run: `cd api && ./gradlew test`
+- Run: `cd api && ./gradlew test` — this runs **all tests** including unit tests and integration tests (Testcontainers PostgreSQL)
+- If any integration test was added or modified, update `api/TEST_REPORT.md`
 - If any step fails, fix the issue and re-validate
-- **STOP** — Report validation results and wait for review
+- **STOP** — Report validation results (unit pass count, integration pass count) and wait for review
 
 ## Step 6: Human Review
 

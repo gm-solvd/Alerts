@@ -14,7 +14,7 @@
 | 8 | Mitigations | DONE | 2026-03-31 | |
 | 9 | Permission audit | DONE | 2026-03-31 | |
 | 10 | Identity scan + OAuth | DONE | 2026-03-31 | OAuth verification is a stub (TODO) |
-| 11 | Test coverage | IN PROGRESS | 2026-03-31 | Unit + controller slice tests |
+| 11 | Test coverage | DONE | 2026-04-02 | 86 integration tests (full HTTP→DB) + unit tests. See api/TEST_REPORT.md |
 
 ## Mobile
 
