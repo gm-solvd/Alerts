@@ -11,6 +11,8 @@ import jakarta.persistence.PostLoad
 import jakarta.persistence.PostPersist
 import jakarta.persistence.Table
 import jakarta.persistence.Transient
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import org.springframework.data.domain.Persistable
 import java.time.Instant
 import java.util.UUID
@@ -32,6 +34,7 @@ class ScanResultEntity(
     @Column(nullable = false)
     val findings: String = "",
     @Column(nullable = false, columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     val findingsJson: String = "[]",
     @Column(nullable = false)
     val createdAt: Instant = Instant.now(),
