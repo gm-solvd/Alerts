@@ -11,6 +11,7 @@ import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import com.privacyalert.isDebugBuild
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.post
@@ -36,7 +37,7 @@ object ApiClient {
         }
 
         install(Logging) {
-            level = LogLevel.BODY
+            level = if (isDebugBuild) LogLevel.BODY else LogLevel.NONE
         }
 
         install(Auth) {

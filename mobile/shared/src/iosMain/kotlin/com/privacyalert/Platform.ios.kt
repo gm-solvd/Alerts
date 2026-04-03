@@ -8,3 +8,5 @@ class IOSPlatform : Platform {
 }
 
 actual fun getPlatform(): Platform = IOSPlatform()
+
+actual val isDebugBuild: Boolean = kotlin.native.Platform.isDebugBinary
