@@ -29,7 +29,9 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import androidx.compose.ui.tooling.preview.Preview
 import com.privacyalert.android.ui.theme.ComponentSize
+import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 import com.privacyalert.android.ui.theme.Spacing
 import com.privacyalert.presentation.viewmodel.AuthUiState
 import com.privacyalert.presentation.viewmodel.AuthViewModel
@@ -140,5 +142,31 @@ private fun LoginContent(
         TextButton(onClick = onNavigateToRegister) {
             Text("Don't have an account? Register")
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoginContentIdlePreview() {
+    PrivacyAlertTheme {
+        LoginContent(
+            authState = AuthUiState.Idle,
+            onLogin = { _, _ -> },
+            onNavigateToRegister = {},
+            onClearError = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoginContentErrorPreview() {
+    PrivacyAlertTheme {
+        LoginContent(
+            authState = AuthUiState.Error("Invalid email or password"),
+            onLogin = { _, _ -> },
+            onNavigateToRegister = {},
+            onClearError = {},
+        )
     }
 }

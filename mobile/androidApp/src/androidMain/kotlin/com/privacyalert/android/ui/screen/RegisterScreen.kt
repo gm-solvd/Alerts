@@ -29,7 +29,9 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import androidx.compose.ui.tooling.preview.Preview
 import com.privacyalert.android.ui.theme.ComponentSize
+import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 import com.privacyalert.android.ui.theme.Spacing
 import com.privacyalert.presentation.viewmodel.AuthUiState
 import com.privacyalert.presentation.viewmodel.AuthViewModel
@@ -164,5 +166,31 @@ private fun RegisterContent(
         TextButton(onClick = onNavigateToLogin) {
             Text("Already have an account? Login")
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RegisterContentIdlePreview() {
+    PrivacyAlertTheme {
+        RegisterContent(
+            authState = AuthUiState.Idle,
+            onRegister = { _, _ -> },
+            onNavigateToLogin = {},
+            onClearError = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RegisterContentErrorPreview() {
+    PrivacyAlertTheme {
+        RegisterContent(
+            authState = AuthUiState.Error("Email already registered"),
+            onRegister = { _, _ -> },
+            onNavigateToLogin = {},
+            onClearError = {},
+        )
     }
 }

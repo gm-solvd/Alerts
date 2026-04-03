@@ -42,8 +42,11 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
+import androidx.compose.ui.tooling.preview.Preview
 import com.privacyalert.android.ui.component.ScoreGauge
 import com.privacyalert.android.ui.component.SeverityBadge
+import com.privacyalert.android.ui.preview.PreviewData
+import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 import com.privacyalert.android.ui.theme.Spacing
 import com.privacyalert.android.ui.navigation.AlertsTab
 import com.privacyalert.android.ui.navigation.FixItTab
@@ -251,5 +254,40 @@ private fun AlertSummaryCard(
             Spacer(modifier = Modifier.width(Spacing.sm))
             SeverityBadge(severity = alert.severity)
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DashboardContentSuccessPreview() {
+    PrivacyAlertTheme {
+        DashboardContent(
+            uiState = DashboardUiState.Success(
+                score = PreviewData.scoreHigh,
+                topAlerts = PreviewData.alertList.take(3),
+            ),
+            onRefresh = {},
+            onLogout = {},
+            onViewAllAlerts = {},
+            onAlertClick = {},
+            onScanNow = {},
+            onFixIt = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DashboardContentErrorPreview() {
+    PrivacyAlertTheme {
+        DashboardContent(
+            uiState = DashboardUiState.Error("Failed to load dashboard"),
+            onRefresh = {},
+            onLogout = {},
+            onViewAllAlerts = {},
+            onAlertClick = {},
+            onScanNow = {},
+            onFixIt = {},
+        )
     }
 }

@@ -43,8 +43,11 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import androidx.compose.ui.tooling.preview.Preview
 import com.privacyalert.android.ui.component.SeverityBadge
+import com.privacyalert.android.ui.preview.PreviewData
 import com.privacyalert.android.ui.theme.ComponentSize
+import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 import com.privacyalert.android.ui.theme.Spacing
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.presentation.viewmodel.ScanUiState
@@ -317,5 +320,31 @@ private fun ScanResultCard(
             Spacer(modifier = Modifier.width(Spacing.sm))
             SeverityBadge(severity = alert.severity)
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ScanContentIdlePreview() {
+    PrivacyAlertTheme {
+        ScanContent(
+            uiState = ScanUiState.Idle,
+            onStartScan = {},
+            onReset = {},
+            onAlertClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ScanContentSuccessPreview() {
+    PrivacyAlertTheme {
+        ScanContent(
+            uiState = ScanUiState.Success(alerts = PreviewData.alertList.take(2)),
+            onStartScan = {},
+            onReset = {},
+            onAlertClick = {},
+        )
     }
 }

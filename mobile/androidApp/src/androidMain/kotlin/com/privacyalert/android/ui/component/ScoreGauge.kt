@@ -16,8 +16,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.privacyalert.android.ui.theme.ComponentSize
 import com.privacyalert.android.ui.theme.PrivacyAlertColors
+import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 
 @Composable
 fun ScoreGauge(
@@ -88,4 +90,20 @@ private fun scoreLabel(score: Int): String = when {
     score >= 60 -> "Fair"
     score >= 40 -> "At Risk"
     else -> "Critical"
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ScoreGaugeHighPreview() {
+    PrivacyAlertTheme {
+        ScoreGauge(score = 85)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ScoreGaugeLowPreview() {
+    PrivacyAlertTheme {
+        ScoreGauge(score = 32)
+    }
 }

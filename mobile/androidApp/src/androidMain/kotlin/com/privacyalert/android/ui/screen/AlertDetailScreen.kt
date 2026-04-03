@@ -37,7 +37,10 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import androidx.compose.ui.tooling.preview.Preview
 import com.privacyalert.android.ui.component.SeverityBadge
+import com.privacyalert.android.ui.preview.PreviewData
+import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 import com.privacyalert.android.ui.theme.Spacing
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.model.Mitigation
@@ -257,5 +260,40 @@ private fun MitigationCard(mitigation: Mitigation) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AlertDetailContentSuccessPreview() {
+    PrivacyAlertTheme {
+        AlertDetailContent(
+            uiState = AlertDetailUiState.Success(
+                alert = PreviewData.alertCritical,
+                mitigations = listOf(
+                    PreviewData.mitigationIncomplete,
+                    PreviewData.mitigationCompleted,
+                ),
+            ),
+            onResolve = {},
+            onRetry = {},
+            onBack = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AlertDetailContentResolvedPreview() {
+    PrivacyAlertTheme {
+        AlertDetailContent(
+            uiState = AlertDetailUiState.Success(
+                alert = PreviewData.alertLowResolved,
+                mitigations = listOf(PreviewData.mitigationCompleted),
+            ),
+            onResolve = {},
+            onRetry = {},
+            onBack = {},
+        )
     }
 }
