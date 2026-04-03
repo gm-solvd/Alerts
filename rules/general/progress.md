@@ -23,9 +23,9 @@
 | 1 | Project scaffold (KMP + CMP) | DONE | 2026-04-02 | KMP shared + Android app, Ktor, Koin, Voyager, SQLDelight, theme, MVVM |
 | 2 | Auth flow (login/register) | DONE | 2026-04-03 | LoginScreen, RegisterScreen, DashboardScreen placeholder, auth-gate Navigator |
 | 3 | Dashboard + score | DONE | 2026-04-03 | Score gauge, severity badges, pull-to-refresh, logout, alert summary cards |
-| 4 | Alerts feed + detail | - | | |
-| 5 | Scan (breach + identity + permissions) | - | | |
-| 6 | Fix It (mitigations) | - | | |
-| 7 | Styling + dark mode | - | | |
+| 4 | Alerts feed + detail | DONE | 2026-04-03 | AlertsScreen with severity filters + pagination, AlertDetailScreen with mitigations, Dashboard navigation |
+| 5 | Scan (breach + identity + permissions) | DONE | 2026-04-03 | ScanScreen with email input, scanning progress, results display, Dashboard "Run Scan" button |
+| 6 | Fix It (mitigations) | DONE | 2026-04-03 | MitigationsScreen with To Do/Completed sections, mark-as-done, Dashboard "Fix It" button |
+| 7 | Styling + dark mode | DONE | 2026-04-03 | Bottom nav with 4 tabs, tab-based routing, dark mode via existing theme |
 
 Status: `-` (not started) | `IN PROGRESS` | `DONE` | `BLOCKED`
