@@ -2,9 +2,10 @@ package com.privacyalert.domain.usecase.alert
 
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.repository.AlertRepository
-import com.privacyalert.domain.util.safeApiCall
+import com.privacyalert.domain.util.safeFlow
+import kotlinx.coroutines.flow.Flow
 
 class GetAlertDetailUseCase(private val alertRepository: AlertRepository) {
-    suspend operator fun invoke(id: String): Result<Alert> =
-        safeApiCall { alertRepository.getAlertById(id) }
+    operator fun invoke(id: String): Flow<Result<Alert>> =
+        safeFlow { alertRepository.getAlertById(id) }
 }
