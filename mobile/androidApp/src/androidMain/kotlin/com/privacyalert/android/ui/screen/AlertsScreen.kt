@@ -1,6 +1,7 @@
 package com.privacyalert.android.ui.screen
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,15 +12,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,50 +40,50 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.privacyalert.android.ui.component.ScoreGauge
 import com.privacyalert.android.ui.component.SeverityBadge
 import com.privacyalert.android.ui.theme.Spacing
 import com.privacyalert.domain.model.Alert
-import com.privacyalert.presentation.viewmodel.AuthViewModel
-import com.privacyalert.presentation.viewmodel.DashboardUiState
-import com.privacyalert.presentation.viewmodel.DashboardViewModel
+import com.privacyalert.domain.model.Severity
+import com.privacyalert.presentation.viewmodel.AlertsUiState
+import com.privacyalert.presentation.viewmodel.AlertsViewModel
 
-class DashboardScreen : Screen {
+class AlertsScreen : Screen {
 
     @Composable
     override fun Content() {
-        val dashboardVm = koinScreenModel<DashboardViewModel>()
-        val authVm = koinScreenModel<AuthViewModel>()
+        val viewModel = koinScreenModel<AlertsViewModel>()
         val navigator = LocalNavigator.currentOrThrow
-        val uiState by dashboardVm.uiState.collectAsState()
+        val uiState by viewModel.uiState.collectAsState()
 
-        DashboardContent(
+        AlertsContent(
             uiState = uiState,
-            onRefresh = { dashboardVm.load() },
-            onLogout = { authVm.logout() },
-            onViewAllAlerts = { navigator.push(AlertsScreen()) },
+            onRefresh = { viewModel.loadAlerts() },
+            onLoadMore = { viewModel.loadMore() },
+            onFilterSeverity = { viewModel.filterBySeverity(it) },
             onAlertClick = { alert -> navigator.push(AlertDetailScreen(alert.id)) },
+            onBack = { navigator.pop() },
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DashboardContent(
-    uiState: DashboardUiState,
+private fun AlertsContent(
+    uiState: AlertsUiState,
     onRefresh: () -> Unit,
-    onLogout: () -> Unit,
-    onViewAllAlerts: () -> Unit,
+    onLoadMore: () -> Unit,
+    onFilterSeverity: (Severity?) -> Unit,
     onAlertClick: (Alert) -> Unit,
+    onBack: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text("Privacy Alert") },
-            actions = {
-                IconButton(onClick = onLogout) {
+            title = { Text("Alerts") },
+            navigationIcon = {
+                IconButton(onClick = onBack) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                        contentDescription = "Logout",
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
                     )
                 }
             },
@@ -91,7 +93,7 @@ private fun DashboardContent(
         )
 
         when (uiState) {
-            is DashboardUiState.Loading -> {
+            is AlertsUiState.Loading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
@@ -100,7 +102,7 @@ private fun DashboardContent(
                 }
             }
 
-            is DashboardUiState.Error -> {
+            is AlertsUiState.Error -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
@@ -119,63 +121,50 @@ private fun DashboardContent(
                 }
             }
 
-            is DashboardUiState.Success -> {
+            is AlertsUiState.Success -> {
                 PullToRefreshBox(
                     isRefreshing = false,
                     onRefresh = onRefresh,
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .padding(Spacing.md),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Spacer(modifier = Modifier.height(Spacing.md))
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        SeverityFilterChips(
+                            selectedSeverity = uiState.selectedSeverity,
+                            onFilterSeverity = onFilterSeverity,
+                        )
 
-                        ScoreGauge(score = uiState.score.score)
-
-                        Spacer(modifier = Modifier.height(Spacing.xl))
-
-                        if (uiState.topAlerts.isNotEmpty()) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    text = "Recent Alerts",
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                                TextButton(onClick = onViewAllAlerts) {
-                                    Text("View All")
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(Spacing.sm))
-                            uiState.topAlerts.forEach { alert ->
-                                AlertSummaryCard(
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = Spacing.md),
+                            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+                        ) {
+                            items(uiState.alerts, key = { it.id }) { alert ->
+                                AlertCard(
                                     alert = alert,
                                     onClick = { onAlertClick(alert) },
                                 )
-                                Spacer(modifier = Modifier.height(Spacing.sm))
                             }
-                        } else {
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                ),
-                            ) {
-                                Text(
-                                    text = "No alerts. Your privacy looks good!",
-                                    modifier = Modifier.padding(Spacing.md),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
+
+                            if (uiState.hasMore) {
+                                item {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(Spacing.md),
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        TextButton(onClick = onLoadMore) {
+                                            Text("Load more")
+                                        }
+                                    }
+                                }
+                            }
+
+                            item {
+                                Spacer(modifier = Modifier.height(Spacing.md))
                             }
                         }
-
-                        Spacer(modifier = Modifier.height(Spacing.lg))
                     }
                 }
             }
@@ -183,8 +172,38 @@ private fun DashboardContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AlertSummaryCard(
+private fun SeverityFilterChips(
+    selectedSeverity: Severity?,
+    onFilterSeverity: (Severity?) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = Spacing.md, vertical = Spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+    ) {
+        FilterChip(
+            selected = selectedSeverity == null,
+            onClick = { onFilterSeverity(null) },
+            label = { Text("All") },
+        )
+        Severity.entries.forEach { severity ->
+            FilterChip(
+                selected = selectedSeverity == severity,
+                onClick = {
+                    onFilterSeverity(if (selectedSeverity == severity) null else severity)
+                },
+                label = { Text(severity.name) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun AlertCard(
     alert: Alert,
     onClick: () -> Unit,
 ) {
@@ -207,11 +226,20 @@ private fun AlertSummaryCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+                Spacer(modifier = Modifier.height(Spacing.xs))
                 Text(
                     text = alert.category.name.replace('_', ' '),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                if (alert.resolved) {
+                    Spacer(modifier = Modifier.height(Spacing.xs))
+                    Text(
+                        text = "Resolved",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
             }
             Spacer(modifier = Modifier.width(Spacing.sm))
             SeverityBadge(severity = alert.severity)
