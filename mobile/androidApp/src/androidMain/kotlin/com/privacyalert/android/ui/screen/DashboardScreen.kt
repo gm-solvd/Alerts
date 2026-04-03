@@ -15,11 +15,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -61,6 +63,7 @@ class DashboardScreen : Screen {
             onLogout = { authVm.logout() },
             onViewAllAlerts = { navigator.push(AlertsScreen()) },
             onAlertClick = { alert -> navigator.push(AlertDetailScreen(alert.id)) },
+            onScanNow = { navigator.push(ScanScreen()) },
         )
     }
 }
@@ -73,6 +76,7 @@ private fun DashboardContent(
     onLogout: () -> Unit,
     onViewAllAlerts: () -> Unit,
     onAlertClick: (Alert) -> Unit,
+    onScanNow: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -135,6 +139,17 @@ private fun DashboardContent(
                         Spacer(modifier = Modifier.height(Spacing.md))
 
                         ScoreGauge(score = uiState.score.score)
+
+                        Spacer(modifier = Modifier.height(Spacing.md))
+
+                        FilledTonalButton(onClick = onScanNow) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = null,
+                            )
+                            Spacer(modifier = Modifier.width(Spacing.sm))
+                            Text("Run Scan")
+                        }
 
                         Spacer(modifier = Modifier.height(Spacing.xl))
 
