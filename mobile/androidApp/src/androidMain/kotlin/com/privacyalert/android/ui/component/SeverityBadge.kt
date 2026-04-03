@@ -45,8 +45,8 @@ fun SeverityBadge(
 @Composable
 private fun severityColors(severity: Severity): Pair<Color, Color> = when (severity) {
     Severity.CRITICAL -> MaterialTheme.colorScheme.error to MaterialTheme.colorScheme.onError
-    Severity.HIGH -> Color(0xFFFF9800) to Color.White
-    Severity.MEDIUM -> Color(0xFFFFC107) to Color.Black
+    Severity.HIGH -> PrivacyAlertColors.Primary to Color.White
+    Severity.MEDIUM -> PrivacyAlertColors.AccentWarm to Color.Black
     Severity.LOW -> PrivacyAlertColors.Success to Color.White
 }
 
