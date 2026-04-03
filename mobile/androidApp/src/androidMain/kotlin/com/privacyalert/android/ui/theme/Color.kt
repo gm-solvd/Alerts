@@ -33,6 +33,9 @@ object PrivacyAlertColors {
     // Accent
     val AccentWarm = Color(0xFFFBBF24)
 
+    // Semantic
+    val Success = Color(0xFF4CAF50)
+
     // Error
     val Error = Color(0xFFF44336)
     val ErrorContainer = Color(0xFF3D0E0E)

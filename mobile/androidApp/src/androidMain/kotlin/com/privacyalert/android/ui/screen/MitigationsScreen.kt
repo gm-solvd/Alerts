@@ -27,11 +27,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import com.privacyalert.android.ui.theme.PrivacyAlertColors
 import androidx.compose.ui.text.style.TextDecoration
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -45,7 +45,7 @@ class MitigationsScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<MitigationsViewModel>()
-        val uiState by viewModel.uiState.collectAsState()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         MitigationsContent(
             uiState = uiState,
@@ -109,7 +109,7 @@ private fun MitigationsContent(
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = null,
-                                tint = Color(0xFF4CAF50),
+                                tint = PrivacyAlertColors.Success,
                                 modifier = Modifier.padding(bottom = Spacing.sm),
                             )
                             Text(
@@ -224,7 +224,7 @@ private fun CompletedMitigationCard(mitigation: Mitigation) {
             Icon(
                 imageVector = Icons.Default.CheckCircle,
                 contentDescription = "Completed",
-                tint = Color(0xFF4CAF50),
+                tint = PrivacyAlertColors.Success,
             )
             Spacer(modifier = Modifier.width(Spacing.sm))
             Text(

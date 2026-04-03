@@ -16,7 +16,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,7 +39,7 @@ class LoginScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<AuthViewModel>()
-        val authState by viewModel.authState.collectAsState()
+        val authState by viewModel.authState.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.currentOrThrow
 
         LoginContent(

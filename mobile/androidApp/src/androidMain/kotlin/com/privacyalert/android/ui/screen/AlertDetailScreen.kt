@@ -28,11 +28,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import com.privacyalert.android.ui.theme.PrivacyAlertColors
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -51,7 +51,7 @@ class AlertDetailScreen(private val alertId: String) : Screen {
     override fun Content() {
         val viewModel = koinScreenModel<AlertDetailViewModel> { parametersOf(alertId) }
         val navigator = LocalNavigator.currentOrThrow
-        val uiState by viewModel.uiState.collectAsState()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         AlertDetailContent(
             uiState = uiState,
@@ -205,13 +205,13 @@ private fun AlertInfoSection(alert: Alert) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = null,
-                        tint = Color(0xFF4CAF50),
+                        tint = PrivacyAlertColors.Success,
                     )
                     Spacer(modifier = Modifier.width(Spacing.xs))
                     Text(
                         text = "Resolved",
                         style = MaterialTheme.typography.labelMedium,
-                        color = Color(0xFF4CAF50),
+                        color = PrivacyAlertColors.Success,
                     )
                 }
             }
@@ -231,7 +231,7 @@ private fun MitigationCard(mitigation: Mitigation) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "Completed",
-                        tint = Color(0xFF4CAF50),
+                        tint = PrivacyAlertColors.Success,
                     )
                     Spacer(modifier = Modifier.width(Spacing.sm))
                 }
