@@ -104,8 +104,8 @@ Each task becomes its own branch and PR. Related tasks use a parent/child branch
 8. **Push & Pull Request** — Push branch, draft PR, **STOP** for approval, then `gh pr create --base develop`. Return PR URL.
 8.5. **Code Review & Merge** — `/review` posts findings as PR comment tagging @gm-solvd. 0 problems → auto-merge. Problems found → auto-fix, validate, re-review (max 3 cycles). macOS notifications at each phase.
 9. **Update Docs** — Run `/docs` to update `SUMMARY.md` files for any changed directories and refresh `README.md`.
-10. **Update Progress** — Update `rules/general/progress.md`.
-11. **Later Improvements** — After all feature tasks are merged, work through `rules/general/later-improvements.md` items (branch, implement, validate, PR, review each).
+10. **Update Progress** — Update `rules/general/progress.md`. **DO NOT STOP** — immediately start the next pending phase. Only stop when all phases are DONE or user explicitly asks.
+11. **All Phases Complete** — When every phase is DONE, show a prominent `display dialog` notification. Then work through `rules/general/later-improvements.md` items (branch, implement, validate, PR, review each).
 
 ## Branching & Commits
 
