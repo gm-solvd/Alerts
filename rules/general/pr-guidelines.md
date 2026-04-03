@@ -85,3 +85,26 @@ feat/parent-feature-name          ← branches off develop
 - [ ] No hardcoded strings (use resources/constants)
 - [ ] Error cases handled
 - [ ] Tests cover the happy path and at least one failure case
+
+## Automated Code Review
+
+Every PR goes through an automated deep review (`/review`) before merge. This replaces manual GitHub review.
+
+### Process
+1. All changed files are reviewed against 6 categories: **BUG**, **SEC**, **ARCH**, **PERF**, **TEST**, **STYLE**
+2. Each finding is classified: **BLOCKER** (must fix), **WARNING** (should fix), **NIT** (optional)
+3. Findings are posted as a PR comment tagging `@gm-solvd` with the total problem count
+4. Only BLOCKERs and WARNINGs count toward the problem count — NITs never block merge
+
+### Auto-merge
+- **0 problems** → PR is approved and merged via `gh pr merge --squash --delete-branch`
+- **Problems found** → auto-fix, validate, commit, push, re-review (max 3 cycles)
+- **3 cycles exhausted** → escalate to user for manual resolution
+
+### Severity Guide
+
+| Severity | Examples | Blocks? |
+|----------|---------|---------|
+| BLOCKER | Bugs, security issues, architecture violations | Yes |
+| WARNING | Missing tests, performance concerns, unclear naming | Yes |
+| NIT | Style preferences, minor improvements | No |
