@@ -47,31 +47,36 @@ fix/api-hibp-null-response
 refactor/mobile-score-usecase
 ```
 
-## Dependent / Stacked PRs
+## Parent / Child Branch Pattern
 
-When a feature is split into phases (e.g., backend then frontend), use **stacked PRs**:
+When a feature has multiple related tasks, use a **parent/child** branch pattern:
 
-| PR | Base Branch | Example |
+```
+feat/parent-feature-name          ← branches off develop
+├── feat/child-task-1             ← branches off parent, PR targets parent
+├── feat/child-task-2             ← branches off parent, PR targets parent
+└── feat/child-task-n             ← branches off parent, PR targets parent
+```
+
+| Branch | Base | Example |
 |---|---|---|
-| Phase 1 (backend) | `develop` | `feat/scan-async-backend` → `develop` |
-| Phase 2 (frontend) | Phase 1's branch | `feat/scan-async-frontend` → `feat/scan-async-backend` |
+| Parent | `develop` | `feat/mobile-phase1-foundation` → `develop` |
+| Child 1 | Parent | `feat/mobile-network-layer` → `feat/mobile-phase1-foundation` |
+| Child 2 | Parent | `feat/mobile-viewmodels` → `feat/mobile-phase1-foundation` |
 
-### Creating a dependent PR
+### Rules
 
-1. Create Phase 2 branch **from Phase 1's branch** (not from develop)
-2. Set `gh pr create --base <phase-1-branch>`
-3. Add a **Dependencies** section in the PR body:
-   ```markdown
-   ## Dependencies
-   - Depends on #<PR-number> — must be merged first
-   ```
+- **Parent** branches off `develop`
+- **Children** branch off the parent and merge back into the parent via PR
+- After **all children** are merged, the **parent** merges into `develop` via PR
+- Branch names must be **relevant** — clearly describe what the branch does
+- Each child PR must be independently reviewable with a clear scope
 
-### Merging stacked PRs
+### Creating a child PR
 
-1. Merge Phase 1 into `develop` (squash merge)
-2. Rebase Phase 2 onto `develop`: `git rebase develop`
-3. Change Phase 2 base to `develop`: `gh pr edit <number> --base develop`
-4. Merge Phase 2 into `develop`
+1. Create child branch from the parent: `git checkout -b feat/child-task feat/parent-feature`
+2. Set `gh pr create --base feat/parent-feature`
+3. After all children are merged into parent, create the final PR: `gh pr create --base develop`
 
 ## Review Checklist
 - [ ] Code follows clean architecture layer rules

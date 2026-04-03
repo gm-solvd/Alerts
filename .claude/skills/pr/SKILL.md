@@ -56,35 +56,28 @@ Key implementation decisions, if non-obvious.
 11. If CI fails, Claude automatically analyzes the failure logs and pushes a fix to the PR branch
 12. PR is **not auto-merged** — requires manual review and approval
 
-## Dependent / Stacked PRs (Tasks within a Feature)
+## Parent / Child Branch Pattern
 
-When a **feature** is split into **tasks** (e.g., Web Backend task + Web Frontend task), create **stacked PRs**:
+When a feature has multiple related tasks, use a **parent/child** branch pattern:
 
-1. **Phase 1 PR** — base: `develop` (as usual)
-2. **Phase 2 PR** — base: **Phase 1's branch** (not develop)
+```
+feat/parent-feature-name          ← branches off develop
+├── feat/child-task-1             ← branches off parent, PR targets parent
+├── feat/child-task-2             ← branches off parent, PR targets parent
+└── feat/child-task-n             ← branches off parent, PR targets parent
+```
 
-### How to create a dependent PR
+### How to create a child PR
 
-- Set `--base` to the **parent branch name** (e.g., `feat/scan-async-backend`)
-- In the PR body, add a **Dependencies** section:
-  ```markdown
-  ## Dependencies
-  - Depends on #<parent-PR-number> — must be merged first
-  ```
-- GitHub will show the diff **only between the two feature branches** (not the full diff from develop)
+- Set `--base` to the **parent branch name** (e.g., `feat/mobile-phase1-foundation`)
+- Each child PR must be independently reviewable with a clear scope
+- After **all children** are merged into the parent, create the final PR from parent to `develop`
 
-### Merge order
+### Rules
 
-1. Merge Phase 1 into develop first
-2. After merge, **rebase Phase 2 onto develop**: `git rebase develop`
-3. Update Phase 2 PR base to `develop` (via GitHub UI or `gh pr edit --base develop`)
-4. Then merge Phase 2
-
-### Rules for stacked PRs
-
-- Each PR must be **independently reviewable** — clear scope and test plan
-- Phase 2 branch is created **from Phase 1's branch** (not from develop)
-- If Phase 1 changes after Phase 2 is created, rebase Phase 2 onto Phase 1
+- Parent branches off `develop`, children branch off the parent
+- Children merge into the parent via PR, parent merges into `develop` via PR
+- Branch names must be **relevant** — clearly describe what the branch does
 
 ## Rules
 - **One concern per PR** — avoid mixing unrelated changes

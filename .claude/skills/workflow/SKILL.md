@@ -31,7 +31,7 @@ Before any planning, divide the feature into tasks:
 
 - List which workstreams are affected
 - Each active workstream becomes a separate task (branch + PR)
-- Tasks that depend on each other become stacked PRs (backend first, then frontend)
+- Related tasks use parent/child branches: children merge to parent, parent merges to develop when complete
 - **STOP** — Present the task split for confirmation before proceeding
 
 ---
@@ -140,14 +140,12 @@ Before any planning, divide the feature into tasks:
 
 ---
 
-## Multi-Phase / Parallel Workflows
+## Multi-Phase / Parent-Child Workflows
 
-When a feature is split into independent phases (e.g., backend + frontend):
+When a feature has multiple related tasks, use a **parent/child** branch pattern:
 
-1. **Phase 1 branch** — created from `develop` as usual
-2. **Phase 2 branch** — created from **Phase 1's branch** (not develop)
-3. Both phases can be **implemented in parallel** (using worktrees or agents)
-4. **Phase 1 PR** → base: `develop`
-5. **Phase 2 PR** → base: Phase 1's branch (dependent PR)
-6. Add `## Dependencies` section in Phase 2's PR body linking to Phase 1's PR number
-7. **Merge order**: Phase 1 first, then rebase Phase 2 onto develop, update base, merge
+1. **Parent branch** — created from `develop` (e.g., `feat/mobile-phase1-foundation`)
+2. **Child branches** — created from the parent (e.g., `feat/mobile-network-layer`)
+3. Each child's PR targets the **parent branch** (`gh pr create --base feat/parent-feature`)
+4. After **all children** are merged into the parent, the parent PR targets `develop`
+5. Branch names must be **relevant** — clearly describe what the branch does

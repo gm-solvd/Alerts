@@ -70,7 +70,7 @@ Every feature must be divided into tasks by workstream before implementation:
 - **Mobile UI** — Compose Multiplatform UI layer changes
 - **Mobile Business Logic** — KMP shared domain/use-case changes
 
-Each task becomes its own branch and PR. Tasks that depend on each other use stacked PRs.
+Each task becomes its own branch and PR. Related tasks use a parent/child branch pattern: children branch off and merge into the parent, then the parent merges into develop when all tasks are complete.
 
 ## Implementation Workflow
 
