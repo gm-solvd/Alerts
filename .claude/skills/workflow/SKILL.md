@@ -38,6 +38,10 @@ Before any planning, divide the feature into tasks:
 
 ## Step 1: Task Intake
 
+- Send notification:
+  ```bash
+  osascript -e 'display notification "Starting task intake..." with title "Claude Code" subtitle "Step 1: Intake" sound name "Glass"'
+  ```
 - Read the task description from `$ARGUMENTS`
 - If it's an issue number, fetch it with `gh issue view $ARGUMENTS`
 - Read all relevant project rules from `rules/`
@@ -66,6 +70,10 @@ Before any planning, divide the feature into tasks:
 
 ## Step 3: Planning
 
+- Send notification:
+  ```bash
+  osascript -e 'display notification "Planning phase starting..." with title "Claude Code" subtitle "Step 3: Planning" sound name "Glass"'
+  ```
 - Enter plan mode
 - Read relevant source files to understand current state
 - Read relevant architecture rules
@@ -74,6 +82,10 @@ Before any planning, divide the feature into tasks:
 
 ## Step 4: Implementation
 
+- Send notification:
+  ```bash
+  osascript -e 'display notification "Implementation starting..." with title "Claude Code" subtitle "Step 4: Implement" sound name "Glass"'
+  ```
 - Implement the plan step by step
 - Follow clean architecture rules strictly
 - **NO COMMITS** at this stage
@@ -82,11 +94,21 @@ Before any planning, divide the feature into tasks:
 
 ## Step 5: Validation
 
-- Run: `cd api && ./gradlew compileKotlin` (or equivalent for mobile)
-- Run: `cd api && ./gradlew ktlintFormat` to auto-fix lint issues
-- Run: `cd api && ./gradlew ktlintCheck` to verify lint passes (manually fix any remaining issues like lines exceeding 140 chars)
-- Run: `cd api && ./gradlew test` — this runs **all tests** including unit tests and integration tests (Testcontainers PostgreSQL)
-- If any integration test was added or modified, update `api/TEST_REPORT.md`
+- Send notification:
+  ```bash
+  osascript -e 'display notification "Running validation pipeline..." with title "Claude Code" subtitle "Step 5: Validate" sound name "Glass"'
+  ```
+- **API changes:**
+  - Run: `cd api && ./gradlew compileKotlin`
+  - Run: `cd api && ./gradlew ktlintFormat` to auto-fix lint issues
+  - Run: `cd api && ./gradlew ktlintCheck` to verify lint passes (manually fix any remaining issues like lines exceeding 140 chars)
+  - Run: `cd api && ./gradlew test` — this runs **all tests** including unit tests and integration tests (Testcontainers PostgreSQL)
+  - If any integration test was added or modified, update `api/TEST_REPORT.md`
+- **Mobile changes:**
+  - Run: `cd mobile && export JAVA_HOME=/opt/homebrew/opt/openjdk@21 && export ANDROID_HOME=~/Library/Android/sdk && ./gradlew :shared:compileDebugKotlinAndroid`
+  - Run: `cd mobile && export JAVA_HOME=/opt/homebrew/opt/openjdk@21 && export ANDROID_HOME=~/Library/Android/sdk && ./gradlew :shared:detektMetadataCommonMain`
+  - If detekt fails: read report, fix issues (remove unused code, fix violations), re-run until clean
+  - Run: `cd mobile && export JAVA_HOME=/opt/homebrew/opt/openjdk@21 && export ANDROID_HOME=~/Library/Android/sdk && ./gradlew :shared:allTests` (if tests exist)
 - If any step fails, fix the issue and re-validate
 - **STOP** — Report validation results (unit pass count, integration pass count) and wait for review
 
@@ -106,6 +128,10 @@ Before any planning, divide the feature into tasks:
 
 ## Step 8: Push & Pull Request
 
+- Send notification:
+  ```bash
+  osascript -e 'display notification "Pushing branch and creating PR..." with title "Claude Code" subtitle "Step 8: Push & PR" sound name "Glass"'
+  ```
 - Push to remote: `git push -u origin HEAD`
 - Read `rules/general/pr-guidelines.md` for PR conventions
 - Draft PR title: `<type>(<scope>): <short description>` (under 70 chars)
@@ -129,7 +155,19 @@ Before any planning, divide the feature into tasks:
 - Return the PR URL to the user
 - CI validates the PR automatically (compile, lint, test via GitHub Actions)
 - If CI fails, Claude automatically analyzes the failure and pushes a fix (via `pr-autofix.yml`)
-- PR is **not auto-merged** — it requires manual review and approval before merging
+- PR is **not auto-merged** — it goes through the automated review in Step 8.5
+
+## Step 8.5: Code Review & Merge
+
+- Run `/review` on the PR just created
+- The review skill will:
+  1. Deep review all changed files against architecture rules (BUG, SEC, ARCH, PERF, TEST, STYLE)
+  2. Post findings as a PR comment tagging @gm-solvd with problem count
+  3. If 0 problems: approve and merge the PR via `gh pr merge --squash --delete-branch`
+  4. If problems found: auto-fix, validate, commit, push, re-review (max 3 cycles)
+  5. Send macOS notifications at each stage
+- After merge, switch to base branch and pull latest
+- If review exhausts 3 cycles without resolving all issues, **STOP** for manual resolution
 
 ## Step 9: Update Docs & Progress
 
@@ -137,6 +175,24 @@ Before any planning, divide the feature into tasks:
 - Update `README.md` to reflect any new features, endpoints, or architectural changes
 - Update `rules/general/progress.md` with the completed work
 - Commit and push these updates on the feature branch before the PR
+- Send notification:
+  ```bash
+  osascript -e 'display notification "All steps finished successfully!" with title "Claude Code" subtitle "Workflow Complete" sound name "Glass"'
+  ```
+
+## Step 10: Later Improvements
+
+After **all tasks** in the feature are merged (not after each individual task):
+
+1. Read `rules/general/later-improvements.md`
+2. If there are pending items:
+   - Send notification:
+     ```bash
+     osascript -e 'display notification "Starting later improvements phase..." with title "Claude Code" subtitle "Step 10: Improvements" sound name "Glass"'
+     ```
+   - For each item, follow the normal workflow: branch → implement → validate → commit → PR → review
+   - Check off completed items in `later-improvements.md`
+3. If no items, skip this step
 
 ---
 

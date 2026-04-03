@@ -5,7 +5,9 @@
       "Bash(gh:*)",
       "Bash(./gradlew:*)",
       "Bash(export JAVA_HOME=*)",
+      "Bash(export JAVA_HOME=* && export ANDROID_HOME=*)",
       "Bash(export PATH=*)",
+      "Bash(export ANDROID_HOME=*)",
       "Bash(JAVA_HOME=* ./gradlew:*)",
       "Bash(npm:*)",
       "Bash(npx:*)",
@@ -28,7 +30,10 @@
       "Bash(curl:*)",
       "Bash(which:*)",
       "Bash(open:*)",
+      "Bash(osascript:*)",
       "Bash(pwd)",
+      "Bash(cd:*)",
+      "Bash(/opt/homebrew/bin/gh:*)",
       "WebSearch",
       "mcp__Claude_Preview__preview_start"
     ]

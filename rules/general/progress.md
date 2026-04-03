@@ -20,7 +20,7 @@
 
 | # | Phase | Status | Date | Notes |
 |---|-------|--------|------|-------|
-| 1 | Project scaffold (KMP + CMP) | - | | |
+| 1 | Project scaffold (KMP + CMP) | DONE | 2026-04-02 | KMP shared + Android app, Ktor, Koin, Voyager, SQLDelight, theme, MVVM |
 | 2 | Auth flow (login/register) | - | | |
 | 3 | Dashboard + score | - | | |
 | 4 | Alerts feed + detail | - | | |
