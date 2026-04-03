@@ -25,11 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import androidx.compose.ui.tooling.preview.Preview
+import com.privacyalert.android.ui.component.ShieldLogo
 import com.privacyalert.android.ui.theme.ComponentSize
 import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 import com.privacyalert.android.ui.theme.Spacing
@@ -73,6 +75,10 @@ private fun RegisterContent(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        ShieldLogo(size = 80.dp)
+
+        Spacer(modifier = Modifier.height(Spacing.md))
+
         Text(
             text = "Create Account",
             style = MaterialTheme.typography.headlineLarge,
