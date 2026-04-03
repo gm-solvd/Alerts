@@ -8,6 +8,10 @@ import com.privacyalert.domain.usecase.mitigation.GetMitigationsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 sealed class MitigationsUiState {
@@ -19,6 +23,7 @@ sealed class MitigationsUiState {
     data class Error(val message: String) : MitigationsUiState()
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MitigationsViewModel(
     private val getMitigationsUseCase: GetMitigationsUseCase,
     private val completeMitigationUseCase: CompleteMitigationUseCase,
@@ -27,27 +32,30 @@ class MitigationsViewModel(
     private val _uiState = MutableStateFlow<MitigationsUiState>(MitigationsUiState.Loading)
     val uiState: StateFlow<MitigationsUiState> = _uiState.asStateFlow()
 
+    private val _refreshTrigger = MutableStateFlow(0)
+
     init {
-        load()
+        _refreshTrigger
+            .flatMapLatest { getMitigationsUseCase() }
+            .onEach { result ->
+                _uiState.value = result.fold(
+                    onSuccess = { mitigations ->
+                        MitigationsUiState.Success(
+                            incomplete = mitigations.filter { !it.completed },
+                            completed = mitigations.filter { it.completed },
+                        )
+                    },
+                    onFailure = {
+                        MitigationsUiState.Error(it.message ?: "Failed to load mitigations")
+                    },
+                )
+            }
+            .launchIn(screenModelScope)
     }
 
     fun load() {
-        screenModelScope.launch {
-            _uiState.value = MitigationsUiState.Loading
-            getMitigationsUseCase().fold(
-                onSuccess = { mitigations ->
-                    _uiState.value = MitigationsUiState.Success(
-                        incomplete = mitigations.filter { !it.completed },
-                        completed = mitigations.filter { it.completed },
-                    )
-                },
-                onFailure = {
-                    _uiState.value = MitigationsUiState.Error(
-                        it.message ?: "Failed to load mitigations",
-                    )
-                },
-            )
-        }
+        _uiState.value = MitigationsUiState.Loading
+        _refreshTrigger.value++
     }
 
     fun completeMitigation(id: String) {

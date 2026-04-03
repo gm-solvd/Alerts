@@ -10,6 +10,9 @@ import com.privacyalert.domain.usecase.mitigation.GetMitigationsByAlertUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 sealed class AlertDetailUiState {
@@ -36,21 +39,25 @@ class AlertDetailViewModel(
     }
 
     fun load() {
-        screenModelScope.launch {
-            _uiState.value = AlertDetailUiState.Loading
-            getAlertDetailUseCase(alertId).fold(
+        _uiState.value = AlertDetailUiState.Loading
+        combine(
+            getAlertDetailUseCase(alertId),
+            getMitigationsByAlertUseCase(alertId),
+        ) { alertResult, mitigationsResult ->
+            alertResult.fold(
                 onSuccess = { alert ->
-                    val mitigations = getMitigationsByAlertUseCase(alertId)
-                        .getOrDefault(emptyList())
-                    _uiState.value = AlertDetailUiState.Success(alert, mitigations)
+                    AlertDetailUiState.Success(
+                        alert = alert,
+                        mitigations = mitigationsResult.getOrDefault(emptyList()),
+                    )
                 },
                 onFailure = {
-                    _uiState.value = AlertDetailUiState.Error(
-                        it.message ?: "Failed to load alert",
-                    )
+                    AlertDetailUiState.Error(it.message ?: "Failed to load alert")
                 },
             )
         }
+            .onEach { _uiState.value = it }
+            .launchIn(screenModelScope)
     }
 
     fun resolve() {

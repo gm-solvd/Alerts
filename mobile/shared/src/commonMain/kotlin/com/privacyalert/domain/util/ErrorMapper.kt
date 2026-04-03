@@ -4,6 +4,8 @@ import com.privacyalert.domain.model.AppError
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 fun Throwable.toAppError(): AppError = when (this) {
     is AppError -> this
@@ -35,3 +37,15 @@ suspend fun <T> safeApiCall(block: suspend () -> T): Result<T> =
     } catch (e: Exception) {
         Result.failure(e.toAppError())
     }
+
+fun <T> safeFlow(block: suspend () -> T): Flow<Result<T>> = flow {
+    emit(
+        try {
+            Result.success(block())
+        } catch (e: AppError) {
+            Result.failure(e)
+        } catch (e: Exception) {
+            Result.failure(e.toAppError())
+        },
+    )
+}
