@@ -36,7 +36,10 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import androidx.compose.ui.tooling.preview.Preview
 import com.privacyalert.android.ui.component.SeverityBadge
+import com.privacyalert.android.ui.preview.PreviewData
+import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 import com.privacyalert.android.ui.theme.Spacing
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.model.Severity
@@ -230,5 +233,37 @@ private fun AlertCard(
             Spacer(modifier = Modifier.width(Spacing.sm))
             SeverityBadge(severity = alert.severity)
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AlertsContentSuccessPreview() {
+    PrivacyAlertTheme {
+        AlertsContent(
+            uiState = AlertsUiState.Success(
+                alerts = PreviewData.alertList,
+                hasMore = true,
+                selectedSeverity = null,
+            ),
+            onRefresh = {},
+            onLoadMore = {},
+            onFilterSeverity = {},
+            onAlertClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AlertsContentErrorPreview() {
+    PrivacyAlertTheme {
+        AlertsContent(
+            uiState = AlertsUiState.Error("Failed to load alerts"),
+            onRefresh = {},
+            onLoadMore = {},
+            onFilterSeverity = {},
+            onAlertClick = {},
+        )
     }
 }

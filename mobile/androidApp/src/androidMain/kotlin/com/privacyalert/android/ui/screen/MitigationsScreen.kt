@@ -31,10 +31,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.privacyalert.android.ui.theme.PrivacyAlertColors
 import androidx.compose.ui.text.style.TextDecoration
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
+import com.privacyalert.android.ui.preview.PreviewData
+import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 import com.privacyalert.android.ui.theme.Spacing
 import com.privacyalert.domain.model.Mitigation
 import com.privacyalert.presentation.viewmodel.MitigationsUiState
@@ -234,5 +237,38 @@ private fun CompletedMitigationCard(mitigation: Mitigation) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MitigationsContentSuccessPreview() {
+    PrivacyAlertTheme {
+        MitigationsContent(
+            uiState = MitigationsUiState.Success(
+                incomplete = listOf(
+                    PreviewData.mitigationIncomplete,
+                    PreviewData.mitigationIncomplete2,
+                ),
+                completed = listOf(PreviewData.mitigationCompleted),
+            ),
+            onRefresh = {},
+            onComplete = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun MitigationsContentEmptyPreview() {
+    PrivacyAlertTheme {
+        MitigationsContent(
+            uiState = MitigationsUiState.Success(
+                incomplete = emptyList(),
+                completed = emptyList(),
+            ),
+            onRefresh = {},
+            onComplete = {},
+        )
     }
 }

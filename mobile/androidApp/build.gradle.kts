@@ -19,6 +19,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
+            implementation(compose.uiTooling)
             implementation(compose.components.resources)
 
             implementation(libs.koin.android)
@@ -34,6 +35,8 @@ kotlin {
             implementation(libs.voyager.tab.navigator)
             implementation(libs.voyager.transitions)
             implementation(libs.voyager.koin)
+
+            implementation(libs.kotlinx.datetime)
         }
     }
 }
