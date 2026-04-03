@@ -127,7 +127,7 @@ ADMIN_TOKEN=changeme
 
 > **Never commit directly to `develop` or `main`.** All work happens on feature/fix branches, merged via PR.
 
-Every **feature** is split into **tasks** by workstream (web backend, web frontend, mobile UI, mobile business logic) and implemented as stacked PRs when tasks depend on each other. See [workflow rules](rules/general/workflow.md) for the full step-by-step process.
+Every **feature** is split into **tasks** by workstream (web backend, web frontend, mobile UI, mobile business logic). Related tasks use a parent/child branch pattern — children merge into the parent, then the parent merges into develop. See [workflow rules](rules/general/workflow.md) for the full step-by-step process.
 
 ---
 
