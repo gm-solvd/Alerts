@@ -2,6 +2,7 @@ package com.privacyalert.presentation.viewmodel
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.privacyalert.domain.model.AppError
 import com.privacyalert.domain.usecase.auth.CheckAuthUseCase
 import com.privacyalert.domain.usecase.auth.LoginUseCase
 import com.privacyalert.domain.usecase.auth.LogoutUseCase
@@ -38,9 +39,7 @@ class AuthViewModel(
             _authState.value = AuthUiState.Loading
             registerUseCase(email, password).fold(
                 onSuccess = { _authState.value = AuthUiState.Success },
-                onFailure = {
-                    _authState.value = AuthUiState.Error(it.message ?: "Registration failed")
-                },
+                onFailure = { _authState.value = AuthUiState.Error(it.toRegisterMessage()) },
             )
         }
     }
@@ -50,9 +49,7 @@ class AuthViewModel(
             _authState.value = AuthUiState.Loading
             loginUseCase(email, password).fold(
                 onSuccess = { _authState.value = AuthUiState.Success },
-                onFailure = {
-                    _authState.value = AuthUiState.Error(it.message ?: "Login failed")
-                },
+                onFailure = { _authState.value = AuthUiState.Error(it.toLoginMessage()) },
             )
         }
     }
@@ -67,4 +64,20 @@ class AuthViewModel(
     fun clearError() {
         _authState.value = AuthUiState.Idle
     }
+}
+
+private fun Throwable.toRegisterMessage(): String = when (this) {
+    is AppError.NetworkError -> "Unable to connect. Please check your internet connection."
+    is AppError.Conflict -> "An account with this email already exists."
+    is AppError.ValidationError -> "Please check your details and try again."
+    is AppError.ServerError -> "Something went wrong on our end. Please try again."
+    else -> "Registration failed. Please try again."
+}
+
+private fun Throwable.toLoginMessage(): String = when (this) {
+    is AppError.NetworkError -> "Unable to connect. Please check your internet connection."
+    is AppError.Unauthorized -> "Incorrect email or password."
+    is AppError.ValidationError -> "Please check your email and password."
+    is AppError.ServerError -> "Something went wrong on our end. Please try again."
+    else -> "Login failed. Please try again."
 }

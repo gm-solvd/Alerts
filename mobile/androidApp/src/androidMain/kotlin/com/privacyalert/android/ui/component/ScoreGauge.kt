@@ -80,7 +80,7 @@ fun ScoreGauge(
 @Composable
 private fun scoreColor(score: Int): Color = when {
     score >= 80 -> PrivacyAlertColors.Success
-    score >= 60 -> Color(0xFFFFC107) // Amber
+    score >= 60 -> PrivacyAlertColors.AccentWarm
     score >= 40 -> MaterialTheme.colorScheme.primary // Orange (theme primary)
     else -> MaterialTheme.colorScheme.error // Red
 }
