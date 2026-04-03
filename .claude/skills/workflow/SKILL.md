@@ -177,22 +177,29 @@ Before any planning, divide the feature into tasks:
 - Commit and push these updates on the feature branch before the PR
 - Send notification:
   ```bash
-  osascript -e 'display notification "All steps finished successfully!" with title "Claude Code" subtitle "Workflow Complete" sound name "Glass"'
+  osascript -e 'display notification "Phase merged. Moving to next phase..." with title "Claude Code" subtitle "Workflow: Next Phase" sound name "Glass"'
   ```
+- **DO NOT STOP** — immediately proceed to the next pending phase in `rules/general/progress.md`
+- Repeat from Step 1 for the next phase (branch off develop, plan, implement, validate, PR, review)
+- Continue until **all phases** are DONE or the user explicitly asks to stop
 
-## Step 10: Later Improvements
+## Step 10: All Phases Complete
 
-After **all tasks** in the feature are merged (not after each individual task):
+When all phases in `rules/general/progress.md` are marked DONE:
 
-1. Read `rules/general/later-improvements.md`
-2. If there are pending items:
+1. Send a **prominent** completion notification:
+   ```bash
+   osascript -e 'display dialog "ALL PHASES COMPLETE! Every mobile phase has been implemented, validated, and merged to develop." with title "Claude Code — DONE" with icon note buttons {"OK"} default button "OK"'
+   ```
+2. Read `rules/general/later-improvements.md`
+3. If there are pending items:
    - Send notification:
      ```bash
      osascript -e 'display notification "Starting later improvements phase..." with title "Claude Code" subtitle "Step 10: Improvements" sound name "Glass"'
      ```
    - For each item, follow the normal workflow: branch → implement → validate → commit → PR → review
    - Check off completed items in `later-improvements.md`
-3. If no items, skip this step
+4. If no items, skip this step
 
 ---
 
