@@ -41,9 +41,13 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import com.privacyalert.android.ui.component.ScoreGauge
 import com.privacyalert.android.ui.component.SeverityBadge
 import com.privacyalert.android.ui.theme.Spacing
+import com.privacyalert.android.ui.navigation.AlertsTab
+import com.privacyalert.android.ui.navigation.FixItTab
+import com.privacyalert.android.ui.navigation.ScanTab
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.presentation.viewmodel.AuthViewModel
 import com.privacyalert.presentation.viewmodel.DashboardUiState
@@ -56,16 +60,17 @@ class DashboardScreen : Screen {
         val dashboardVm = koinScreenModel<DashboardViewModel>()
         val authVm = koinScreenModel<AuthViewModel>()
         val navigator = LocalNavigator.currentOrThrow
+        val tabNavigator = LocalTabNavigator.current
         val uiState by dashboardVm.uiState.collectAsState()
 
         DashboardContent(
             uiState = uiState,
             onRefresh = { dashboardVm.load() },
             onLogout = { authVm.logout() },
-            onViewAllAlerts = { navigator.push(AlertsScreen()) },
+            onViewAllAlerts = { tabNavigator.current = AlertsTab },
             onAlertClick = { alert -> navigator.push(AlertDetailScreen(alert.id)) },
-            onScanNow = { navigator.push(ScanScreen()) },
-            onFixIt = { navigator.push(MitigationsScreen()) },
+            onScanNow = { tabNavigator.current = ScanTab },
+            onFixIt = { tabNavigator.current = FixItTab },
         )
     }
 }

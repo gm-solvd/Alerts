@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -22,7 +21,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -37,8 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import com.privacyalert.android.ui.theme.Spacing
 import com.privacyalert.domain.model.Mitigation
 import com.privacyalert.presentation.viewmodel.MitigationsUiState
@@ -49,14 +45,12 @@ class MitigationsScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<MitigationsViewModel>()
-        val navigator = LocalNavigator.currentOrThrow
         val uiState by viewModel.uiState.collectAsState()
 
         MitigationsContent(
             uiState = uiState,
             onRefresh = { viewModel.load() },
             onComplete = { id -> viewModel.completeMitigation(id) },
-            onBack = { navigator.pop() },
         )
     }
 }
@@ -67,19 +61,10 @@ private fun MitigationsContent(
     uiState: MitigationsUiState,
     onRefresh: () -> Unit,
     onComplete: (String) -> Unit,
-    onBack: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Fix It") },
-            navigationIcon = {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                    )
-                }
-            },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.surface,
             ),
