@@ -22,7 +22,7 @@
 |---|-------|--------|------|-------|
 | 1 | Project scaffold (KMP + CMP) | DONE | 2026-04-02 | KMP shared + Android app, Ktor, Koin, Voyager, SQLDelight, theme, MVVM |
 | 2 | Auth flow (login/register) | DONE | 2026-04-03 | LoginScreen, RegisterScreen, DashboardScreen placeholder, auth-gate Navigator |
-| 3 | Dashboard + score | - | | |
+| 3 | Dashboard + score | DONE | 2026-04-03 | Score gauge, severity badges, pull-to-refresh, logout, alert summary cards |
 | 4 | Alerts feed + detail | - | | |
 | 5 | Scan (breach + identity + permissions) | - | | |
 | 6 | Fix It (mitigations) | - | | |
