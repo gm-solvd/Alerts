@@ -22,6 +22,7 @@ import kotlinx.serialization.json.Json
 
 object ApiClient {
 
+    @Suppress("LongMethod")
     fun create(tokenStorage: TokenStorage): HttpClient = HttpClient {
         install(ContentNegotiation) {
             json(

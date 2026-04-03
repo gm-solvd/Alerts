@@ -30,7 +30,7 @@ class AuthRepositoryImpl(
 
     override suspend fun refreshToken(): AuthTokens {
         val refresh = tokenStorage.getRefreshToken()
-            ?: throw IllegalStateException("No refresh token available")
+            ?: error("No refresh token available")
         val response = authApi.refresh(RefreshTokenRequestDto(refresh))
         val tokens = response.toDomain()
         tokenStorage.saveTokens(tokens)

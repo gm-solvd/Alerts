@@ -7,6 +7,7 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
+@Suppress("CyclomaticComplexMethod")
 fun Throwable.toAppError(): AppError = when (this) {
     is AppError -> this
     is ClientRequestException -> when (response.status) {
@@ -29,6 +30,7 @@ fun Throwable.toAppError(): AppError = when (this) {
     }
 }
 
+@Suppress("TooGenericExceptionCaught")
 suspend fun <T> safeApiCall(block: suspend () -> T): Result<T> =
     try {
         Result.success(block())
@@ -38,6 +40,7 @@ suspend fun <T> safeApiCall(block: suspend () -> T): Result<T> =
         Result.failure(e.toAppError())
     }
 
+@Suppress("TooGenericExceptionCaught")
 fun <T> safeFlow(block: suspend () -> T): Flow<Result<T>> = flow {
     emit(
         try {
