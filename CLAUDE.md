@@ -37,7 +37,10 @@ All mobile commands run from the `mobile/` directory. Android SDK is required (`
 
 ```bash
 # Compile shared KMP module
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:compileDebugKotlinAndroid
+
+# Detekt static analysis
+./gradlew :shared:detektMetadataCommonMain
 
 # Build Android debug APK
 ./gradlew :androidApp:assembleDebug
@@ -95,12 +98,14 @@ Each task becomes its own branch and PR. Tasks that depend on each other use sta
 2. **Branch Creation** — `git fetch origin && git checkout develop && git pull origin develop && git checkout -b <type>/<scope>-<description>`. **STOP** for approval.
 3. **Planning** — Create implementation plan with tasks split by workstream. **STOP** for approval.
 4. **Implementation** — Implement step by step. **NO COMMITS** yet.
-5. **Validation** — Run `compileKotlin`, `ktlintFormat`, `ktlintCheck`, `test`. **STOP** to report results.
+5. **Validation** — Run `compileKotlin`, `ktlintFormat`, `ktlintCheck`, `detekt` (mobile), `test`. Fix unused code. **STOP** to report results.
 6. **Human Review** — Show `git diff`, wait for user review.
 7. **Atomic Commits** — Group changes logically. Stage files by name (never `git add .`).
-8. **Push & Pull Request** — Push branch, draft PR, **STOP** for approval, then `gh pr create --base develop`. Return PR URL. CI validates automatically. If CI fails, Claude auto-fixes via `pr-autofix.yml`. PR is not auto-merged.
+8. **Push & Pull Request** — Push branch, draft PR, **STOP** for approval, then `gh pr create --base develop`. Return PR URL.
+8.5. **Code Review & Merge** — `/review` posts findings as PR comment tagging @gm-solvd. 0 problems → auto-merge. Problems found → auto-fix, validate, re-review (max 3 cycles). macOS notifications at each phase.
 9. **Update Docs** — Run `/docs` to update `SUMMARY.md` files for any changed directories and refresh `README.md`.
 10. **Update Progress** — Update `rules/general/progress.md`.
+11. **Later Improvements** — After all feature tasks are merged, work through `rules/general/later-improvements.md` items (branch, implement, validate, PR, review each).
 
 ## Branching & Commits
 
@@ -143,7 +148,7 @@ Detailed architecture, convention, and workflow rules are in `rules/`:
 - `rules/architecture-api/` — clean architecture, API conventions, database, auth, scoring, testing, error handling, DI
 - `rules/architecture-mobile/` — KMP architecture, components, navigation, styling, testing
 
-Custom automation skills are in `.claude/skills/` — `workflow`, `branch`, `commit`, `pr`, `validate`, `test`, `lint`, `push`, `implement`, `progress`, `docs`.
+Custom automation skills are in `.claude/skills/` — `workflow`, `branch`, `commit`, `pr`, `review`, `validate`, `test`, `lint`, `push`, `implement`, `progress`, `docs`.
 
 ## Documentation Summaries
 

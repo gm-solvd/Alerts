@@ -30,6 +30,7 @@
       "Bash(curl:*)",
       "Bash(which:*)",
       "Bash(open:*)",
+      "Bash(osascript:*)",
       "Bash(pwd)",
       "Bash(cd:*)",
       "Bash(/opt/homebrew/bin/gh:*)",

@@ -38,17 +38,24 @@ Run full validation pipeline for the project.
 
 2. **Compile check:**
    ```
-   cd mobile && ./gradlew compileKotlin
+   cd mobile && export JAVA_HOME=/opt/homebrew/opt/openjdk@21 && export ANDROID_HOME=~/Library/Android/sdk && ./gradlew :shared:compileDebugKotlinAndroid
    ```
 
-3. **Lint check:**
+3. **Detekt static analysis:**
    ```
-   cd mobile && ./gradlew ktlintCheck
+   cd mobile && export JAVA_HOME=/opt/homebrew/opt/openjdk@21 && export ANDROID_HOME=~/Library/Android/sdk && ./gradlew :shared:detektMetadataCommonMain
    ```
+   - If detekt fails, read the report, fix the issues, and re-run
+   - Suppress only when the violation is intentional (e.g., `@Suppress("LongMethod")` on declarative builders)
 
-4. **Tests:**
+4. **Unused code cleanup:**
+   - Check detekt output for `UnusedImports`, `UnusedPrivateMember`, `UnusedParameter` warnings
+   - Remove any unused imports, functions, classes, or parameters
+   - Re-run detekt to confirm clean
+
+5. **Tests:**
    ```
-   cd mobile && ./gradlew test
+   cd mobile && export JAVA_HOME=/opt/homebrew/opt/openjdk@21 && export ANDROID_HOME=~/Library/Android/sdk && ./gradlew :shared:allTests
    ```
 
 ## Reporting
