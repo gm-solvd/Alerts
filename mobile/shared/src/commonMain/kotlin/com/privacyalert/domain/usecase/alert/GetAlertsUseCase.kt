@@ -5,14 +5,15 @@ import com.privacyalert.domain.model.PageResult
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.model.ThreatCategory
 import com.privacyalert.domain.repository.AlertRepository
-import com.privacyalert.domain.util.safeApiCall
+import com.privacyalert.domain.util.safeFlow
+import kotlinx.coroutines.flow.Flow
 
 class GetAlertsUseCase(private val alertRepository: AlertRepository) {
-    suspend operator fun invoke(
+    operator fun invoke(
         category: ThreatCategory? = null,
         severity: Severity? = null,
         page: Int = 0,
         size: Int = 20,
-    ): Result<PageResult<Alert>> =
-        safeApiCall { alertRepository.getAlerts(category, severity, page, size) }
+    ): Flow<Result<PageResult<Alert>>> =
+        safeFlow { alertRepository.getAlerts(category, severity, page, size) }
 }

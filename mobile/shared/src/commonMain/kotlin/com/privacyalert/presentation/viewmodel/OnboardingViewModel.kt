@@ -8,6 +8,7 @@ import com.privacyalert.domain.usecase.scan.FullScanUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -95,7 +96,7 @@ class OnboardingViewModel(
     }
 
     private suspend fun runScan() {
-        fullScanUseCase(_uiState.value.email.trim()).fold(
+        fullScanUseCase(_uiState.value.email.trim()).first().fold(
             onSuccess = { alerts ->
                 _uiState.update { it.copy(isLoading = false, scanResults = alerts) }
             },

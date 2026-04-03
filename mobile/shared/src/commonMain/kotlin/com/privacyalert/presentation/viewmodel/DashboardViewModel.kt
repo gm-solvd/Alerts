@@ -9,7 +9,9 @@ import com.privacyalert.domain.usecase.score.GetScoreUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 sealed class DashboardUiState {
     data object Loading : DashboardUiState()
@@ -33,20 +35,24 @@ class DashboardViewModel(
     }
 
     fun load() {
-        screenModelScope.launch {
-            _uiState.value = DashboardUiState.Loading
-            val scoreResult = getScoreUseCase()
-            val alertsResult = getAlertsUseCase(page = 0, size = 3)
-
+        _uiState.value = DashboardUiState.Loading
+        combine(
+            getScoreUseCase(),
+            getAlertsUseCase(page = 0, size = 3),
+        ) { scoreResult, alertsResult ->
             scoreResult.fold(
                 onSuccess = { score ->
-                    val alerts = alertsResult.getOrNull()?.content ?: emptyList()
-                    _uiState.value = DashboardUiState.Success(score, alerts)
+                    DashboardUiState.Success(
+                        score = score,
+                        topAlerts = alertsResult.getOrNull()?.content ?: emptyList(),
+                    )
                 },
                 onFailure = {
-                    _uiState.value = DashboardUiState.Error(it.message ?: "Failed to load dashboard")
+                    DashboardUiState.Error(it.message ?: "Failed to load dashboard")
                 },
             )
         }
+            .onEach { _uiState.value = it }
+            .launchIn(screenModelScope)
     }
 }

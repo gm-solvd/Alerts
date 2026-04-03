@@ -7,6 +7,7 @@ import com.privacyalert.domain.usecase.scan.FullScanUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 sealed class ScanUiState {
@@ -26,11 +27,9 @@ class ScanViewModel(
     fun startFullScan(email: String) {
         screenModelScope.launch {
             _uiState.value = ScanUiState.Scanning
-            fullScanUseCase(email).fold(
+            fullScanUseCase(email).first().fold(
                 onSuccess = { _uiState.value = ScanUiState.Success(it) },
-                onFailure = {
-                    _uiState.value = ScanUiState.Error(it.message ?: "Scan failed")
-                },
+                onFailure = { _uiState.value = ScanUiState.Error(it.message ?: "Scan failed") },
             )
         }
     }
