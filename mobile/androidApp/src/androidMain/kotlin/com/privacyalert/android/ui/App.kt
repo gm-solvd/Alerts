@@ -12,7 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.navigator.Navigator
@@ -33,7 +33,7 @@ import org.koin.compose.koinInject
 @Composable
 fun App() {
     val checkAuth = koinInject<CheckAuthUseCase>()
-    val isAuthenticated by checkAuth().collectAsState(initial = false)
+    val isAuthenticated by checkAuth().collectAsStateWithLifecycle(initialValue = false)
 
     PrivacyAlertTheme {
         Surface(

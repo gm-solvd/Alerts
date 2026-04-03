@@ -32,7 +32,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +61,7 @@ class DashboardScreen : Screen {
         val authVm = koinScreenModel<AuthViewModel>()
         val navigator = LocalNavigator.currentOrThrow
         val tabNavigator = LocalTabNavigator.current
-        val uiState by dashboardVm.uiState.collectAsState()
+        val uiState by dashboardVm.uiState.collectAsStateWithLifecycle()
 
         DashboardContent(
             uiState = uiState,

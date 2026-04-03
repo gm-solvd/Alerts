@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.privacyalert.android.ui.theme.ComponentSize
+import com.privacyalert.android.ui.theme.PrivacyAlertColors
 import com.privacyalert.android.ui.theme.Spacing
 import com.privacyalert.domain.model.Severity
 
@@ -42,5 +43,5 @@ private fun severityColors(severity: Severity): Pair<Color, Color> = when (sever
     Severity.CRITICAL -> MaterialTheme.colorScheme.error to MaterialTheme.colorScheme.onError
     Severity.HIGH -> Color(0xFFFF9800) to Color.White
     Severity.MEDIUM -> Color(0xFFFFC107) to Color.Black
-    Severity.LOW -> Color(0xFF4CAF50) to Color.White
+    Severity.LOW -> PrivacyAlertColors.Success to Color.White
 }

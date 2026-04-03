@@ -24,5 +24,5 @@ After all main tasks in a feature are complete (all PRs merged), work through th
 ## Items
 
 - [ ] **[STYLE]** Add `@Preview` annotations to all content composables and preview data factories on domain models (from PR #23 review)
-- [ ] **[STYLE]** Migrate `collectAsState` to `collectAsStateWithLifecycle` across all screens and App.kt (from PR #23 review)
-- [ ] **[STYLE]** Extract hardcoded `Color(0xFF4CAF50)` (green/success) to `PrivacyAlertColors.success` — used in ScoreGauge, SeverityBadge, AlertDetailScreen (from PR #26 review)
+- [x] **[STYLE]** Migrate `collectAsState` to `collectAsStateWithLifecycle` across all screens and App.kt (from PR #23 review)
+- [x] **[STYLE]** Extract hardcoded `Color(0xFF4CAF50)` (green/success) to `PrivacyAlertColors.Success` — used in ScoreGauge, SeverityBadge, AlertDetailScreen, MitigationsScreen (from PR #26 review)
