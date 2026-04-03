@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -64,6 +65,7 @@ class DashboardScreen : Screen {
             onViewAllAlerts = { navigator.push(AlertsScreen()) },
             onAlertClick = { alert -> navigator.push(AlertDetailScreen(alert.id)) },
             onScanNow = { navigator.push(ScanScreen()) },
+            onFixIt = { navigator.push(MitigationsScreen()) },
         )
     }
 }
@@ -77,6 +79,7 @@ private fun DashboardContent(
     onViewAllAlerts: () -> Unit,
     onAlertClick: (Alert) -> Unit,
     onScanNow: () -> Unit,
+    onFixIt: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -142,13 +145,25 @@ private fun DashboardContent(
 
                         Spacer(modifier = Modifier.height(Spacing.md))
 
-                        FilledTonalButton(onClick = onScanNow) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = null,
-                            )
-                            Spacer(modifier = Modifier.width(Spacing.sm))
-                            Text("Run Scan")
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                        ) {
+                            FilledTonalButton(onClick = onScanNow) {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = null,
+                                )
+                                Spacer(modifier = Modifier.width(Spacing.xs))
+                                Text("Run Scan")
+                            }
+                            FilledTonalButton(onClick = onFixIt) {
+                                Icon(
+                                    imageVector = Icons.Default.Build,
+                                    contentDescription = null,
+                                )
+                                Spacer(modifier = Modifier.width(Spacing.xs))
+                                Text("Fix It")
+                            }
                         }
 
                         Spacer(modifier = Modifier.height(Spacing.xl))
