@@ -187,18 +187,18 @@ Before any planning, divide the feature into tasks:
 
 When all phases in `rules/general/progress.md` are marked DONE:
 
-1. Send a **prominent** completion notification:
-   ```bash
-   osascript -e 'display dialog "ALL PHASES COMPLETE! Every mobile phase has been implemented, validated, and merged to develop." with title "Claude Code — DONE" with icon note buttons {"OK"} default button "OK"'
-   ```
-2. Read `rules/general/later-improvements.md`
-3. If there are pending items:
+1. Read `rules/general/later-improvements.md`
+2. If there are pending items:
    - Send notification:
      ```bash
      osascript -e 'display notification "Starting later improvements phase..." with title "Claude Code" subtitle "Step 10: Improvements" sound name "Glass"'
      ```
    - For each item, follow the normal workflow: branch → implement → validate → commit → PR → review
    - Check off completed items in `later-improvements.md`
+3. Only after all phases AND all later-improvement items are finished, send the **prominent** completion notification:
+   ```bash
+   osascript -e 'display dialog "ALL DONE! Every phase and improvement has been implemented, validated, and merged." with title "Claude Code — DONE" with icon note buttons {"OK"} default button "OK"'
+   ```
 4. If no items, skip this step
 
 ---
