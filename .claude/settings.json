@@ -37,5 +37,31 @@
       "WebSearch",
       "mcp__Claude_Preview__preview_start"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/git-safety.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/block-sensitive-read.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/block-sensitive-read.sh"
+          }
+        ]
+      }
+    ]
   }
 }
