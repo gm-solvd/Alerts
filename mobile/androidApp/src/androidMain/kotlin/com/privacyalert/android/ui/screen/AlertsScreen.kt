@@ -236,6 +236,24 @@ private fun AlertCard(
     }
 }
 
+/** Test-only entry point for AlertsContent. */
+@Composable
+fun AlertsContentForTest(
+    uiState: AlertsUiState,
+    onRefresh: () -> Unit = {},
+    onLoadMore: () -> Unit = {},
+    onFilterSeverity: (Severity?) -> Unit = {},
+    onAlertClick: (Alert) -> Unit = {},
+) {
+    AlertsContent(
+        uiState = uiState,
+        onRefresh = onRefresh,
+        onLoadMore = onLoadMore,
+        onFilterSeverity = onFilterSeverity,
+        onAlertClick = onAlertClick,
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun AlertsContentSuccessPreview() {
