@@ -15,6 +15,22 @@ refactor/*    → refactoring branches
 - All work happens on feature/fix/refactor branches, merged via PR
 - Exception: only when the user explicitly instructs a direct commit
 
+### Behavior Changes Are Tasks Too
+
+Any request to improve, adjust, or extend Claude's own behavior **must** go through the full task workflow — branch, implement, commit, push, PR — exactly like any code task. No exceptions.
+
+This includes changes to:
+- `rules/` — any `.md` rule file
+- `.claude/skills/` — any skill (`SKILL.md`)
+- `.claude/hooks/` — any hook script
+- `.claude/rules/` — any on-demand rule
+- `.claude/settings.json` or `.claude/settings.local.json`
+- `CLAUDE.md`
+
+Branch naming: use `chore/rules-<description>` for rule/config changes.
+
+> Rationale: behavior changes are configuration-as-code. They affect every future task and must be reviewed, versioned, and reversible just like application code.
+
 ### Terminology
 
 - **Feature** — top-level goal that may contain multiple tasks (e.g., "Async scan + structured findings")

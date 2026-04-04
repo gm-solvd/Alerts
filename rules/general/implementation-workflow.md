@@ -2,6 +2,8 @@
 
 AI-assisted development workflow with explicit human checkpoints.
 
+> ⚠️ **Behavior changes are tasks.** Any request to improve Claude's behavior (rules, skills, hooks, settings, CLAUDE.md) triggers this full workflow — branch → implement → commit → push → PR. Use `chore/rules-<description>` as the branch type. No direct commits to develop/main.
+
 ---
 
 ## Steps
