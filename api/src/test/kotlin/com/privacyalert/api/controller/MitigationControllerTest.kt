@@ -106,13 +106,13 @@ class MitigationControllerTest(
     }
 
     @Test
-    fun `GET mitigations returns 403 without authentication`() {
+    fun `GET mitigations returns 401 without authentication`() {
         every { jwtProvider.validateAndExtractUserId(any()) } returns null
 
         mockMvc
             .get("/api/v1/mitigations")
             .andExpect {
-                status { isForbidden() }
+                status { isUnauthorized() }
             }
     }
 }

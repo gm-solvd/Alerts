@@ -87,7 +87,7 @@ class ScanControllerTest(
     }
 
     @Test
-    fun `POST breach scan returns 403 without authentication`() {
+    fun `POST breach scan returns 401 without authentication`() {
         every { jwtProvider.validateAndExtractUserId(any()) } returns null
 
         mockMvc
@@ -95,7 +95,7 @@ class ScanControllerTest(
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(ScanProfileRequest("user@example.com"))
             }.andExpect {
-                status { isForbidden() }
+                status { isUnauthorized() }
             }
     }
 
@@ -200,7 +200,7 @@ class ScanControllerTest(
     }
 
     @Test
-    fun `POST pii scan returns 403 without authentication`() {
+    fun `POST pii scan returns 401 without authentication`() {
         every { jwtProvider.validateAndExtractUserId(any()) } returns null
 
         mockMvc
@@ -208,7 +208,7 @@ class ScanControllerTest(
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(ScanProfileRequest("user@example.com"))
             }.andExpect {
-                status { isForbidden() }
+                status { isUnauthorized() }
             }
     }
 
@@ -262,7 +262,7 @@ class ScanControllerTest(
     }
 
     @Test
-    fun `POST social scan returns 403 without authentication`() {
+    fun `POST social scan returns 401 without authentication`() {
         every { jwtProvider.validateAndExtractUserId(any()) } returns null
 
         mockMvc
@@ -270,7 +270,7 @@ class ScanControllerTest(
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(ScanProfileRequest("user@example.com"))
             }.andExpect {
-                status { isForbidden() }
+                status { isUnauthorized() }
             }
     }
 
@@ -352,7 +352,7 @@ class ScanControllerTest(
     }
 
     @Test
-    fun `POST full scan returns 403 without authentication`() {
+    fun `POST full scan returns 401 without authentication`() {
         every { jwtProvider.validateAndExtractUserId(any()) } returns null
 
         mockMvc
@@ -360,7 +360,7 @@ class ScanControllerTest(
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(ScanProfileRequest("user@example.com"))
             }.andExpect {
-                status { isForbidden() }
+                status { isUnauthorized() }
             }
     }
 

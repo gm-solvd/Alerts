@@ -20,7 +20,7 @@ import org.springframework.test.context.jdbc.Sql
 )
 class SecurityIntegrationTest : BaseIntegrationTest() {
     @Test
-    fun `unauthenticated requests to protected endpoints return 403`() {
+    fun `unauthenticated requests to protected endpoints return 401`() {
         val headers = HttpHeaders()
 
         val alertsResponse =
@@ -30,7 +30,7 @@ class SecurityIntegrationTest : BaseIntegrationTest() {
                 HttpEntity<Void>(headers),
                 String::class.java,
             )
-        assertThat(alertsResponse.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(alertsResponse.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
 
         val scoreResponse =
             restTemplate.exchange(
@@ -39,7 +39,7 @@ class SecurityIntegrationTest : BaseIntegrationTest() {
                 HttpEntity<Void>(headers),
                 String::class.java,
             )
-        assertThat(scoreResponse.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(scoreResponse.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
 
         val scanResponse =
             restTemplate.exchange(
@@ -48,11 +48,11 @@ class SecurityIntegrationTest : BaseIntegrationTest() {
                 HttpEntity<Void>(headers),
                 String::class.java,
             )
-        assertThat(scanResponse.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(scanResponse.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 
     @Test
-    fun `malformed jwt returns 403`() {
+    fun `malformed jwt returns 401`() {
         val headers =
             HttpHeaders().apply {
                 setBearerAuth("not-a-valid-jwt")
@@ -66,7 +66,7 @@ class SecurityIntegrationTest : BaseIntegrationTest() {
                 String::class.java,
             )
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 
     @Test

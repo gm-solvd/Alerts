@@ -82,7 +82,7 @@ class PermissionAuditIntegrationTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `permission audit returns 403 without auth`() {
+    fun `permission audit returns 401 without auth`() {
         val request =
             PermissionAuditRequest(
                 permissions =
@@ -101,6 +101,6 @@ class PermissionAuditIntegrationTest : BaseIntegrationTest() {
                 String::class.java,
             )
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 }

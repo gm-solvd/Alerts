@@ -33,6 +33,10 @@ class SecurityConfig(
                     .permitAll()
                     .requestMatchers("/actuator/health", "/actuator/info")
                     .permitAll()
+                    // Permit /error so Tomcat's error-page forwarding (triggered by sendError)
+                    // is not intercepted by Spring Security and overwritten with 401.
+                    .requestMatchers("/error")
+                    .permitAll()
                     .requestMatchers("/api/v1/admin/**")
                     .hasRole("ADMIN")
                     .anyRequest()

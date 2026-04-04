@@ -235,7 +235,7 @@ class ScanIntegrationTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `breach scan returns 403 without auth`() {
+    fun `breach scan returns 401 without auth`() {
         val request = ScanProfileRequest(email = "user@test.com")
         val response =
             post(
@@ -247,6 +247,6 @@ class ScanIntegrationTest : BaseIntegrationTest() {
                 String::class.java,
             )
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 }
