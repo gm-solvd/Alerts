@@ -4,6 +4,7 @@ import com.privacyalert.data.remote.dto.AuthTokensResponseDto
 import com.privacyalert.data.remote.dto.LoginRequestDto
 import com.privacyalert.data.remote.dto.RefreshTokenRequestDto
 import com.privacyalert.data.remote.dto.RegisterRequestDto
+import com.privacyalert.data.remote.throwIfError
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -13,21 +14,30 @@ import io.ktor.http.contentType
 
 class AuthApi(private val client: HttpClient) {
 
-    suspend fun register(request: RegisterRequestDto): AuthTokensResponseDto =
-        client.post("/api/v1/auth/register") {
+    suspend fun register(request: RegisterRequestDto): AuthTokensResponseDto {
+        val response = client.post("/api/v1/auth/register") {
             contentType(ContentType.Application.Json)
             setBody(request)
-        }.body()
+        }
+        response.throwIfError()
+        return response.body()
+    }
 
-    suspend fun login(request: LoginRequestDto): AuthTokensResponseDto =
-        client.post("/api/v1/auth/login") {
+    suspend fun login(request: LoginRequestDto): AuthTokensResponseDto {
+        val response = client.post("/api/v1/auth/login") {
             contentType(ContentType.Application.Json)
             setBody(request)
-        }.body()
+        }
+        response.throwIfError()
+        return response.body()
+    }
 
-    suspend fun refresh(request: RefreshTokenRequestDto): AuthTokensResponseDto =
-        client.post("/api/v1/auth/refresh") {
+    suspend fun refresh(request: RefreshTokenRequestDto): AuthTokensResponseDto {
+        val response = client.post("/api/v1/auth/refresh") {
             contentType(ContentType.Application.Json)
             setBody(request)
-        }.body()
+        }
+        response.throwIfError()
+        return response.body()
+    }
 }
