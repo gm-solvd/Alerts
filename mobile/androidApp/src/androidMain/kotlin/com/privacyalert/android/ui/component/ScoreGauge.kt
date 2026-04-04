@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.privacyalert.android.ui.theme.ComponentSize
-import com.privacyalert.android.ui.theme.PrivacyAlertColors
+import com.privacyalert.android.ui.theme.AppColors
 import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 
 @Composable
@@ -79,9 +79,9 @@ fun ScoreGauge(
 
 @Composable
 private fun scoreColor(score: Int): Color = when {
-    score >= 80 -> PrivacyAlertColors.Success
-    score >= 60 -> PrivacyAlertColors.AccentWarm
-    score >= 40 -> MaterialTheme.colorScheme.primary // Orange (theme primary)
+    score >= 80 -> AppColors.Success
+    score >= 60 -> AppColors.Warning
+    score >= 40 -> MaterialTheme.colorScheme.primary
     else -> MaterialTheme.colorScheme.error // Red
 }
 

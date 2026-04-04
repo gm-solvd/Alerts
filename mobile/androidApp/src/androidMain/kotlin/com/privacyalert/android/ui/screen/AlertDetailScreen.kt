@@ -32,7 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.privacyalert.android.ui.theme.PrivacyAlertColors
+import com.privacyalert.android.ui.theme.AppColors
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -208,13 +208,13 @@ private fun AlertInfoSection(alert: Alert) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = null,
-                        tint = PrivacyAlertColors.Success,
+                        tint = AppColors.Success,
                     )
                     Spacer(modifier = Modifier.width(Spacing.xs))
                     Text(
                         text = "Resolved",
                         style = MaterialTheme.typography.labelMedium,
-                        color = PrivacyAlertColors.Success,
+                        color = AppColors.Success,
                     )
                 }
             }
@@ -234,7 +234,7 @@ private fun MitigationCard(mitigation: Mitigation) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "Completed",
-                        tint = PrivacyAlertColors.Success,
+                        tint = AppColors.Success,
                     )
                     Spacer(modifier = Modifier.width(Spacing.sm))
                 }

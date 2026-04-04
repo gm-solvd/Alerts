@@ -9,4 +9,6 @@ interface TokenStorage {
     suspend fun getRefreshToken(): String?
     suspend fun clearTokens()
     fun hasTokens(): Flow<Boolean>
+    suspend fun saveEmail(email: String)
+    suspend fun getEmail(): String?
 }

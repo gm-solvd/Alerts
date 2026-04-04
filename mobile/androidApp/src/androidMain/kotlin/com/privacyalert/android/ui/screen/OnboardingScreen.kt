@@ -37,7 +37,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.privacyalert.android.ui.theme.PrivacyAlertColors
+import com.privacyalert.android.ui.theme.AppColors
 import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 import com.privacyalert.android.ui.theme.Spacing
 import kotlinx.coroutines.launch
@@ -208,7 +208,7 @@ private fun PageIndicator(
 @Composable
 private fun EmailIllustration() {
     val primary = MaterialTheme.colorScheme.primary
-    val secondary = PrivacyAlertColors.Secondary
+    val secondary = AppColors.Secondary
     val surface = MaterialTheme.colorScheme.surfaceVariant
 
     Canvas(modifier = Modifier.size(160.dp)) {
@@ -277,7 +277,7 @@ private fun DrawScope.drawEmailIllustration(
 @Composable
 private fun PasswordIllustration() {
     val primary = MaterialTheme.colorScheme.primary
-    val accent = PrivacyAlertColors.AccentWarm
+    val accent = AppColors.Warning
     val surface = MaterialTheme.colorScheme.surfaceVariant
 
     Canvas(modifier = Modifier.size(160.dp)) {
@@ -357,7 +357,7 @@ private fun DrawScope.drawPasswordIllustration(
 @Composable
 private fun GetStartedIllustration() {
     val primary = MaterialTheme.colorScheme.primary
-    val success = PrivacyAlertColors.Success
+    val success = AppColors.Success
     val surface = MaterialTheme.colorScheme.surfaceVariant
 
     Canvas(modifier = Modifier.size(160.dp)) {

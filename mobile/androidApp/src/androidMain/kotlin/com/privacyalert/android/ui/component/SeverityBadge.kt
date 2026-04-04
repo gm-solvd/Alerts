@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.privacyalert.android.ui.theme.ComponentSize
-import com.privacyalert.android.ui.theme.PrivacyAlertColors
+import com.privacyalert.android.ui.theme.AppColors
 import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 import com.privacyalert.android.ui.theme.Spacing
 import com.privacyalert.domain.model.Severity
@@ -45,9 +45,9 @@ fun SeverityBadge(
 @Composable
 private fun severityColors(severity: Severity): Pair<Color, Color> = when (severity) {
     Severity.CRITICAL -> MaterialTheme.colorScheme.error to MaterialTheme.colorScheme.onError
-    Severity.HIGH -> PrivacyAlertColors.Primary to Color.White
-    Severity.MEDIUM -> PrivacyAlertColors.AccentWarm to Color.Black
-    Severity.LOW -> PrivacyAlertColors.Success to Color.White
+    Severity.HIGH -> AppColors.SeverityHigh to Color.White
+    Severity.MEDIUM -> AppColors.SeverityMedium to Color.Black
+    Severity.LOW -> AppColors.SeverityLow to Color.White
 }
 
 @Preview(showBackground = true)

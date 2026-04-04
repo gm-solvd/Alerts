@@ -5,123 +5,148 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
-// Core palette — Ruuster-inspired deep navy + warm gradient accents
-object PrivacyAlertColors {
-    // Backgrounds
-    val DeepNavy = Color(0xFF0F1729)
-    val NavySurface = Color(0xFF1A2332)
-    val NavySurfaceVariant = Color(0xFF243044)
+/**
+ * Swiss-clean design palette derived from the Pencil design system.
+ *
+ * Light mode: white backgrounds, blue (#2563EB) primary.
+ * Dark mode: slate backgrounds, lighter blue (#3B82F6) primary.
+ */
+object AppColors {
+    // Primary — Blue
+    val BluePrimary = Color(0xFF2563EB)
+    val BluePrimaryDark = Color(0xFF3B82F6)
+    val BluePrimaryContainer = Color(0xFFDBEAFE)
+    val BluePrimaryContainerDark = Color(0xFF1E3A5F)
+    val OnBluePrimary = Color(0xFFFFFFFF)
+    val OnBluePrimaryContainer = Color(0xFF1E40AF)
+    val OnBluePrimaryContainerDark = Color(0xFFBFDBFE)
 
-    // Primary — Orange
-    val Primary = Color(0xFFF97316)
-    val PrimaryContainer = Color(0xFF3D1D00)
-    val OnPrimary = Color(0xFFFFFFFF)
-    val OnPrimaryContainer = Color(0xFFFFB86C)
-
-    // Secondary — Indigo
-    val Secondary = Color(0xFF5B6ABF)
-    val SecondaryContainer = Color(0xFF1E2254)
+    // Secondary — Slate
+    val Secondary = Color(0xFF64748B)
+    val SecondaryDark = Color(0xFF94A3B8)
+    val SecondaryContainer = Color(0xFFF1F5F9)
+    val SecondaryContainerDark = Color(0xFF334155)
     val OnSecondary = Color(0xFFFFFFFF)
-    val OnSecondaryContainer = Color(0xFFB8C1FF)
+    val OnSecondaryContainer = Color(0xFF1E293B)
+    val OnSecondaryContainerDark = Color(0xFFE2E8F0)
 
-    // Tertiary — Coral
-    val Tertiary = Color(0xFFE84B6A)
-    val TertiaryContainer = Color(0xFF3D0F1B)
+    // Tertiary — Violet
+    val Tertiary = Color(0xFF7C3AED)
+    val TertiaryDark = Color(0xFFA78BFA)
+    val TertiaryContainer = Color(0xFFEDE9FE)
+    val TertiaryContainerDark = Color(0xFF3B1D6E)
     val OnTertiary = Color(0xFFFFFFFF)
-    val OnTertiaryContainer = Color(0xFFFFB3C1)
+    val OnTertiaryContainer = Color(0xFF4C1D95)
+    val OnTertiaryContainerDark = Color(0xFFDDD6FE)
 
-    // Accent
-    val AccentWarm = Color(0xFFFBBF24)
-
-    // Semantic
-    val Success = Color(0xFF4CAF50)
-
-    // Error
-    val Error = Color(0xFFF44336)
-    val ErrorContainer = Color(0xFF3D0E0E)
+    // Error — Red
+    val Error = Color(0xFFEF4444)
+    val ErrorDark = Color(0xFFFCA5A5)
+    val ErrorContainer = Color(0xFFFEE2E2)
+    val ErrorContainerDark = Color(0xFF7F1D1D)
     val OnError = Color(0xFFFFFFFF)
-    val OnErrorContainer = Color(0xFFFFB4AB)
+    val OnErrorContainer = Color(0xFF991B1B)
+    val OnErrorContainerDark = Color(0xFFFECACA)
 
-    // Neutrals — Dark
-    val OnBackground = Color(0xFFE8ECF2)
-    val OnSurface = Color(0xFFE8ECF2)
-    val OnSurfaceVariant = Color(0xFF8E95A3)
-    val Outline = Color(0xFF3A4255)
-    val OutlineVariant = Color(0xFF2A3140)
-    val InverseSurface = Color(0xFFE8ECF2)
-    val InverseOnSurface = Color(0xFF0F1729)
-    val InversePrimary = Color(0xFFBB5A0F)
-    val Scrim = Color(0xFF000000)
+    // Semantic — used directly in components
+    val Success = Color(0xFF16A34A)
+    val SuccessDark = Color(0xFF4ADE80)
+    val Warning = Color(0xFFF59E0B)
+    val WarningDark = Color(0xFFFBBF24)
+    val FixGreen = Color(0xFF16A34A)
 
-    // Neutrals — Light
-    val LightBackground = Color(0xFFFAFBFE)
+    // Severity mapping
+    val SeverityCritical = Error
+    val SeverityHigh = Color(0xFFF97316)  // orange
+    val SeverityMedium = Warning
+    val SeverityLow = Color(0xFF3B82F6)   // blue
+    val SeverityInfo = Secondary
+
+    // Light neutrals
+    val LightBackground = Color(0xFFFFFFFF)
     val LightSurface = Color(0xFFFFFFFF)
-    val LightSurfaceVariant = Color(0xFFE8ECF2)
-    val LightOnBackground = Color(0xFF0F1729)
-    val LightOnSurface = Color(0xFF0F1729)
-    val LightOnSurfaceVariant = Color(0xFF4A5568)
-    val LightOutline = Color(0xFFCBD2DE)
+    val LightSurfaceVariant = Color(0xFFF1F5F9)
+    val LightOnBackground = Color(0xFF0F172A)
+    val LightOnSurface = Color(0xFF0F172A)
+    val LightOnSurfaceVariant = Color(0xFF64748B)
+    val LightOutline = Color(0xFFCBD5E1)
     val LightOutlineVariant = Color(0xFFE2E8F0)
+    val LightInverseSurface = Color(0xFF1E293B)
+    val LightInverseOnSurface = Color(0xFFF1F5F9)
+
+    // Dark neutrals
+    val DarkBackground = Color(0xFF0F172A)
+    val DarkSurface = Color(0xFF1E293B)
+    val DarkSurfaceVariant = Color(0xFF334155)
+    val DarkOnBackground = Color(0xFFF1F5F9)
+    val DarkOnSurface = Color(0xFFF1F5F9)
+    val DarkOnSurfaceVariant = Color(0xFF94A3B8)
+    val DarkOutline = Color(0xFF475569)
+    val DarkOutlineVariant = Color(0xFF334155)
+    val DarkInverseSurface = Color(0xFFF1F5F9)
+    val DarkInverseOnSurface = Color(0xFF0F172A)
+
+    val Scrim = Color(0xFF000000)
 }
 
-val DarkColorScheme: ColorScheme = darkColorScheme(
-    primary = PrivacyAlertColors.Primary,
-    onPrimary = PrivacyAlertColors.OnPrimary,
-    primaryContainer = PrivacyAlertColors.PrimaryContainer,
-    onPrimaryContainer = PrivacyAlertColors.OnPrimaryContainer,
-    secondary = PrivacyAlertColors.Secondary,
-    onSecondary = PrivacyAlertColors.OnSecondary,
-    secondaryContainer = PrivacyAlertColors.SecondaryContainer,
-    onSecondaryContainer = PrivacyAlertColors.OnSecondaryContainer,
-    tertiary = PrivacyAlertColors.Tertiary,
-    onTertiary = PrivacyAlertColors.OnTertiary,
-    tertiaryContainer = PrivacyAlertColors.TertiaryContainer,
-    onTertiaryContainer = PrivacyAlertColors.OnTertiaryContainer,
-    error = PrivacyAlertColors.Error,
-    onError = PrivacyAlertColors.OnError,
-    errorContainer = PrivacyAlertColors.ErrorContainer,
-    onErrorContainer = PrivacyAlertColors.OnErrorContainer,
-    background = PrivacyAlertColors.DeepNavy,
-    onBackground = PrivacyAlertColors.OnBackground,
-    surface = PrivacyAlertColors.NavySurface,
-    onSurface = PrivacyAlertColors.OnSurface,
-    surfaceVariant = PrivacyAlertColors.NavySurfaceVariant,
-    onSurfaceVariant = PrivacyAlertColors.OnSurfaceVariant,
-    outline = PrivacyAlertColors.Outline,
-    outlineVariant = PrivacyAlertColors.OutlineVariant,
-    inverseSurface = PrivacyAlertColors.InverseSurface,
-    inverseOnSurface = PrivacyAlertColors.InverseOnSurface,
-    inversePrimary = PrivacyAlertColors.InversePrimary,
-    scrim = PrivacyAlertColors.Scrim,
+val LightColorScheme: ColorScheme = lightColorScheme(
+    primary = AppColors.BluePrimary,
+    onPrimary = AppColors.OnBluePrimary,
+    primaryContainer = AppColors.BluePrimaryContainer,
+    onPrimaryContainer = AppColors.OnBluePrimaryContainer,
+    secondary = AppColors.Secondary,
+    onSecondary = AppColors.OnSecondary,
+    secondaryContainer = AppColors.SecondaryContainer,
+    onSecondaryContainer = AppColors.OnSecondaryContainer,
+    tertiary = AppColors.Tertiary,
+    onTertiary = AppColors.OnTertiary,
+    tertiaryContainer = AppColors.TertiaryContainer,
+    onTertiaryContainer = AppColors.OnTertiaryContainer,
+    error = AppColors.Error,
+    onError = AppColors.OnError,
+    errorContainer = AppColors.ErrorContainer,
+    onErrorContainer = AppColors.OnErrorContainer,
+    background = AppColors.LightBackground,
+    onBackground = AppColors.LightOnBackground,
+    surface = AppColors.LightSurface,
+    onSurface = AppColors.LightOnSurface,
+    surfaceVariant = AppColors.LightSurfaceVariant,
+    onSurfaceVariant = AppColors.LightOnSurfaceVariant,
+    outline = AppColors.LightOutline,
+    outlineVariant = AppColors.LightOutlineVariant,
+    inverseSurface = AppColors.LightInverseSurface,
+    inverseOnSurface = AppColors.LightInverseOnSurface,
+    inversePrimary = AppColors.BluePrimaryDark,
+    scrim = AppColors.Scrim,
 )
 
-val LightColorScheme: ColorScheme = lightColorScheme(
-    primary = PrivacyAlertColors.Primary,
-    onPrimary = PrivacyAlertColors.OnPrimary,
-    primaryContainer = Color(0xFFFFDCC2),
-    onPrimaryContainer = Color(0xFF3D1D00),
-    secondary = PrivacyAlertColors.Secondary,
-    onSecondary = PrivacyAlertColors.OnSecondary,
-    secondaryContainer = Color(0xFFDDE1FF),
-    onSecondaryContainer = Color(0xFF1E2254),
-    tertiary = PrivacyAlertColors.Tertiary,
-    onTertiary = PrivacyAlertColors.OnTertiary,
-    tertiaryContainer = Color(0xFFFFD9DF),
-    onTertiaryContainer = Color(0xFF3D0F1B),
-    error = PrivacyAlertColors.Error,
-    onError = PrivacyAlertColors.OnError,
-    errorContainer = Color(0xFFFFDAD6),
-    onErrorContainer = Color(0xFF410002),
-    background = PrivacyAlertColors.LightBackground,
-    onBackground = PrivacyAlertColors.LightOnBackground,
-    surface = PrivacyAlertColors.LightSurface,
-    onSurface = PrivacyAlertColors.LightOnSurface,
-    surfaceVariant = PrivacyAlertColors.LightSurfaceVariant,
-    onSurfaceVariant = PrivacyAlertColors.LightOnSurfaceVariant,
-    outline = PrivacyAlertColors.LightOutline,
-    outlineVariant = PrivacyAlertColors.LightOutlineVariant,
-    inverseSurface = PrivacyAlertColors.DeepNavy,
-    inverseOnSurface = PrivacyAlertColors.OnBackground,
-    inversePrimary = PrivacyAlertColors.OnPrimaryContainer,
-    scrim = PrivacyAlertColors.Scrim,
+val DarkColorScheme: ColorScheme = darkColorScheme(
+    primary = AppColors.BluePrimaryDark,
+    onPrimary = AppColors.OnBluePrimary,
+    primaryContainer = AppColors.BluePrimaryContainerDark,
+    onPrimaryContainer = AppColors.OnBluePrimaryContainerDark,
+    secondary = AppColors.SecondaryDark,
+    onSecondary = AppColors.OnSecondary,
+    secondaryContainer = AppColors.SecondaryContainerDark,
+    onSecondaryContainer = AppColors.OnSecondaryContainerDark,
+    tertiary = AppColors.TertiaryDark,
+    onTertiary = AppColors.OnTertiary,
+    tertiaryContainer = AppColors.TertiaryContainerDark,
+    onTertiaryContainer = AppColors.OnTertiaryContainerDark,
+    error = AppColors.ErrorDark,
+    onError = AppColors.OnError,
+    errorContainer = AppColors.ErrorContainerDark,
+    onErrorContainer = AppColors.OnErrorContainerDark,
+    background = AppColors.DarkBackground,
+    onBackground = AppColors.DarkOnBackground,
+    surface = AppColors.DarkSurface,
+    onSurface = AppColors.DarkOnSurface,
+    surfaceVariant = AppColors.DarkSurfaceVariant,
+    onSurfaceVariant = AppColors.DarkOnSurfaceVariant,
+    outline = AppColors.DarkOutline,
+    outlineVariant = AppColors.DarkOutlineVariant,
+    inverseSurface = AppColors.DarkInverseSurface,
+    inverseOnSurface = AppColors.DarkInverseOnSurface,
+    inversePrimary = AppColors.BluePrimary,
+    scrim = AppColors.Scrim,
 )
