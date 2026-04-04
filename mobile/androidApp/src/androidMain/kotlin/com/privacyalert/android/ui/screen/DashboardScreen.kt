@@ -43,16 +43,18 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import androidx.compose.ui.tooling.preview.Preview
+import com.privacyalert.android.ui.component.ProgressCard
 import com.privacyalert.android.ui.component.ScoreGauge
+import com.privacyalert.android.ui.component.SectionHeader
 import com.privacyalert.android.ui.component.SeverityBadge
 import com.privacyalert.android.ui.preview.PreviewData
 import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 import com.privacyalert.android.ui.theme.Spacing
 import com.privacyalert.android.ui.navigation.AlertsTab
-import com.privacyalert.android.ui.navigation.FixItTab
-import com.privacyalert.android.ui.navigation.ScanTab
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.presentation.viewmodel.AuthViewModel
+import com.privacyalert.android.ui.theme.AppColors
+import com.privacyalert.presentation.viewmodel.ActionState
 import com.privacyalert.presentation.viewmodel.DashboardUiState
 import com.privacyalert.presentation.viewmodel.DashboardViewModel
 
@@ -72,8 +74,9 @@ class DashboardScreen : Screen {
             onLogout = { authVm.logout() },
             onViewAllAlerts = { tabNavigator.current = AlertsTab },
             onAlertClick = { alert -> navigator.push(AlertDetailScreen(alert.id)) },
-            onScanNow = { tabNavigator.current = ScanTab },
-            onFixIt = { tabNavigator.current = FixItTab },
+            onScanNow = { dashboardVm.startScan() },
+            onFixIt = { dashboardVm.startFixAll() },
+            onDismissAction = { dashboardVm.dismissAction() },
         )
     }
 }
@@ -88,6 +91,7 @@ private fun DashboardContent(
     onAlertClick: (Alert) -> Unit,
     onScanNow: () -> Unit,
     onFixIt: () -> Unit,
+    onDismissAction: () -> Unit = {},
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -153,43 +157,119 @@ private fun DashboardContent(
 
                         Spacer(modifier = Modifier.height(Spacing.md))
 
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-                        ) {
-                            FilledTonalButton(onClick = onScanNow) {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = null,
+                        when (uiState.actionState) {
+                            is ActionState.Scanning -> {
+                                ProgressCard(
+                                    icon = Icons.Default.Search,
+                                    title = "Scanning...",
+                                    containerColor = AppColors.BluePrimary,
                                 )
-                                Spacer(modifier = Modifier.width(Spacing.xs))
-                                Text("Run Scan")
                             }
-                            FilledTonalButton(onClick = onFixIt) {
-                                Icon(
-                                    imageVector = Icons.Default.Build,
-                                    contentDescription = null,
+
+                            is ActionState.Fixing -> {
+                                ProgressCard(
+                                    icon = Icons.Default.Build,
+                                    title = "Fixing...",
+                                    containerColor = AppColors.FixGreen,
                                 )
-                                Spacer(modifier = Modifier.width(Spacing.xs))
-                                Text("Fix It")
+                            }
+
+                            is ActionState.ScanComplete -> {
+                                val scanResult = uiState.actionState as ActionState.ScanComplete
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    ),
+                                ) {
+                                    Column(modifier = Modifier.padding(Spacing.md)) {
+                                        Text(
+                                            text = "Scan complete — ${scanResult.newAlerts} new alerts found",
+                                            style = MaterialTheme.typography.titleSmall,
+                                        )
+                                        Spacer(modifier = Modifier.height(Spacing.sm))
+                                        Button(onClick = onDismissAction) {
+                                            Text("Done")
+                                        }
+                                    }
+                                }
+                            }
+
+                            is ActionState.FixComplete -> {
+                                val fixResult = uiState.actionState as ActionState.FixComplete
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    ),
+                                ) {
+                                    Column(modifier = Modifier.padding(Spacing.md)) {
+                                        Text(
+                                            text = "Fix complete — ${fixResult.resolvedCount} mitigations resolved",
+                                            style = MaterialTheme.typography.titleSmall,
+                                        )
+                                        Spacer(modifier = Modifier.height(Spacing.sm))
+                                        Button(onClick = onDismissAction) {
+                                            Text("Done")
+                                        }
+                                    }
+                                }
+                            }
+
+                            is ActionState.ActionError -> {
+                                val actionError = uiState.actionState as ActionState.ActionError
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    ),
+                                ) {
+                                    Column(modifier = Modifier.padding(Spacing.md)) {
+                                        Text(
+                                            text = actionError.message,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onErrorContainer,
+                                        )
+                                        Spacer(modifier = Modifier.height(Spacing.sm))
+                                        Button(onClick = onDismissAction) {
+                                            Text("Dismiss")
+                                        }
+                                    }
+                                }
+                            }
+
+                            is ActionState.Idle -> {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                                ) {
+                                    FilledTonalButton(onClick = onScanNow) {
+                                        Icon(
+                                            imageVector = Icons.Default.Search,
+                                            contentDescription = null,
+                                        )
+                                        Spacer(modifier = Modifier.width(Spacing.xs))
+                                        Text("Run Scan")
+                                    }
+                                    FilledTonalButton(onClick = onFixIt) {
+                                        Icon(
+                                            imageVector = Icons.Default.Build,
+                                            contentDescription = null,
+                                        )
+                                        Spacer(modifier = Modifier.width(Spacing.xs))
+                                        Text("Fix It")
+                                    }
+                                }
                             }
                         }
 
                         Spacer(modifier = Modifier.height(Spacing.xl))
 
                         if (uiState.topAlerts.isNotEmpty()) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    text = "Recent Alerts",
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                                TextButton(onClick = onViewAllAlerts) {
-                                    Text("View All")
-                                }
-                            }
+                            SectionHeader(
+                                title = "Recent Alerts",
+                                actionText = "View All",
+                                onAction = onViewAllAlerts,
+                            )
                             Spacer(modifier = Modifier.height(Spacing.sm))
                             uiState.topAlerts.forEach { alert ->
                                 AlertSummaryCard(
@@ -266,6 +346,38 @@ private fun DashboardContentSuccessPreview() {
                 score = PreviewData.scoreHigh,
                 topAlerts = PreviewData.alertList.take(3),
             ),
+            onRefresh = {},
+            onLogout = {},
+            onViewAllAlerts = {},
+            onAlertClick = {},
+            onScanNow = {},
+            onFixIt = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DashboardContentScanningPreview() {
+    PrivacyAlertTheme {
+        DashboardContent(
+            uiState = PreviewData.dashboardScanning,
+            onRefresh = {},
+            onLogout = {},
+            onViewAllAlerts = {},
+            onAlertClick = {},
+            onScanNow = {},
+            onFixIt = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DashboardContentFixingPreview() {
+    PrivacyAlertTheme {
+        DashboardContent(
+            uiState = PreviewData.dashboardFixing,
             onRefresh = {},
             onLogout = {},
             onViewAllAlerts = {},

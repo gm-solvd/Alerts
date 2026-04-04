@@ -5,6 +5,8 @@ import com.privacyalert.domain.model.Mitigation
 import com.privacyalert.domain.model.ScoreRecord
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.model.ThreatCategory
+import com.privacyalert.presentation.viewmodel.ActionState
+import com.privacyalert.presentation.viewmodel.DashboardUiState
 import kotlinx.datetime.Instant
 
 object PreviewData {
@@ -100,5 +102,42 @@ object PreviewData {
         id = "score-2",
         score = 32,
         recordedAt = now,
+    )
+
+    // Dashboard state previews
+    val dashboardIdle = DashboardUiState.Success(
+        score = scoreHigh,
+        topAlerts = alertList.take(3),
+        actionState = ActionState.Idle,
+    )
+
+    val dashboardScanning = DashboardUiState.Success(
+        score = scoreHigh,
+        topAlerts = alertList.take(3),
+        actionState = ActionState.Scanning,
+    )
+
+    val dashboardFixing = DashboardUiState.Success(
+        score = scoreHigh,
+        topAlerts = alertList.take(3),
+        actionState = ActionState.Fixing,
+    )
+
+    val dashboardScanComplete = DashboardUiState.Success(
+        score = scoreHigh,
+        topAlerts = alertList.take(3),
+        actionState = ActionState.ScanComplete(newAlerts = 3),
+    )
+
+    val dashboardFixComplete = DashboardUiState.Success(
+        score = scoreHigh,
+        topAlerts = alertList.take(3),
+        actionState = ActionState.FixComplete(resolvedCount = 5),
+    )
+
+    val dashboardEmpty = DashboardUiState.Success(
+        score = ScoreRecord(id = "score-perfect", score = 100, recordedAt = now),
+        topAlerts = emptyList(),
+        actionState = ActionState.Idle,
     )
 }

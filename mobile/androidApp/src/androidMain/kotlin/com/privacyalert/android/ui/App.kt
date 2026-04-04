@@ -30,8 +30,6 @@ import cafe.adriel.voyager.transitions.SlideTransition
 import com.privacyalert.android.preferences.OnboardingPreferences
 import com.privacyalert.android.ui.navigation.AlertsTab
 import com.privacyalert.android.ui.navigation.DashboardTab
-import com.privacyalert.android.ui.navigation.FixItTab
-import com.privacyalert.android.ui.navigation.ScanTab
 import com.privacyalert.android.ui.screen.LoginScreen
 import com.privacyalert.android.ui.screen.OnboardingScreen
 import com.privacyalert.android.ui.screen.RegisterScreen
@@ -122,7 +120,7 @@ private fun MainContent() {
     }
 }
 
-private val tabs = listOf(DashboardTab, AlertsTab, ScanTab, FixItTab)
+private val tabs = listOf(DashboardTab, AlertsTab)
 
 @Composable
 private fun BottomNavBar() {

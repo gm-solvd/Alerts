@@ -36,4 +36,11 @@ class SqlDelightTokenStorage(
     }
 
     override fun hasTokens(): Flow<Boolean> = _hasTokens.asStateFlow()
+
+    override suspend fun saveEmail(email: String) {
+        db.privacyAlertQueries.upsertEmail(email)
+    }
+
+    override suspend fun getEmail(): String? =
+        db.privacyAlertQueries.getEmail().executeAsOneOrNull()?.email
 }
