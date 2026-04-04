@@ -175,6 +175,22 @@ private fun RegisterContent(
     }
 }
 
+/** Test-only entry point for RegisterContent. */
+@Composable
+fun RegisterContentForTest(
+    authState: AuthUiState,
+    onRegister: (String, String) -> Unit = { _, _ -> },
+    onNavigateToLogin: () -> Unit = {},
+    onClearError: () -> Unit = {},
+) {
+    RegisterContent(
+        authState = authState,
+        onRegister = onRegister,
+        onNavigateToLogin = onNavigateToLogin,
+        onClearError = onClearError,
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun RegisterContentIdlePreview() {
