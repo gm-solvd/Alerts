@@ -98,7 +98,7 @@ class PermissionAuditControllerTest(
     }
 
     @Test
-    fun `POST audit permissions returns 403 without authentication`() {
+    fun `POST audit permissions returns 401 without authentication`() {
         every { jwtProvider.validateAndExtractUserId(any()) } returns null
 
         mockMvc
@@ -111,7 +111,7 @@ class PermissionAuditControllerTest(
                         ),
                     )
             }.andExpect {
-                status { isForbidden() }
+                status { isUnauthorized() }
             }
     }
 }

@@ -160,7 +160,7 @@ class AlertIntegrationTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `list alerts returns 403 without authentication`() {
+    fun `list alerts returns 401 without authentication`() {
         val response =
             restTemplate.exchange(
                 "/api/v1/alerts",
@@ -169,6 +169,6 @@ class AlertIntegrationTest : BaseIntegrationTest() {
                 String::class.java,
             )
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 }

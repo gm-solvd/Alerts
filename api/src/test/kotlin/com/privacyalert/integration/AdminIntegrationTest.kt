@@ -199,13 +199,13 @@ class AdminIntegrationTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `admin endpoints return 403 with no token`() {
+    fun `admin endpoints return 401 with no token`() {
         val emptyHeaders =
             HttpHeaders().apply {
                 contentType = MediaType.APPLICATION_JSON
             }
         val response = get("/api/v1/admin/users", emptyHeaders, String::class.java)
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 }

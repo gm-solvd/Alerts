@@ -85,7 +85,7 @@ class ScoreIntegrationTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `get score returns 403 without authentication`() {
+    fun `get score returns 401 without authentication`() {
         val response =
             restTemplate.exchange(
                 "/api/v1/score",
@@ -94,6 +94,6 @@ class ScoreIntegrationTest : BaseIntegrationTest() {
                 String::class.java,
             )
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 }

@@ -87,13 +87,13 @@ class AlertControllerTest(
     }
 
     @Test
-    fun `GET alerts returns 403 without authentication`() {
+    fun `GET alerts returns 401 without authentication`() {
         every { jwtProvider.validateAndExtractUserId(any()) } returns null
 
         mockMvc
             .get("/api/v1/alerts")
             .andExpect {
-                status { isForbidden() }
+                status { isUnauthorized() }
             }
     }
 

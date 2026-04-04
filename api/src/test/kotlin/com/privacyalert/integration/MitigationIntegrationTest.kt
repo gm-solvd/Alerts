@@ -98,7 +98,7 @@ class MitigationIntegrationTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `list mitigations returns 403 without auth`() {
+    fun `list mitigations returns 401 without auth`() {
         val response =
             get(
                 "/api/v1/mitigations",
@@ -106,6 +106,6 @@ class MitigationIntegrationTest : BaseIntegrationTest() {
                 String::class.java,
             )
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
     }
 }
