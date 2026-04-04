@@ -3,8 +3,18 @@ package com.privacyalert.data.remote
 import android.util.Log
 import io.ktor.client.plugins.logging.Logger
 
+private const val MAX_LOG_LENGTH = 4000
+
 actual val httpLogger: Logger = object : Logger {
     override fun log(message: String) {
-        message.lines().forEach { line -> Log.d("Ktor", line) }
+        message.lines().forEach { line ->
+            if (line.length <= MAX_LOG_LENGTH) {
+                Log.d("Ktor", line)
+            } else {
+                line.chunked(MAX_LOG_LENGTH).forEach { chunk ->
+                    Log.d("Ktor", chunk)
+                }
+            }
+        }
     }
 }
