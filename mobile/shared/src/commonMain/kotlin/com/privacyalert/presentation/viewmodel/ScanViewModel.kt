@@ -4,6 +4,7 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.usecase.scan.FullScanUseCase
+import com.privacyalert.presentation.util.toUserMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,7 +30,7 @@ class ScanViewModel(
             _uiState.value = ScanUiState.Scanning
             fullScanUseCase(email).first().fold(
                 onSuccess = { _uiState.value = ScanUiState.Success(it) },
-                onFailure = { _uiState.value = ScanUiState.Error(it.message ?: "Scan failed") },
+                onFailure = { _uiState.value = ScanUiState.Error(it.toUserMessage()) },
             )
         }
     }

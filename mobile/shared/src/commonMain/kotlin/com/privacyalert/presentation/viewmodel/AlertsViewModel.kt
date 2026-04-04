@@ -5,6 +5,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.usecase.alert.GetAlertsUseCase
+import com.privacyalert.presentation.util.toUserMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -62,7 +63,7 @@ class AlertsViewModel(
                         )
                     },
                     onFailure = {
-                        _uiState.value = AlertsUiState.Error(it.message ?: "Failed to load alerts")
+                        _uiState.value = AlertsUiState.Error(it.toUserMessage())
                     },
                 )
             }

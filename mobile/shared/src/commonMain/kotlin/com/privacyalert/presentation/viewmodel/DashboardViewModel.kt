@@ -6,6 +6,7 @@ import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.model.ScoreRecord
 import com.privacyalert.domain.usecase.alert.GetAlertsUseCase
 import com.privacyalert.domain.usecase.score.GetScoreUseCase
+import com.privacyalert.presentation.util.toUserMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,7 +49,7 @@ class DashboardViewModel(
                     )
                 },
                 onFailure = {
-                    DashboardUiState.Error(it.message ?: "Failed to load dashboard")
+                    DashboardUiState.Error(it.toUserMessage())
                 },
             )
         }
