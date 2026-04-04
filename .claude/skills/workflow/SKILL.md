@@ -94,6 +94,8 @@ Before any planning, divide the feature into tasks:
 
 ## Step 5: Validation
 
+> **Config-only changes skip this step.** If every changed file is under `.claude/`, `rules/`, or is `CLAUDE.md` — skip compile, lint, and test entirely. Jump straight to Step 7.
+
 - Send notification:
   ```bash
   osascript -e 'display notification "Running validation pipeline..." with title "Claude Code" subtitle "Step 5: Validate" sound name "Glass"'

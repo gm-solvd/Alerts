@@ -29,6 +29,8 @@ This includes changes to:
 
 Branch naming: use `chore/rules-<description>` for rule/config changes.
 
+**Validation for config-only PRs**: if all changed files are under `.claude/`, `rules/`, or `CLAUDE.md` — **skip compile, lint, and test**. There is no Kotlin code to validate. Go straight from implementation to commit → push → PR → merge.
+
 > Rationale: behavior changes are configuration-as-code. They affect every future task and must be reviewed, versioned, and reversible just like application code.
 
 ### Terminology

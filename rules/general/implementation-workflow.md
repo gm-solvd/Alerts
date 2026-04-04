@@ -27,6 +27,8 @@ AI-assisted development workflow with explicit human checkpoints.
 - All changes visible in `git status` for your review
 
 ### 5. Validation
+
+> **Config-only PRs skip this step entirely.** If every changed file is under `.claude/`, `rules/`, or is `CLAUDE.md` — there is no Kotlin code to compile, lint, or test. Proceed directly to Step 7 (Atomic Commits).
 - AI compiles: `./gradlew compileKotlin`
 - AI auto-formats: `./gradlew ktlintFormat`
 - AI verifies lint: `./gradlew ktlintCheck` (manually fix any remaining issues)

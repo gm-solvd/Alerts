@@ -92,7 +92,7 @@ Each task becomes its own branch and PR. Related tasks use a parent/child branch
 2. **Branch Creation** — `git fetch origin && git checkout develop && git pull origin develop && git checkout -b <type>/<scope>-<description>`. **STOP** for approval.
 3. **Planning** — Create implementation plan with tasks split by workstream. **STOP** for approval.
 4. **Implementation** — Implement step by step. **NO COMMITS** yet.
-5. **Validation** — Run `compileKotlin`, `ktlintFormat`, `ktlintCheck`, `detekt` (mobile), `test`. Fix unused code. **STOP** to report results.
+5. **Validation** — Run `compileKotlin`, `ktlintFormat`, `ktlintCheck`, `detekt` (mobile), `test`. Fix unused code. **STOP** to report results. *(Skip entirely for config-only changes — `.claude/`, `rules/`, `CLAUDE.md`.)*
 6. **Human Review** — Show `git diff`, wait for user review.
 7. **Atomic Commits** — Group changes logically. Stage files by name (never `git add .`).
 8. **Push & Pull Request** — Push branch, draft PR, **STOP** for approval, then `gh pr create --base develop`. Return PR URL.
