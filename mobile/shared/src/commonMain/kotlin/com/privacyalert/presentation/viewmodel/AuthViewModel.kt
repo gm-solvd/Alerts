@@ -3,6 +3,7 @@ package com.privacyalert.presentation.viewmodel
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.privacyalert.domain.model.AppError
+import com.privacyalert.presentation.util.AppLogger
 import com.privacyalert.domain.usecase.auth.CheckAuthUseCase
 import com.privacyalert.domain.usecase.auth.LoginUseCase
 import com.privacyalert.domain.usecase.auth.LogoutUseCase
@@ -21,6 +22,8 @@ sealed class AuthUiState {
     data object Success : AuthUiState()
     data class Error(val message: String) : AuthUiState()
 }
+
+private const val TAG = "AuthViewModel"
 
 class AuthViewModel(
     private val registerUseCase: RegisterUseCase,
@@ -44,7 +47,10 @@ class AuthViewModel(
                     saveUserEmailUseCase(email)
                     _authState.value = AuthUiState.Success
                 },
-                onFailure = { _authState.value = AuthUiState.Error(it.toRegisterMessage()) },
+                onFailure = {
+                    AppLogger.e(TAG, "register() failed", it)
+                    _authState.value = AuthUiState.Error(it.toRegisterMessage())
+                },
             )
         }
     }
@@ -57,7 +63,10 @@ class AuthViewModel(
                     saveUserEmailUseCase(email)
                     _authState.value = AuthUiState.Success
                 },
-                onFailure = { _authState.value = AuthUiState.Error(it.toLoginMessage()) },
+                onFailure = {
+                    AppLogger.e(TAG, "login() failed", it)
+                    _authState.value = AuthUiState.Error(it.toLoginMessage())
+                },
             )
         }
     }
