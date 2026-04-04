@@ -2,12 +2,12 @@ package com.privacyalert.presentation.viewmodel
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.privacyalert.data.local.TokenStorage
 import com.privacyalert.domain.model.AppError
 import com.privacyalert.domain.usecase.auth.CheckAuthUseCase
 import com.privacyalert.domain.usecase.auth.LoginUseCase
 import com.privacyalert.domain.usecase.auth.LogoutUseCase
 import com.privacyalert.domain.usecase.auth.RegisterUseCase
+import com.privacyalert.domain.usecase.user.SaveUserEmailUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +27,7 @@ class AuthViewModel(
     private val loginUseCase: LoginUseCase,
     private val logoutUseCase: LogoutUseCase,
     checkAuthUseCase: CheckAuthUseCase,
-    private val tokenStorage: TokenStorage,
+    private val saveUserEmailUseCase: SaveUserEmailUseCase,
 ) : ScreenModel {
 
     val isAuthenticated: StateFlow<Boolean> = checkAuthUseCase()
@@ -41,7 +41,7 @@ class AuthViewModel(
             _authState.value = AuthUiState.Loading
             registerUseCase(email, password).fold(
                 onSuccess = {
-                    tokenStorage.saveEmail(email)
+                    saveUserEmailUseCase(email)
                     _authState.value = AuthUiState.Success
                 },
                 onFailure = { _authState.value = AuthUiState.Error(it.toRegisterMessage()) },
@@ -54,7 +54,7 @@ class AuthViewModel(
             _authState.value = AuthUiState.Loading
             loginUseCase(email, password).fold(
                 onSuccess = {
-                    tokenStorage.saveEmail(email)
+                    saveUserEmailUseCase(email)
                     _authState.value = AuthUiState.Success
                 },
                 onFailure = { _authState.value = AuthUiState.Error(it.toLoginMessage()) },

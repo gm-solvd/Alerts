@@ -18,12 +18,15 @@ import com.privacyalert.domain.repository.AuthRepository
 import com.privacyalert.domain.repository.MitigationRepository
 import com.privacyalert.domain.repository.ScanRepository
 import com.privacyalert.domain.repository.ScoreRepository
+import com.privacyalert.domain.repository.UserRepository
 import io.ktor.client.HttpClient
 import org.koin.dsl.module
 
 val dataModule = module {
-    // Token storage
-    single<TokenStorage> { SqlDelightTokenStorage(get()) }
+    // Token storage (also implements UserRepository)
+    single { SqlDelightTokenStorage(get()) }
+    single<TokenStorage> { get<SqlDelightTokenStorage>() }
+    single<UserRepository> { get<SqlDelightTokenStorage>() }
 
     // HTTP client
     single<HttpClient> { ApiClient.create(get()) }

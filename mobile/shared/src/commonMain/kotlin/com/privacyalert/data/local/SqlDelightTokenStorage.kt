@@ -2,13 +2,14 @@ package com.privacyalert.data.local
 
 import com.privacyalert.db.PrivacyAlertDb
 import com.privacyalert.domain.model.AuthTokens
+import com.privacyalert.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class SqlDelightTokenStorage(
     private val db: PrivacyAlertDb,
-) : TokenStorage {
+) : TokenStorage, UserRepository {
 
     private val _hasTokens = MutableStateFlow(false)
 
