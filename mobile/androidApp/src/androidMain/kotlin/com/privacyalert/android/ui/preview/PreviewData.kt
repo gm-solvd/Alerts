@@ -6,6 +6,8 @@ import com.privacyalert.domain.model.ScoreRecord
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.model.ThreatCategory
 import com.privacyalert.presentation.viewmodel.ActionState
+import com.privacyalert.presentation.viewmodel.AlertDetailUiState
+import com.privacyalert.presentation.viewmodel.AlertsUiState
 import com.privacyalert.presentation.viewmodel.DashboardUiState
 import kotlinx.datetime.Instant
 
@@ -140,4 +142,9 @@ object PreviewData {
         topAlerts = emptyList(),
         actionState = ActionState.Idle,
     )
+
+    // SessionExpired state previews
+    val dashboardSessionExpired = DashboardUiState.SessionExpired
+    val alertsSessionExpired = AlertsUiState.SessionExpired
+    val alertDetailSessionExpired = AlertDetailUiState.SessionExpired
 }

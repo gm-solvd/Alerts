@@ -119,6 +119,19 @@ private fun DashboardContent(
                 }
             }
 
+            is DashboardUiState.SessionExpired -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "Session expired. Redirecting to login...",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
             is DashboardUiState.Error -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),

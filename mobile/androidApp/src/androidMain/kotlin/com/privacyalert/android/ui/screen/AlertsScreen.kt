@@ -91,6 +91,19 @@ private fun AlertsContent(
                 }
             }
 
+            is AlertsUiState.SessionExpired -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "Session expired. Redirecting to login...",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
             is AlertsUiState.Error -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),

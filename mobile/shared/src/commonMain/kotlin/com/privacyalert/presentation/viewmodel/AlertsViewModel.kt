@@ -3,14 +3,17 @@ package com.privacyalert.presentation.viewmodel
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.privacyalert.domain.model.Alert
+import com.privacyalert.domain.model.AppError
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.usecase.alert.GetAlertsUseCase
+import com.privacyalert.domain.usecase.auth.LogoutUseCase
 import com.privacyalert.presentation.util.AppLogger
 import com.privacyalert.presentation.util.toUserMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -24,6 +27,7 @@ sealed class AlertsUiState {
         val selectedSeverity: Severity? = null,
     ) : AlertsUiState()
     data class Error(val message: String) : AlertsUiState()
+    data object SessionExpired : AlertsUiState()
 }
 
 private const val TAG = "AlertsViewModel"
@@ -31,6 +35,7 @@ private const val TAG = "AlertsViewModel"
 @OptIn(ExperimentalCoroutinesApi::class)
 class AlertsViewModel(
     private val getAlertsUseCase: GetAlertsUseCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : ScreenModel {
 
     private val _uiState = MutableStateFlow<AlertsUiState>(AlertsUiState.Loading)
@@ -67,7 +72,12 @@ class AlertsViewModel(
                     },
                     onFailure = {
                         AppLogger.e(TAG, "loadAlerts() failed", it)
-                        _uiState.value = AlertsUiState.Error(it.toUserMessage())
+                        if (it is AppError.Unauthorized) {
+                            _uiState.value = AlertsUiState.SessionExpired
+                            screenModelScope.launch { logoutUseCase() }
+                        } else {
+                            _uiState.value = AlertsUiState.Error(it.toUserMessage())
+                        }
                     },
                 )
             }

@@ -3,8 +3,10 @@ package com.privacyalert.presentation.viewmodel
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.privacyalert.domain.model.Alert
+import com.privacyalert.domain.model.AppError
 import com.privacyalert.domain.model.ScoreRecord
 import com.privacyalert.domain.usecase.alert.GetAlertsUseCase
+import com.privacyalert.domain.usecase.auth.LogoutUseCase
 import com.privacyalert.domain.usecase.mitigation.CompleteMitigationUseCase
 import com.privacyalert.domain.usecase.mitigation.GetMitigationsUseCase
 import com.privacyalert.domain.usecase.scan.FullScanUseCase
@@ -41,6 +43,7 @@ sealed class DashboardUiState {
         val actionState: ActionState = ActionState.Idle,
     ) : DashboardUiState()
     data class Error(val message: String) : DashboardUiState()
+    data object SessionExpired : DashboardUiState()
 }
 
 private const val TAG = "DashboardViewModel"
@@ -52,6 +55,7 @@ class DashboardViewModel(
     private val getMitigationsUseCase: GetMitigationsUseCase,
     private val completeMitigationUseCase: CompleteMitigationUseCase,
     private val getUserEmailUseCase: GetUserEmailUseCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : ScreenModel {
 
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
@@ -76,7 +80,12 @@ class DashboardViewModel(
                 },
                 onFailure = {
                     AppLogger.e(TAG, "load() failed", it)
-                    DashboardUiState.Error(it.toUserMessage())
+                    if (it is AppError.Unauthorized) {
+                        handleSessionExpired()
+                        DashboardUiState.SessionExpired
+                    } else {
+                        DashboardUiState.Error(it.toUserMessage())
+                    }
                 },
             )
         }
@@ -107,9 +116,13 @@ class DashboardViewModel(
                 },
                 onFailure = {
                     AppLogger.e(TAG, "startScan() failed", it)
-                    _uiState.value = current.copy(
-                        actionState = ActionState.ActionError(it.toUserMessage()),
-                    )
+                    if (it is AppError.Unauthorized) {
+                        handleSessionExpired()
+                    } else {
+                        _uiState.value = current.copy(
+                            actionState = ActionState.ActionError(it.toUserMessage()),
+                        )
+                    }
                 },
             )
         }
@@ -137,9 +150,13 @@ class DashboardViewModel(
                 },
                 onFailure = {
                     AppLogger.e(TAG, "startFixAll() failed", it)
-                    _uiState.value = current.copy(
-                        actionState = ActionState.ActionError(it.toUserMessage()),
-                    )
+                    if (it is AppError.Unauthorized) {
+                        handleSessionExpired()
+                    } else {
+                        _uiState.value = current.copy(
+                            actionState = ActionState.ActionError(it.toUserMessage()),
+                        )
+                    }
                 },
             )
         }
@@ -151,5 +168,10 @@ class DashboardViewModel(
             _uiState.value = current.copy(actionState = ActionState.Idle)
         }
         load()
+    }
+
+    private fun handleSessionExpired() {
+        _uiState.value = DashboardUiState.SessionExpired
+        screenModelScope.launch { logoutUseCase() }
     }
 }

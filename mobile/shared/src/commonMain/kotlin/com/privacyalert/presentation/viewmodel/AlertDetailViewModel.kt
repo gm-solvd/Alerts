@@ -3,10 +3,12 @@ package com.privacyalert.presentation.viewmodel
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.privacyalert.domain.model.Alert
+import com.privacyalert.domain.model.AppError
 import com.privacyalert.domain.model.Mitigation
 import com.privacyalert.presentation.util.AppLogger
 import com.privacyalert.domain.usecase.alert.GetAlertDetailUseCase
 import com.privacyalert.domain.usecase.alert.ResolveAlertUseCase
+import com.privacyalert.domain.usecase.auth.LogoutUseCase
 import com.privacyalert.domain.usecase.mitigation.GetMitigationsByAlertUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +25,7 @@ sealed class AlertDetailUiState {
         val mitigations: List<Mitigation>,
     ) : AlertDetailUiState()
     data class Error(val message: String) : AlertDetailUiState()
+    data object SessionExpired : AlertDetailUiState()
 }
 
 private const val TAG = "AlertDetailViewModel"
@@ -32,6 +35,7 @@ class AlertDetailViewModel(
     private val getAlertDetailUseCase: GetAlertDetailUseCase,
     private val resolveAlertUseCase: ResolveAlertUseCase,
     private val getMitigationsByAlertUseCase: GetMitigationsByAlertUseCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : ScreenModel {
 
     private val _uiState = MutableStateFlow<AlertDetailUiState>(AlertDetailUiState.Loading)
@@ -56,7 +60,12 @@ class AlertDetailViewModel(
                 },
                 onFailure = {
                     AppLogger.e(TAG, "load() failed for alertId=$alertId", it)
-                    AlertDetailUiState.Error(it.message ?: "Failed to load alert")
+                    if (it is AppError.Unauthorized) {
+                        handleSessionExpired()
+                        AlertDetailUiState.SessionExpired
+                    } else {
+                        AlertDetailUiState.Error(it.message ?: "Failed to load alert")
+                    }
                 },
             )
         }
@@ -70,8 +79,16 @@ class AlertDetailViewModel(
                 onSuccess = { load() },
                 onFailure = {
                     AppLogger.e(TAG, "resolve() failed for alertId=$alertId", it)
+                    if (it is AppError.Unauthorized) {
+                        handleSessionExpired()
+                    }
                 },
             )
         }
+    }
+
+    private fun handleSessionExpired() {
+        _uiState.value = AlertDetailUiState.SessionExpired
+        screenModelScope.launch { logoutUseCase() }
     }
 }

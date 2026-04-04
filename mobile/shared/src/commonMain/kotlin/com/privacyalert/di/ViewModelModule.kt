@@ -10,7 +10,7 @@ import org.koin.dsl.module
 val viewModelModule = module {
     factory { AuthViewModel(get(), get(), get(), get(), get()) }
     factory { OnboardingViewModel(get(), get()) }
-    factory { DashboardViewModel(get(), get(), get(), get(), get(), get()) }
-    factory { AlertsViewModel(get()) }
-    factory { params -> AlertDetailViewModel(params.get(), get(), get(), get()) }
+    factory { DashboardViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    factory { AlertsViewModel(get(), get()) }
+    factory { params -> AlertDetailViewModel(params.get(), get(), get(), get(), get()) }
 }

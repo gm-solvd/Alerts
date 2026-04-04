@@ -74,4 +74,14 @@ class AlertDetailScreenshotTest {
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/AlertDetail_Error.png")
     }
+
+    @Test
+    fun alertDetail_session_expired() {
+        composeTestRule.setContent {
+            PrivacyAlertTheme {
+                AlertDetailContentForTest(uiState = AlertDetailUiState.SessionExpired)
+            }
+        }
+        composeTestRule.onRoot().captureRoboImage("src/test/screenshots/AlertDetail_SessionExpired.png")
+    }
 }
