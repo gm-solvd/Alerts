@@ -5,6 +5,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.usecase.alert.GetAlertsUseCase
+import com.privacyalert.presentation.util.AppLogger
 import com.privacyalert.presentation.util.toUserMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +25,8 @@ sealed class AlertsUiState {
     ) : AlertsUiState()
     data class Error(val message: String) : AlertsUiState()
 }
+
+private const val TAG = "AlertsViewModel"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AlertsViewModel(
@@ -63,6 +66,7 @@ class AlertsViewModel(
                         )
                     },
                     onFailure = {
+                        AppLogger.e(TAG, "loadAlerts() failed", it)
                         _uiState.value = AlertsUiState.Error(it.toUserMessage())
                     },
                 )

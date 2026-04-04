@@ -4,6 +4,7 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.model.Mitigation
+import com.privacyalert.presentation.util.AppLogger
 import com.privacyalert.domain.usecase.alert.GetAlertDetailUseCase
 import com.privacyalert.domain.usecase.alert.ResolveAlertUseCase
 import com.privacyalert.domain.usecase.mitigation.GetMitigationsByAlertUseCase
@@ -23,6 +24,8 @@ sealed class AlertDetailUiState {
     ) : AlertDetailUiState()
     data class Error(val message: String) : AlertDetailUiState()
 }
+
+private const val TAG = "AlertDetailViewModel"
 
 class AlertDetailViewModel(
     private val alertId: String,
@@ -52,6 +55,7 @@ class AlertDetailViewModel(
                     )
                 },
                 onFailure = {
+                    AppLogger.e(TAG, "load() failed for alertId=$alertId", it)
                     AlertDetailUiState.Error(it.message ?: "Failed to load alert")
                 },
             )
@@ -64,7 +68,9 @@ class AlertDetailViewModel(
         screenModelScope.launch {
             resolveAlertUseCase(alertId).fold(
                 onSuccess = { load() },
-                onFailure = { /* Keep current state, could show snackbar */ },
+                onFailure = {
+                    AppLogger.e(TAG, "resolve() failed for alertId=$alertId", it)
+                },
             )
         }
     }

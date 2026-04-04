@@ -10,6 +10,7 @@ import com.privacyalert.domain.usecase.mitigation.GetMitigationsUseCase
 import com.privacyalert.domain.usecase.scan.FullScanUseCase
 import com.privacyalert.domain.usecase.score.GetScoreUseCase
 import com.privacyalert.domain.usecase.user.GetUserEmailUseCase
+import com.privacyalert.presentation.util.AppLogger
 import com.privacyalert.presentation.util.toUserMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,6 +43,8 @@ sealed class DashboardUiState {
     data class Error(val message: String) : DashboardUiState()
 }
 
+private const val TAG = "DashboardViewModel"
+
 class DashboardViewModel(
     private val getScoreUseCase: GetScoreUseCase,
     private val getAlertsUseCase: GetAlertsUseCase,
@@ -72,6 +75,7 @@ class DashboardViewModel(
                     )
                 },
                 onFailure = {
+                    AppLogger.e(TAG, "load() failed", it)
                     DashboardUiState.Error(it.toUserMessage())
                 },
             )
@@ -102,6 +106,7 @@ class DashboardViewModel(
                     )
                 },
                 onFailure = {
+                    AppLogger.e(TAG, "startScan() failed", it)
                     _uiState.value = current.copy(
                         actionState = ActionState.ActionError(it.toUserMessage()),
                     )
@@ -131,6 +136,7 @@ class DashboardViewModel(
                     )
                 },
                 onFailure = {
+                    AppLogger.e(TAG, "startFixAll() failed", it)
                     _uiState.value = current.copy(
                         actionState = ActionState.ActionError(it.toUserMessage()),
                     )

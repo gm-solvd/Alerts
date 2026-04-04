@@ -4,6 +4,7 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.usecase.auth.RegisterUseCase
+import com.privacyalert.presentation.util.AppLogger
 import com.privacyalert.domain.usecase.scan.FullScanUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,8 @@ data class OnboardingUiState(
     val scanResults: List<Alert>? = null,
     val error: String? = null,
 )
+
+private const val TAG = "OnboardingViewModel"
 
 class OnboardingViewModel(
     private val registerUseCase: RegisterUseCase,
@@ -84,6 +87,7 @@ class OnboardingViewModel(
                     runScan()
                 },
                 onFailure = { error ->
+                    AppLogger.e(TAG, "submitRegistration() failed", error)
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -101,6 +105,7 @@ class OnboardingViewModel(
                 _uiState.update { it.copy(isLoading = false, scanResults = alerts) }
             },
             onFailure = {
+                AppLogger.e(TAG, "runScan() failed", it)
                 _uiState.update { it.copy(isLoading = false, scanResults = emptyList()) }
             },
         )
