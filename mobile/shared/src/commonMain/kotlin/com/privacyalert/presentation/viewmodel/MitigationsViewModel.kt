@@ -5,6 +5,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.privacyalert.domain.model.Mitigation
 import com.privacyalert.domain.usecase.mitigation.CompleteMitigationUseCase
 import com.privacyalert.domain.usecase.mitigation.GetMitigationsUseCase
+import com.privacyalert.presentation.util.toUserMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,7 +47,7 @@ class MitigationsViewModel(
                         )
                     },
                     onFailure = {
-                        MitigationsUiState.Error(it.message ?: "Failed to load mitigations")
+                        MitigationsUiState.Error(it.toUserMessage())
                     },
                 )
             }
