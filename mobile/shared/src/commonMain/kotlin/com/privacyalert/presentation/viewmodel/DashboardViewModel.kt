@@ -2,7 +2,6 @@ package com.privacyalert.presentation.viewmodel
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.privacyalert.data.local.TokenStorage
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.model.ScoreRecord
 import com.privacyalert.domain.usecase.alert.GetAlertsUseCase
@@ -10,6 +9,7 @@ import com.privacyalert.domain.usecase.mitigation.CompleteMitigationUseCase
 import com.privacyalert.domain.usecase.mitigation.GetMitigationsUseCase
 import com.privacyalert.domain.usecase.scan.FullScanUseCase
 import com.privacyalert.domain.usecase.score.GetScoreUseCase
+import com.privacyalert.domain.usecase.user.GetUserEmailUseCase
 import com.privacyalert.presentation.util.toUserMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -48,7 +48,7 @@ class DashboardViewModel(
     private val fullScanUseCase: FullScanUseCase,
     private val getMitigationsUseCase: GetMitigationsUseCase,
     private val completeMitigationUseCase: CompleteMitigationUseCase,
-    private val tokenStorage: TokenStorage,
+    private val getUserEmailUseCase: GetUserEmailUseCase,
 ) : ScreenModel {
 
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
@@ -87,7 +87,7 @@ class DashboardViewModel(
         _uiState.value = current.copy(actionState = ActionState.Scanning)
 
         screenModelScope.launch {
-            val email = tokenStorage.getEmail()
+            val email = getUserEmailUseCase()
             if (email == null) {
                 _uiState.value = current.copy(
                     actionState = ActionState.ActionError("No email found. Please log in again."),

@@ -13,6 +13,8 @@ import com.privacyalert.domain.usecase.mitigation.GetMitigationsUseCase
 import com.privacyalert.domain.usecase.scan.FullScanUseCase
 import com.privacyalert.domain.usecase.score.GetScoreHistoryUseCase
 import com.privacyalert.domain.usecase.score.GetScoreUseCase
+import com.privacyalert.domain.usecase.user.GetUserEmailUseCase
+import com.privacyalert.domain.usecase.user.SaveUserEmailUseCase
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -29,4 +31,6 @@ val domainModule = module {
     factory { GetMitigationsUseCase(get()) }
     factory { GetMitigationsByAlertUseCase(get()) }
     factory { CompleteMitigationUseCase(get()) }
+    factory { SaveUserEmailUseCase(get()) }
+    factory { GetUserEmailUseCase(get()) }
 }
