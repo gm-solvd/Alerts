@@ -263,6 +263,22 @@ private fun MitigationCard(mitigation: Mitigation) {
     }
 }
 
+/** Test-only entry point for AlertDetailContent. */
+@Composable
+fun AlertDetailContentForTest(
+    uiState: AlertDetailUiState,
+    onResolve: () -> Unit = {},
+    onRetry: () -> Unit = {},
+    onBack: () -> Unit = {},
+) {
+    AlertDetailContent(
+        uiState = uiState,
+        onResolve = onResolve,
+        onRetry = onRetry,
+        onBack = onBack,
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun AlertDetailContentSuccessPreview() {

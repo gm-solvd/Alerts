@@ -151,6 +151,22 @@ private fun LoginContent(
     }
 }
 
+/** Test-only entry point for LoginContent. */
+@Composable
+fun LoginContentForTest(
+    authState: AuthUiState,
+    onLogin: (String, String) -> Unit = { _, _ -> },
+    onNavigateToRegister: () -> Unit = {},
+    onClearError: () -> Unit = {},
+) {
+    LoginContent(
+        authState = authState,
+        onLogin = onLogin,
+        onNavigateToRegister = onNavigateToRegister,
+        onClearError = onClearError,
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun LoginContentIdlePreview() {

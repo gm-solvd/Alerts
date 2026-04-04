@@ -337,6 +337,30 @@ private fun AlertSummaryCard(
     }
 }
 
+/** Test-only entry point for DashboardContent. */
+@Composable
+fun DashboardContentForTest(
+    uiState: DashboardUiState,
+    onRefresh: () -> Unit = {},
+    onLogout: () -> Unit = {},
+    onViewAllAlerts: () -> Unit = {},
+    onAlertClick: (Alert) -> Unit = {},
+    onScanNow: () -> Unit = {},
+    onFixIt: () -> Unit = {},
+    onDismissAction: () -> Unit = {},
+) {
+    DashboardContent(
+        uiState = uiState,
+        onRefresh = onRefresh,
+        onLogout = onLogout,
+        onViewAllAlerts = onViewAllAlerts,
+        onAlertClick = onAlertClick,
+        onScanNow = onScanNow,
+        onFixIt = onFixIt,
+        onDismissAction = onDismissAction,
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun DashboardContentSuccessPreview() {
