@@ -5,6 +5,10 @@
 INPUT=$(cat)
 COMMAND=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('command',''))" 2>/dev/null)
 
+# --- Fast exit: gh CLI commands ---
+# PR/issue bodies may contain code examples (e.g. `git add .`); never flag those.
+echo "$COMMAND" | grep -qE '^\s*(gh|/opt/homebrew/bin/gh)\s' && exit 0
+
 # --- Block: git add . / -A / --all ---
 if echo "$COMMAND" | grep -qE '\bgit\s+add\s+(-A|--all)\b' || echo "$COMMAND" | grep -qE '\bgit\s+add\s+\.\s*($|[;&|])'; then
   echo "BLOCKED: Stage files individually by name. Do not use 'git add .', 'git add -A', or 'git add --all'." >&2
