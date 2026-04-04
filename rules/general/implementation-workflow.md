@@ -2,6 +2,8 @@
 
 AI-assisted development workflow with explicit human checkpoints.
 
+> ⚠️ **Behavior changes are tasks.** Any request to improve Claude's behavior (rules, skills, hooks, settings, CLAUDE.md) triggers this full workflow — branch → implement → commit → push → PR. Use `chore/rules-<description>` as the branch type. No direct commits to develop/main.
+
 ---
 
 ## Steps
@@ -25,6 +27,8 @@ AI-assisted development workflow with explicit human checkpoints.
 - All changes visible in `git status` for your review
 
 ### 5. Validation
+
+> **Config-only PRs skip this step entirely.** If every changed file is under `.claude/`, `rules/`, or is `CLAUDE.md` — there is no Kotlin code to compile, lint, or test. Proceed directly to Step 7 (Atomic Commits).
 - AI compiles: `./gradlew compileKotlin`
 - AI auto-formats: `./gradlew ktlintFormat`
 - AI verifies lint: `./gradlew ktlintCheck` (manually fix any remaining issues)
