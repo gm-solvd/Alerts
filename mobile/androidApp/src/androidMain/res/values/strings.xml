@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Privacy Alert</string>
+
+    <!-- Error messages (matches ErrorStringKey enum) -->
+    <string name="error_session_expired">Your session has expired. Please log in again.</string>
+    <string name="error_not_found">The requested data could not be found.</string>
+    <string name="error_network">No internet connection. Please check your network and try again.</string>
+    <string name="error_server">Something went wrong on our end. Please try again later.</string>
+    <string name="error_conflict">A conflict occurred. Please refresh and try again.</string>
+    <string name="error_validation">Invalid request. Please try again.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+</resources>
