@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.privacyalert.android.ui.theme.AppColors
+import com.privacyalert.android.ui.theme.ComponentSize
 import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 import com.privacyalert.android.ui.theme.Spacing
 import kotlinx.coroutines.launch
@@ -121,7 +122,7 @@ fun OnboardingScreen(
             if (isLastPage) {
                 Button(
                     onClick = onLoginClick,
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    modifier = Modifier.fillMaxWidth().height(ComponentSize.buttonHeight),
                 ) {
                     Text("Log In")
                 }
@@ -136,7 +137,7 @@ fun OnboardingScreen(
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         }
                     },
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    modifier = Modifier.fillMaxWidth().height(ComponentSize.buttonHeight),
                 ) {
                     Text("Next")
                 }

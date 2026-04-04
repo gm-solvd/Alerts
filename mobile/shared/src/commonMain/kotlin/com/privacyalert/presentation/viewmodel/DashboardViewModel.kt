@@ -18,6 +18,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 sealed class ActionState {
@@ -117,13 +120,12 @@ class DashboardViewModel(
             getMitigationsUseCase().first().fold(
                 onSuccess = { mitigations ->
                     val incomplete = mitigations.filter { !it.completed }
-                    var resolvedCount = 0
-                    for (mitigation in incomplete) {
-                        completeMitigationUseCase(mitigation.id).fold(
-                            onSuccess = { resolvedCount++ },
-                            onFailure = { /* continue with next */ },
-                        )
+                    val results = coroutineScope {
+                        incomplete.map { mitigation ->
+                            async { completeMitigationUseCase(mitigation.id) }
+                        }.awaitAll()
                     }
+                    val resolvedCount = results.count { it.isSuccess }
                     _uiState.value = current.copy(
                         actionState = ActionState.FixComplete(resolvedCount = resolvedCount),
                     )
