@@ -164,17 +164,26 @@ No issues found. Code follows architecture rules, no bugs detected, security loo
 
 ### If 0 problems (blockers + warnings):
 
-1. Merge the PR (skip approve — GitHub blocks self-approval):
+**MANDATORY: Run local tests before merging — never skip this.**
+
+1. Run validation based on what platform the PR touches:
+   - For API changes: `cd /Users/gmribas/Projects/Alerts/api && JAVA_HOME=/opt/homebrew/opt/openjdk@21 ./gradlew compileKotlin ktlintCheck test`
+   - For Mobile changes: `cd /Users/gmribas/Projects/Alerts/mobile && export JAVA_HOME=/opt/homebrew/opt/openjdk@21 && export ANDROID_HOME=~/Library/Android/sdk && ./gradlew :shared:compileDebugKotlinAndroid :shared:allTests`
+   - For both: run both
+
+2. If tests fail: treat each failing test as a **BLOCKER**, fix them, then go to "If problems found" flow below.
+
+3. If tests pass, merge the PR:
    ```bash
    /opt/homebrew/bin/gh pr merge $PR_NUMBER --squash --delete-branch
    ```
 
-2. Switch to base branch and pull:
+4. Switch to base branch and pull:
    ```bash
    git checkout <base-branch> && git pull origin <base-branch>
    ```
 
-3. Send notification:
+5. Send notification:
    ```bash
    osascript -e 'display notification "PR merged. 0 problems found." with title "Claude Code" subtitle "Review Complete" sound name "Glass"'
    ```
@@ -191,9 +200,9 @@ No issues found. Code follows architecture rules, no bugs detected, security loo
    - Apply the fix
    - Verify the fix doesn't break surrounding code
 
-3. Run validation:
-   - For API: `cd api && JAVA_HOME=/opt/homebrew/opt/openjdk@21 ./gradlew compileKotlin ktlintFormat ktlintCheck test`
-   - For Mobile: `cd mobile && export JAVA_HOME=/opt/homebrew/opt/openjdk@21 && export ANDROID_HOME=~/Library/Android/sdk && ./gradlew :shared:compileDebugKotlinAndroid :shared:allTests :androidApp:assembleDebug`
+3. Run validation (mandatory, same as above):
+   - For API: `cd /Users/gmribas/Projects/Alerts/api && JAVA_HOME=/opt/homebrew/opt/openjdk@21 ./gradlew compileKotlin ktlintFormat ktlintCheck test`
+   - For Mobile: `cd /Users/gmribas/Projects/Alerts/mobile && export JAVA_HOME=/opt/homebrew/opt/openjdk@21 && export ANDROID_HOME=~/Library/Android/sdk && ./gradlew :shared:compileDebugKotlinAndroid :shared:allTests :androidApp:assembleDebug`
 
 4. Commit the fixes:
    - Stage files by name (never `git add .`)
@@ -250,6 +259,7 @@ After a successful merge:
 ## Rules
 
 - **Never skip the review** — every PR gets reviewed before merge
+- **Never merge without running tests locally** — code review alone is insufficient; CI may be slow or pending. Always run `./gradlew test` (API) and/or `./gradlew :shared:allTests` (mobile) before merging. A review that found 0 problems means nothing if tests break.
 - **NITs never block** — only BLOCKERs and WARNINGs count toward the problem count
 - **Max 3 iterations** — prevents infinite fix-review loops
 - **Always post as PR comment** — creates a persistent record on GitHub
