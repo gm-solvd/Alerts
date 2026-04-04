@@ -101,4 +101,14 @@ class DashboardScreenshotTest {
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Dashboard_Empty.png")
     }
+
+    @Test
+    fun dashboard_session_expired() {
+        composeTestRule.setContent {
+            PrivacyAlertTheme {
+                DashboardContentForTest(uiState = PreviewData.dashboardSessionExpired)
+            }
+        }
+        composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Dashboard_SessionExpired.png")
+    }
 }
