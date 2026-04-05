@@ -70,6 +70,9 @@ class AsyncScanService(
             updateProgress(jobId, "social")
 
             alerts += scanService.socialFootprintScan(userId, profile, null)
+            updateProgress(jobId, "reputation")
+
+            alerts += scanService.emailReputationScan(userId, profile)
 
             scanJobRepository.save(
                 scanJobRepository.findById(jobId)!!.copy(
