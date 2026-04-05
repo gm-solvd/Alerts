@@ -38,8 +38,7 @@ class EmailRepClientImpl(
                     .retrieve()
                     .onStatus({ it == HttpStatus.TOO_MANY_REQUESTS }) { _, _ ->
                         log.warn("EmailRep rate limit reached")
-                    }
-                    .body(EmailRepResponse::class.java)
+                    }.body(EmailRepResponse::class.java)
 
             response?.toResult()
         } catch (e: RestClientException) {

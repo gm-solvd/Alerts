@@ -1,5 +1,6 @@
 package com.privacyalert.domain.service
 
+import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.model.ScanResult
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.model.ThreatCategory
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.util.Optional
 import java.util.UUID
 
 class ScanServiceTest {
@@ -26,6 +28,7 @@ class ScanServiceTest {
     private val dataTypeNormalizer = DataTypeNormalizer()
     private val breachRiskClassifier = BreachRiskClassifier()
     private val scanResultRepository = mockk<ScanResultRepository>(relaxed = true)
+    private val emailReputationScanner = mockk<EmailReputationScanner>()
     private val service =
         ScanService(
             alertRepository,
@@ -37,6 +40,7 @@ class ScanServiceTest {
             dataTypeNormalizer,
             breachRiskClassifier,
             scanResultRepository,
+            Optional.of(emailReputationScanner),
         )
 
     private val userId = UUID.randomUUID()
@@ -155,6 +159,43 @@ class ScanServiceTest {
         service.breachScan(userId, emailOnlyProfile)
 
         verify(exactly = 0) { breachScanner.scanPhone(any()) }
+    }
+
+    @Test
+    fun `breachScan sets credential_exposed tag when Passwords in dataClasses`() {
+        val breaches =
+            listOf(
+                BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Email addresses", "Passwords")),
+            )
+        val alertSlot = slot<Alert>()
+
+        every { breachScanner.scanEmail("user@example.com") } returns breaches
+        every { breachScanner.scanPhone("+1234567890") } returns emptyList()
+        every { alertRepository.save(capture(alertSlot)) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+
+        val alerts = service.breachScan(userId, profile)
+
+        assertEquals(1, alerts.size)
+        assertTrue(alerts[0].tags.contains("credential_exposed"))
+    }
+
+    @Test
+    fun `breachScan does not set credential_exposed tag when no Passwords exposed`() {
+        val breaches =
+            listOf(
+                BreachResult("MinorBreach", "minor.com", "2024-01-01", listOf("Email addresses")),
+            )
+
+        every { breachScanner.scanEmail("user@example.com") } returns breaches
+        every { breachScanner.scanPhone("+1234567890") } returns emptyList()
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+
+        val alerts = service.breachScan(userId, profile)
+
+        assertEquals(1, alerts.size)
+        assertTrue(alerts[0].tags.isEmpty())
     }
 
     @Test
@@ -459,10 +500,180 @@ class ScanServiceTest {
         assertEquals(listOf("bio", "location", "links"), saved.findingsJson[0].exposedFields)
     }
 
+    // ── emailReputationScan ───────────────────────────────────────────────
+
+    @Test
+    fun `emailReputationScan creates HIGH alert when reputation is none`() {
+        val result =
+            EmailReputationResult(
+                reputation = "none",
+                suspicious = false,
+                credentialsLeaked = true,
+                darkWebAppearances = 3,
+                dataBreachCount = 5,
+                profilesFound = 2,
+            )
+
+        every { emailReputationScanner.scan("user@example.com") } returns result
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+
+        val alerts = service.emailReputationScan(userId, profile)
+
+        assertEquals(1, alerts.size)
+        assertEquals(Severity.HIGH, alerts[0].severity)
+        assertEquals(ThreatCategory.IDENTITY_EXPOSURE, alerts[0].category)
+        assertTrue(alerts[0].tags.contains("email_reputation"))
+        assertTrue(alerts[0].tags.contains("credential_exposed"))
+    }
+
+    @Test
+    fun `emailReputationScan creates HIGH alert when suspicious`() {
+        val result =
+            EmailReputationResult(
+                reputation = "low",
+                suspicious = true,
+                credentialsLeaked = false,
+                darkWebAppearances = 0,
+                dataBreachCount = 0,
+                profilesFound = 0,
+            )
+
+        every { emailReputationScanner.scan("user@example.com") } returns result
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+
+        val alerts = service.emailReputationScan(userId, profile)
+
+        assertEquals(1, alerts.size)
+        assertEquals(Severity.HIGH, alerts[0].severity)
+    }
+
+    @Test
+    fun `emailReputationScan creates MEDIUM alert when reputation is low`() {
+        val result =
+            EmailReputationResult(
+                reputation = "low",
+                suspicious = false,
+                credentialsLeaked = false,
+                darkWebAppearances = 0,
+                dataBreachCount = 1,
+                profilesFound = 0,
+            )
+
+        every { emailReputationScanner.scan("user@example.com") } returns result
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+
+        val alerts = service.emailReputationScan(userId, profile)
+
+        assertEquals(1, alerts.size)
+        assertEquals(Severity.MEDIUM, alerts[0].severity)
+    }
+
+    @Test
+    fun `emailReputationScan creates LOW alert when reputation is medium`() {
+        val result =
+            EmailReputationResult(
+                reputation = "medium",
+                suspicious = false,
+                credentialsLeaked = false,
+                darkWebAppearances = 0,
+                dataBreachCount = 0,
+                profilesFound = 1,
+            )
+
+        every { emailReputationScanner.scan("user@example.com") } returns result
+        every { alertRepository.save(any()) } answers { firstArg() }
+
+        val alerts = service.emailReputationScan(userId, profile)
+
+        assertEquals(1, alerts.size)
+        assertEquals(Severity.LOW, alerts[0].severity)
+        verify(exactly = 0) { scoreService.recalculate(any()) }
+    }
+
+    @Test
+    fun `emailReputationScan skips alert when reputation is high`() {
+        val result =
+            EmailReputationResult(
+                reputation = "high",
+                suspicious = false,
+                credentialsLeaked = false,
+                darkWebAppearances = 0,
+                dataBreachCount = 0,
+                profilesFound = 0,
+            )
+
+        every { emailReputationScanner.scan("user@example.com") } returns result
+
+        val alerts = service.emailReputationScan(userId, profile)
+
+        assertTrue(alerts.isEmpty())
+        verify(exactly = 0) { alertRepository.save(any()) }
+    }
+
+    @Test
+    fun `emailReputationScan returns empty when scanner returns null`() {
+        every { emailReputationScanner.scan("user@example.com") } returns null
+
+        val alerts = service.emailReputationScan(userId, profile)
+
+        assertTrue(alerts.isEmpty())
+    }
+
+    @Test
+    fun `emailReputationScan returns empty when scanner is absent`() {
+        val serviceWithoutEmailRep =
+            ScanService(
+                alertRepository,
+                breachScanner,
+                piiExposureScanner,
+                identityExposureScanner,
+                socialFootprintScanner,
+                scoreService,
+                dataTypeNormalizer,
+                breachRiskClassifier,
+                scanResultRepository,
+                Optional.empty(),
+            )
+
+        val alerts = serviceWithoutEmailRep.emailReputationScan(userId, profile)
+
+        assertTrue(alerts.isEmpty())
+    }
+
+    @Test
+    fun `emailReputationScan populates findingsJson with structured finding`() {
+        val result =
+            EmailReputationResult(
+                reputation = "none",
+                suspicious = false,
+                credentialsLeaked = true,
+                darkWebAppearances = 2,
+                dataBreachCount = 3,
+                profilesFound = 1,
+            )
+        val scanResultSlot = slot<ScanResult>()
+
+        every { emailReputationScanner.scan("user@example.com") } returns result
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+        every { scanResultRepository.save(capture(scanResultSlot)) } answers { firstArg() }
+
+        service.emailReputationScan(userId, profile)
+
+        val saved = scanResultSlot.captured
+        assertEquals(1, saved.findingsJson.size)
+        assertEquals("reputation", saved.findingsJson[0].type)
+        assertEquals("EmailRep", saved.findingsJson[0].name)
+        assertTrue(saved.findingsJson[0].credentialExposed)
+    }
+
     // ── fullScan ────────────────────────────────────────────────────────
 
     @Test
-    fun `fullScan aggregates results from all four scans`() {
+    fun `fullScan aggregates results from all five scans`() {
         val breaches =
             listOf(
                 BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails")),
@@ -479,18 +690,28 @@ class ScanServiceTest {
             listOf(
                 SocialFootprintResult("Twitter", "https://twitter.com/jd", "jd", listOf("bio")),
             )
+        val emailRepResult =
+            EmailReputationResult(
+                reputation = "low",
+                suspicious = false,
+                credentialsLeaked = false,
+                darkWebAppearances = 0,
+                dataBreachCount = 1,
+                profilesFound = 0,
+            )
 
         every { breachScanner.scanEmail("user@example.com") } returns breaches
         every { breachScanner.scanPhone("+1234567890") } returns emptyList()
         every { identityExposureScanner.scan("user@example.com", "John Doe") } returns identityResults
         every { piiExposureScanner.scan(profile) } returns piiResults
         every { socialFootprintScanner.scan("user@example.com", "John Doe", "johndoe") } returns socialResults
+        every { emailReputationScanner.scan("user@example.com") } returns emailRepResult
         every { alertRepository.save(any()) } answers { firstArg() }
         every { scoreService.recalculate(userId) } returns mockk()
 
         val alerts = service.fullScan(userId, profile, "johndoe")
 
-        assertEquals(4, alerts.size)
+        assertEquals(5, alerts.size)
         assertTrue(alerts.any { it.category == ThreatCategory.DATA_BREACH })
         assertTrue(alerts.any { it.category == ThreatCategory.IDENTITY_EXPOSURE })
         assertTrue(alerts.any { it.category == ThreatCategory.TRACKER_EXPOSURE })
@@ -505,6 +726,7 @@ class ScanServiceTest {
         every { identityExposureScanner.scan("clean@example.com", null) } returns emptyList()
         every { piiExposureScanner.scan(emptyProfile) } returns emptyList()
         every { socialFootprintScanner.scan("clean@example.com", null, null) } returns emptyList()
+        every { emailReputationScanner.scan("clean@example.com") } returns null
 
         val alerts = service.fullScan(userId, emptyProfile, null)
 
