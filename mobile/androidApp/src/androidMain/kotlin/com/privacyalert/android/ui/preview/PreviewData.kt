@@ -59,7 +59,19 @@ object PreviewData {
         createdAt = now,
     )
 
-    val alertList = listOf(alertCritical, alertHigh, alertMedium, alertLowResolved)
+    val alertCredentialExposed = Alert(
+        id = "alert-5",
+        category = ThreatCategory.DATA_BREACH,
+        severity = Severity.CRITICAL,
+        title = "Credentials found in COMB database",
+        description = "Your plaintext password was found in a public credential database. Change this password immediately.",
+        resolved = false,
+        resolvedAt = null,
+        createdAt = now,
+        tags = listOf("credential_exposed"),
+    )
+
+    val alertList = listOf(alertCritical, alertHigh, alertMedium, alertLowResolved, alertCredentialExposed)
 
     val mitigationIncomplete = Mitigation(
         id = "mit-1",
