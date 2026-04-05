@@ -26,9 +26,9 @@ class DataBrokerSiteEntity(
     val baseUrl: String = "",
     val searchUrlTpl: String? = null,
     val resultSelector: String? = null,
-    @Column(name = "pii_fields", columnDefinition = "TEXT[]")
+    @Column(name = "pii_fields", columnDefinition = "text[]")
     @JdbcTypeCode(SqlTypes.ARRAY)
-    var piiFields: List<String> = emptyList(),
+    var piiFields: Array<String> = emptyArray(),
     @Column(nullable = false)
     val active: Boolean = true,
     @Column(nullable = false)
@@ -55,7 +55,7 @@ fun DataBrokerSiteEntity.toDomain(): DataBrokerSite =
         baseUrl = baseUrl,
         searchUrlTemplate = searchUrlTpl,
         resultSelector = resultSelector,
-        piiFields = piiFields,
+        piiFields = piiFields.toList(),
         active = active,
     )
 
@@ -66,6 +66,6 @@ fun DataBrokerSite.toEntity(): DataBrokerSiteEntity =
         baseUrl = baseUrl,
         searchUrlTpl = searchUrlTemplate,
         resultSelector = resultSelector,
-        piiFields = piiFields,
+        piiFields = piiFields.toTypedArray(),
         active = active,
     )
