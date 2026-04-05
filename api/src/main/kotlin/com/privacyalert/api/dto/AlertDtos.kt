@@ -15,6 +15,7 @@ data class AlertResponse(
     val resolved: Boolean,
     val resolvedAt: Instant?,
     val createdAt: Instant,
+    val tags: List<String> = emptyList(),
 )
 
 fun Alert.toResponse(): AlertResponse =
@@ -27,4 +28,5 @@ fun Alert.toResponse(): AlertResponse =
         resolved = resolved,
         resolvedAt = resolvedAt,
         createdAt = createdAt,
+        tags = tags,
     )

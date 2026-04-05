@@ -12,6 +12,8 @@ import jakarta.persistence.PostLoad
 import jakarta.persistence.PostPersist
 import jakarta.persistence.Table
 import jakarta.persistence.Transient
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import org.springframework.data.domain.Persistable
 import java.time.Instant
 import java.util.UUID
@@ -39,6 +41,9 @@ class AlertEntity(
     var resolvedAt: Instant? = null,
     @Column(nullable = false)
     val createdAt: Instant = Instant.now(),
+    @Column(nullable = false, columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    val tags: List<String> = emptyList(),
 ) : Persistable<UUID> {
     @Transient
     private var new: Boolean = true
@@ -65,6 +70,7 @@ fun AlertEntity.toDomain(): Alert =
         resolved = resolved,
         resolvedAt = resolvedAt,
         createdAt = createdAt,
+        tags = tags,
     )
 
 fun Alert.toEntity(): AlertEntity =
@@ -78,4 +84,5 @@ fun Alert.toEntity(): AlertEntity =
         resolved = resolved,
         resolvedAt = resolvedAt,
         createdAt = createdAt,
+        tags = tags,
     )

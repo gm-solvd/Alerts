@@ -13,4 +13,5 @@ data class Alert(
     val resolved: Boolean = false,
     val resolvedAt: Instant? = null,
     val createdAt: Instant = Instant.now(),
+    val tags: List<String> = emptyList(),
 )
