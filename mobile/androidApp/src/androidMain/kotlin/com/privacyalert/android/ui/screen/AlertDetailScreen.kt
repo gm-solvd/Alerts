@@ -90,88 +90,108 @@ private fun AlertDetailContent(
         )
 
         when (uiState) {
-            is AlertDetailUiState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
+            is AlertDetailUiState.Loading -> LoadingContent()
+            is AlertDetailUiState.SessionExpired -> SessionExpiredContent()
+            is AlertDetailUiState.Error -> ErrorContent(
+                message = uiState.message,
+                onRetry = onRetry,
+            )
+            is AlertDetailUiState.Success -> SuccessContent(
+                alert = uiState.alert,
+                mitigations = uiState.mitigations,
+                onResolve = onResolve,
+            )
+        }
+    }
+}
 
-            is AlertDetailUiState.SessionExpired -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "Session expired. Redirecting to login...",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
+@Composable
+private fun LoadingContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator()
+    }
+}
 
-            is AlertDetailUiState.Error -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = uiState.message,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-                        Spacer(modifier = Modifier.height(Spacing.md))
-                        Button(onClick = onRetry) {
-                            Text("Retry")
-                        }
-                    }
-                }
-            }
+@Composable
+private fun SessionExpiredContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "Session expired. Redirecting to login...",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
 
-            is AlertDetailUiState.Success -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(Spacing.md),
-                ) {
-                    AlertInfoSection(alert = uiState.alert)
-
-                    if (!uiState.alert.resolved) {
-                        Spacer(modifier = Modifier.height(Spacing.md))
-                        Button(
-                            onClick = onResolve,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                contentDescription = null,
-                            )
-                            Spacer(modifier = Modifier.width(Spacing.sm))
-                            Text("Mark as Resolved")
-                        }
-                    }
-
-                    if (uiState.mitigations.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(Spacing.lg))
-                        Text(
-                            text = "Mitigations",
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        Spacer(modifier = Modifier.height(Spacing.sm))
-                        uiState.mitigations.forEach { mitigation ->
-                            MitigationCard(mitigation = mitigation)
-                            Spacer(modifier = Modifier.height(Spacing.sm))
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(Spacing.lg))
-                }
+@Composable
+private fun ErrorContent(message: String, onRetry: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Spacer(modifier = Modifier.height(Spacing.md))
+            Button(onClick = onRetry) {
+                Text("Retry")
             }
         }
+    }
+}
+
+@Composable
+private fun SuccessContent(
+    alert: Alert,
+    mitigations: List<Mitigation>,
+    onResolve: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(Spacing.md),
+    ) {
+        AlertInfoSection(alert = alert)
+
+        if (!alert.resolved) {
+            Spacer(modifier = Modifier.height(Spacing.md))
+            Button(
+                onClick = onResolve,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = null,
+                )
+                Spacer(modifier = Modifier.width(Spacing.sm))
+                Text("Mark as Resolved")
+            }
+        }
+
+        if (mitigations.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(Spacing.lg))
+            Text(
+                text = "Mitigations",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            mitigations.forEach { mitigation ->
+                MitigationCard(mitigation = mitigation)
+                Spacer(modifier = Modifier.height(Spacing.sm))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(Spacing.lg))
     }
 }
 
