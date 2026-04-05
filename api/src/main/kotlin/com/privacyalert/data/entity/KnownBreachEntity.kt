@@ -25,9 +25,9 @@ class KnownBreachEntity(
     val name: String = "",
     val domain: String? = null,
     val breachDate: LocalDate? = null,
-    @Column(name = "data_classes", columnDefinition = "TEXT[]")
+    @Column(name = "data_classes", columnDefinition = "text[]")
     @JdbcTypeCode(SqlTypes.ARRAY)
-    var dataClasses: List<String> = emptyList(),
+    var dataClasses: Array<String> = emptyArray(),
     val recordCount: Long? = null,
     val sourceUrl: String? = null,
     @Column(nullable = false)
@@ -53,7 +53,7 @@ fun KnownBreachEntity.toDomain(): KnownBreach =
         name = name,
         domain = domain,
         breachDate = breachDate,
-        dataClasses = dataClasses,
+        dataClasses = dataClasses.toList(),
         recordCount = recordCount,
         sourceUrl = sourceUrl,
         ingestedAt = ingestedAt,
@@ -65,7 +65,7 @@ fun KnownBreach.toEntity(): KnownBreachEntity =
         name = name,
         domain = domain,
         breachDate = breachDate,
-        dataClasses = dataClasses,
+        dataClasses = dataClasses.toTypedArray(),
         recordCount = recordCount,
         sourceUrl = sourceUrl,
         ingestedAt = ingestedAt,
