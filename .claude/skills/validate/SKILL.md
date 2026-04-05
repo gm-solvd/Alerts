@@ -68,3 +68,14 @@ Run full validation pipeline for the project.
    - Ask the user if you should fix the issues
    - If approved, fix and re-run the failed step
    - Repeat until all pass or user decides to stop
+
+## Merge Marker
+
+9. **Only when ALL steps passed**, create the validation marker so the pre-merge hook allows `gh pr merge`:
+   ```bash
+   touch "/tmp/.claude-validation-passed-api-$(git rev-parse --short=8 HEAD)"    # for API
+   touch "/tmp/.claude-validation-passed-mobile-$(git rev-parse --short=8 HEAD)" # for Mobile
+   ```
+   - Use the platform matching `$ARGUMENTS` (api or mobile)
+   - The marker is keyed to HEAD SHA — any new commit invalidates it automatically
+   - Do NOT create the marker if any step failed
