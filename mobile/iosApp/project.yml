@@ -1,0 +1,31 @@
+name: PrivacyAlert
+options:
+  bundleIdPrefix: com.privacyalert
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+targets:
+  PrivacyAlert:
+    type: application
+    platform: iOS
+    sources:
+      - path: PrivacyAlert
+    settings:
+      base:
+        INFOPLIST_FILE: PrivacyAlert/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.privacyalert.ios
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - -lsqlite3
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+    preBuildScripts:
+      - name: Compile Kotlin Framework
+        script: |
+          cd "$SRCROOT/.."
+          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+        basedOnDependencyAnalysis: false
+    dependencies: []
