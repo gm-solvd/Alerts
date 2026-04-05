@@ -6,7 +6,10 @@
       "Skill(*)",
       "WebFetch(*)",
       "WebSearch",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Edit(.claude/**)",
+      "Write(.claude/**)",
+      "Read(.claude/**)"
     ]
   },
   "hooks": {
@@ -25,6 +28,10 @@
           {
             "type": "command",
             "command": "bash .claude/hooks/block-merge-without-validation.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/block-pr-without-tests.sh"
           }
         ]
       },

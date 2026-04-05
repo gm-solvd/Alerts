@@ -7,8 +7,9 @@
 INPUT=$(cat)
 COMMAND=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('command',''))" 2>/dev/null)
 
-# Only intercept gh pr merge commands (both short and full path)
-if ! echo "$COMMAND" | grep -qE '(^|\s|/|;|&&|\|)(/opt/homebrew/bin/)?gh\s+pr\s+merge\b'; then
+# Only intercept commands where gh pr merge is the actual command, not inside quotes/args.
+CMD_PREFIX=$(echo "$COMMAND" | sed 's/[[:space:]]*--body[[:space:]].*//' | sed 's/[[:space:]]*-m[[:space:]].*//')
+if ! echo "$CMD_PREFIX" | grep -qE '(^|\s|/|;|&&|\|)(/opt/homebrew/bin/)?gh\s+pr\s+merge\b'; then
   exit 0
 fi
 
