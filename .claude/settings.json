@@ -32,6 +32,15 @@
             "command": "bash .claude/hooks/block-sensitive-read.sh"
           }
         ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/prefer-improve-over-create.sh"
+          }
+        ]
       }
     ]
   }
