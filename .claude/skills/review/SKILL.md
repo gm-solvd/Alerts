@@ -173,17 +173,26 @@ No issues found. Code follows architecture rules, no bugs detected, security loo
 
 2. If tests fail: treat each failing test as a **BLOCKER**, fix them, then go to "If problems found" flow below.
 
-3. If tests pass, merge the PR:
+3. If tests pass, create the merge validation markers:
+   ```bash
+   # For API changes:
+   touch "/tmp/.claude-validation-passed-api-$(git rev-parse --short=8 HEAD)"
+   # For Mobile changes:
+   touch "/tmp/.claude-validation-passed-mobile-$(git rev-parse --short=8 HEAD)"
+   ```
+   Only create the marker for the platform(s) that were validated. Do NOT create markers if any validation step failed.
+
+4. If tests pass, merge the PR:
    ```bash
    /opt/homebrew/bin/gh pr merge $PR_NUMBER --squash --delete-branch
    ```
 
-4. Switch to base branch and pull:
+5. Switch to base branch and pull:
    ```bash
    git checkout <base-branch> && git pull origin <base-branch>
    ```
 
-5. Send notification:
+6. Send notification:
    ```bash
    osascript -e 'display notification "PR merged. 0 problems found." with title "Claude Code" subtitle "Review Complete" sound name "Glass"'
    ```
