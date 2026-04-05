@@ -1,5 +1,6 @@
 package com.privacyalert.android.ui.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,13 +11,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -397,8 +402,39 @@ private fun AlertSummaryCard(
                 )
             }
             Spacer(modifier = Modifier.width(Spacing.sm))
-            SeverityBadge(severity = alert.severity)
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+            ) {
+                SeverityBadge(severity = alert.severity)
+                if ("credential_exposed" in alert.tags) {
+                    DashboardCredentialBadge()
+                }
+            }
         }
+    }
+}
+
+@Composable
+private fun DashboardCredentialBadge() {
+    Row(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.error, RoundedCornerShape(4.dp))
+            .padding(horizontal = Spacing.xs, vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        Icon(
+            imageVector = Icons.Default.Warning,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onError,
+            modifier = Modifier.size(12.dp),
+        )
+        Text(
+            text = "PASSWORD EXPOSED",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onError,
+        )
     }
 }
 

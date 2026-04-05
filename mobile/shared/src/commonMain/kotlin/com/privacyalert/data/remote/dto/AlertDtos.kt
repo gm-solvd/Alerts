@@ -16,6 +16,7 @@ data class AlertResponseDto(
     val resolved: Boolean,
     val resolvedAt: Instant? = null,
     val createdAt: Instant,
+    val tags: List<String> = emptyList(),
 ) {
     fun toDomain(): Alert = Alert(
         id = id,
@@ -26,5 +27,6 @@ data class AlertResponseDto(
         resolved = resolved,
         resolvedAt = resolvedAt,
         createdAt = createdAt,
+        tags = tags,
     )
 }

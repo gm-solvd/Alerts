@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -234,6 +235,11 @@ private fun AlertInfoSection(alert: Alert) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
+            if ("credential_exposed" in alert.tags) {
+                Spacer(modifier = Modifier.height(Spacing.md))
+                CredentialWarningCard()
+            }
+
             Spacer(modifier = Modifier.height(Spacing.md))
 
             if (alert.resolved) {
@@ -250,6 +256,38 @@ private fun AlertInfoSection(alert: Alert) {
                         color = AppColors.Success,
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CredentialWarningCard() {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+        ),
+    ) {
+        Row(
+            modifier = Modifier.padding(Spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error,
+            )
+            Spacer(modifier = Modifier.width(Spacing.sm))
+            Column {
+                Text(
+                    text = "Password Exposed",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+                Text(
+                    text = "A plaintext password linked to your email was found in a public database. Change this password immediately.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
         }
     }
