@@ -12,6 +12,8 @@ data class AppProperties(
     val xon: XonProperties = XonProperties(),
     val catalogSync: CatalogSyncProperties = CatalogSyncProperties(),
     val admin: AdminProperties = AdminProperties(),
+    val comb: CombProperties = CombProperties(),
+    val emailRep: EmailRepProperties = EmailRepProperties(),
 ) {
     data class AdminProperties(
         val token: String = "changeme",
@@ -48,5 +50,16 @@ data class AppProperties(
     data class CatalogSyncProperties(
         val enabled: Boolean = false,
         val cron: String = "0 3 * * *",
+    )
+
+    data class CombProperties(
+        val enabled: Boolean = false,
+        val baseUrl: String = "https://api.proxynova.com",
+    )
+
+    data class EmailRepProperties(
+        val enabled: Boolean = false,
+        val apiKey: String = "",
+        val baseUrl: String = "https://emailrep.io",
     )
 }

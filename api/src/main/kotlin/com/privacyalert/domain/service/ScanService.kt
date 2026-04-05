@@ -9,6 +9,7 @@ import com.privacyalert.domain.model.UserScanProfile
 import com.privacyalert.domain.repository.AlertRepository
 import com.privacyalert.domain.repository.ScanResultRepository
 import org.springframework.stereotype.Service
+import java.util.Optional
 import java.util.UUID
 
 @Service
@@ -22,6 +23,7 @@ class ScanService(
     private val dataTypeNormalizer: DataTypeNormalizer,
     private val breachRiskClassifier: BreachRiskClassifier,
     private val scanResultRepository: ScanResultRepository,
+    private val emailReputationScanner: Optional<EmailReputationScanner>,
 ) {
     fun breachScan(
         userId: UUID,
@@ -38,6 +40,7 @@ class ScanService(
             allBreaches.map { breach ->
                 val normalized = dataTypeNormalizer.normalize(breach.dataClasses)
                 val severity = breachRiskClassifier.classify(normalized)
+                val hasPassword = normalized.any { it.equals("Passwords", ignoreCase = true) }
                 structuredFindings +=
                     StructuredFinding(
                         type = "breach",
@@ -46,7 +49,9 @@ class ScanService(
                         date = breach.breachDate,
                         dataClasses = normalized,
                         severity = severity.name,
+                        credentialExposed = hasPassword,
                     )
+                val tags = if (hasPassword) listOf("credential_exposed") else emptyList()
                 alertRepository.save(
                     Alert(
                         userId = userId,
@@ -56,6 +61,7 @@ class ScanService(
                         description =
                             "Your data was found in the ${breach.name} breach (${breach.breachDate}). " +
                                 "Exposed data: ${normalized.joinToString(", ")}.",
+                        tags = tags,
                     ),
                 )
             }
@@ -246,6 +252,77 @@ class ScanService(
         return alerts
     }
 
+    fun emailReputationScan(
+        userId: UUID,
+        profile: UserScanProfile,
+    ): List<Alert> {
+        val scanner = emailReputationScanner.orElse(null) ?: return emptyList()
+        val result = scanner.scan(profile.email) ?: return emptyList()
+
+        val severity =
+            when {
+                result.reputation == "none" || result.suspicious -> Severity.HIGH
+                result.reputation == "low" -> Severity.MEDIUM
+                result.reputation == "medium" -> Severity.LOW
+                else -> return emptyList()
+            }
+
+        val tags = mutableListOf("email_reputation")
+        if (result.credentialsLeaked) tags += "credential_exposed"
+
+        val finding =
+            StructuredFinding(
+                type = "reputation",
+                name = "EmailRep",
+                severity = severity.name,
+                credentialExposed = result.credentialsLeaked,
+                exposedFields =
+                    buildList {
+                        if (result.credentialsLeaked) add("Credentials leaked")
+                        if (result.darkWebAppearances > 0) add("Dark web appearances: ${result.darkWebAppearances}")
+                        if (result.dataBreachCount > 0) add("Data breaches: ${result.dataBreachCount}")
+                        if (result.profilesFound > 0) add("Profiles found: ${result.profilesFound}")
+                    },
+            )
+
+        val description =
+            buildString {
+                append("Email reputation: ${result.reputation}.")
+                if (result.suspicious) append(" Flagged as suspicious.")
+                if (result.credentialsLeaked) append(" Credentials found in leaked databases.")
+                if (result.darkWebAppearances > 0) append(" ${result.darkWebAppearances} dark web appearances.")
+                if (result.dataBreachCount > 0) append(" Found in ${result.dataBreachCount} data breaches.")
+            }
+
+        val alert =
+            alertRepository.save(
+                Alert(
+                    userId = userId,
+                    category = ThreatCategory.IDENTITY_EXPOSURE,
+                    severity = severity,
+                    title = "Email reputation: ${result.reputation}",
+                    description = description,
+                    tags = tags,
+                ),
+            )
+
+        scanResultRepository.save(
+            ScanResult(
+                userId = userId,
+                scanType = "reputation",
+                scanInput = profile.email,
+                findings = description,
+                findingsJson = listOf(finding),
+            ),
+        )
+
+        if (severity != Severity.LOW) {
+            scoreService.recalculate(userId)
+        }
+
+        return listOf(alert)
+    }
+
     fun fullScan(
         userId: UUID,
         profile: UserScanProfile,
@@ -256,6 +333,7 @@ class ScanService(
         alerts += identityScan(userId, profile)
         alerts += piiExposureScan(userId, profile)
         alerts += socialFootprintScan(userId, profile, username)
+        alerts += emailReputationScan(userId, profile)
         return alerts
     }
 }
