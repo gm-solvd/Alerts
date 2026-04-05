@@ -1,4 +1,4 @@
-package com.privacyalert.android.ui.theme
+package com.privacyalert.presentation.ui.theme
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme

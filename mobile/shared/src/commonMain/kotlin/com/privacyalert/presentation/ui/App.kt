@@ -1,4 +1,4 @@
-package com.privacyalert.android.ui
+package com.privacyalert.presentation.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
@@ -16,25 +16,25 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import cafe.adriel.voyager.transitions.SlideTransition
-import com.privacyalert.android.preferences.OnboardingPreferences
-import com.privacyalert.android.ui.navigation.AlertsTab
-import com.privacyalert.android.ui.navigation.DashboardTab
-import com.privacyalert.android.ui.screen.LoginScreen
-import com.privacyalert.android.ui.screen.OnboardingScreen
-import com.privacyalert.android.ui.screen.RegisterScreen
-import com.privacyalert.android.ui.screen.SplashScreen
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
+import com.privacyalert.presentation.preferences.OnboardingPreferences
+import com.privacyalert.presentation.ui.navigation.AlertsTab
+import com.privacyalert.presentation.ui.navigation.DashboardTab
+import com.privacyalert.presentation.ui.screen.LoginScreen
+import com.privacyalert.presentation.ui.screen.OnboardingScreen
+import com.privacyalert.presentation.ui.screen.RegisterScreen
+import com.privacyalert.presentation.ui.screen.SplashScreen
+import com.privacyalert.presentation.ui.theme.PrivacyAlertTheme
 import com.privacyalert.domain.usecase.auth.CheckAuthUseCase
 import org.koin.compose.koinInject
 
@@ -48,7 +48,7 @@ private sealed interface AppPhase {
 fun App() {
     val checkAuth = koinInject<CheckAuthUseCase>()
     val onboardingPrefs = koinInject<OnboardingPreferences>()
-    val isAuthenticated by checkAuth().collectAsStateWithLifecycle(initialValue = false)
+    val isAuthenticated by checkAuth().collectAsState(initial = false)
 
     var phase by remember { mutableStateOf<AppPhase>(AppPhase.Splash) }
 

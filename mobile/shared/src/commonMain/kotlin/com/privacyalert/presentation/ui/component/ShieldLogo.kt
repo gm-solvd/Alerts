@@ -1,4 +1,4 @@
-package com.privacyalert.android.ui.component
+package com.privacyalert.presentation.ui.component
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
@@ -12,10 +12,8 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
 
 @Composable
 fun ShieldLogo(
@@ -84,13 +82,5 @@ fun ShieldLogo(
             color = Color.White.copy(alpha = 0.3f),
             style = Stroke(width = w * 0.025f, cap = StrokeCap.Round),
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ShieldLogoPreview() {
-    PrivacyAlertTheme {
-        ShieldLogo(size = 120.dp)
     }
 }

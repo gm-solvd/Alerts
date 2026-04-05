@@ -1,4 +1,4 @@
-package com.privacyalert.android.ui.screen
+package com.privacyalert.presentation.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,20 +29,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.privacyalert.android.ui.theme.AppColors
+import com.privacyalert.presentation.ui.theme.AppColors
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import androidx.compose.ui.tooling.preview.Preview
-import com.privacyalert.android.ui.component.SeverityBadge
-import com.privacyalert.android.ui.preview.PreviewData
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
-import com.privacyalert.android.ui.theme.Spacing
+import com.privacyalert.presentation.ui.component.SeverityBadge
+import com.privacyalert.presentation.ui.theme.Spacing
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.domain.model.Mitigation
 import com.privacyalert.presentation.viewmodel.AlertDetailUiState
@@ -55,7 +52,7 @@ class AlertDetailScreen(private val alertId: String) : Screen {
     override fun Content() {
         val viewModel = koinScreenModel<AlertDetailViewModel> { parametersOf(alertId) }
         val navigator = LocalNavigator.currentOrThrow
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+        val uiState by viewModel.uiState.collectAsState()
 
         AlertDetailContent(
             uiState = uiState,
@@ -68,7 +65,7 @@ class AlertDetailScreen(private val alertId: String) : Screen {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AlertDetailContent(
+fun AlertDetailContent(
     uiState: AlertDetailUiState,
     onResolve: () -> Unit,
     onRetry: () -> Unit,
@@ -331,56 +328,5 @@ private fun MitigationCard(mitigation: Mitigation) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-    }
-}
-
-/** Test-only entry point for AlertDetailContent. */
-@Composable
-fun AlertDetailContentForTest(
-    uiState: AlertDetailUiState,
-    onResolve: () -> Unit = {},
-    onRetry: () -> Unit = {},
-    onBack: () -> Unit = {},
-) {
-    AlertDetailContent(
-        uiState = uiState,
-        onResolve = onResolve,
-        onRetry = onRetry,
-        onBack = onBack,
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun AlertDetailContentSuccessPreview() {
-    PrivacyAlertTheme {
-        AlertDetailContent(
-            uiState = AlertDetailUiState.Success(
-                alert = PreviewData.alertCritical,
-                mitigations = listOf(
-                    PreviewData.mitigationIncomplete,
-                    PreviewData.mitigationCompleted,
-                ),
-            ),
-            onResolve = {},
-            onRetry = {},
-            onBack = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun AlertDetailContentResolvedPreview() {
-    PrivacyAlertTheme {
-        AlertDetailContent(
-            uiState = AlertDetailUiState.Success(
-                alert = PreviewData.alertLowResolved,
-                mitigations = listOf(PreviewData.mitigationCompleted),
-            ),
-            onResolve = {},
-            onRetry = {},
-            onBack = {},
-        )
     }
 }

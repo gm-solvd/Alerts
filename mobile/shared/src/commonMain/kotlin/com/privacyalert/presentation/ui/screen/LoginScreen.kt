@@ -1,4 +1,4 @@
-package com.privacyalert.android.ui.screen
+package com.privacyalert.presentation.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,7 +16,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,43 +30,39 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import androidx.compose.ui.tooling.preview.Preview
-import com.privacyalert.android.ui.component.ShieldLogo
-import com.privacyalert.android.ui.theme.ComponentSize
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
-import com.privacyalert.android.ui.theme.Spacing
+import com.privacyalert.presentation.ui.component.ShieldLogo
+import com.privacyalert.presentation.ui.theme.ComponentSize
+import com.privacyalert.presentation.ui.theme.Spacing
 import com.privacyalert.presentation.viewmodel.AuthUiState
 import com.privacyalert.presentation.viewmodel.AuthViewModel
 
-class RegisterScreen : Screen {
+class LoginScreen : Screen {
 
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<AuthViewModel>()
-        val authState by viewModel.authState.collectAsStateWithLifecycle()
+        val authState by viewModel.authState.collectAsState()
         val navigator = LocalNavigator.currentOrThrow
 
-        RegisterContent(
+        LoginContent(
             authState = authState,
-            onRegister = { email, password -> viewModel.register(email, password) },
-            onNavigateToLogin = { navigator.pop() },
+            onLogin = { email, password -> viewModel.login(email, password) },
+            onNavigateToRegister = { navigator.push(RegisterScreen()) },
             onClearError = { viewModel.clearError() },
         )
     }
 }
 
 @Composable
-private fun RegisterContent(
+fun LoginContent(
     authState: AuthUiState,
-    onRegister: (String, String) -> Unit,
-    onNavigateToLogin: () -> Unit,
+    onLogin: (String, String) -> Unit,
+    onNavigateToRegister: () -> Unit,
     onClearError: () -> Unit,
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
-    var confirmPassword by rememberSaveable { mutableStateOf("") }
     val isLoading = authState is AuthUiState.Loading
-    val passwordsMatch = password == confirmPassword
 
     Column(
         modifier = Modifier
@@ -80,7 +76,7 @@ private fun RegisterContent(
         Spacer(modifier = Modifier.height(Spacing.md))
 
         Text(
-            text = "Create Account",
+            text = "Privacy Alert",
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.primary,
         )
@@ -116,28 +112,6 @@ private fun RegisterContent(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        Spacer(modifier = Modifier.height(Spacing.md))
-
-        OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = {
-                confirmPassword = it
-                if (authState is AuthUiState.Error) onClearError()
-            },
-            label = { Text("Confirm Password") },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            singleLine = true,
-            enabled = !isLoading,
-            isError = confirmPassword.isNotEmpty() && !passwordsMatch,
-            supportingText = if (confirmPassword.isNotEmpty() && !passwordsMatch) {
-                { Text("Passwords do not match") }
-            } else {
-                null
-            },
-            modifier = Modifier.fillMaxWidth(),
-        )
-
         if (authState is AuthUiState.Error) {
             Spacer(modifier = Modifier.height(Spacing.sm))
             Text(
@@ -150,8 +124,8 @@ private fun RegisterContent(
         Spacer(modifier = Modifier.height(Spacing.lg))
 
         Button(
-            onClick = { onRegister(email, password) },
-            enabled = !isLoading && email.isNotBlank() && password.isNotBlank() && passwordsMatch,
+            onClick = { onLogin(email, password) },
+            enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(ComponentSize.buttonHeight),
@@ -163,56 +137,14 @@ private fun RegisterContent(
                     strokeWidth = Spacing.xs,
                 )
             } else {
-                Text("Register")
+                Text("Login")
             }
         }
 
         Spacer(modifier = Modifier.height(Spacing.md))
 
-        TextButton(onClick = onNavigateToLogin) {
-            Text("Already have an account? Login")
+        TextButton(onClick = onNavigateToRegister) {
+            Text("Don't have an account? Register")
         }
-    }
-}
-
-/** Test-only entry point for RegisterContent. */
-@Composable
-fun RegisterContentForTest(
-    authState: AuthUiState,
-    onRegister: (String, String) -> Unit = { _, _ -> },
-    onNavigateToLogin: () -> Unit = {},
-    onClearError: () -> Unit = {},
-) {
-    RegisterContent(
-        authState = authState,
-        onRegister = onRegister,
-        onNavigateToLogin = onNavigateToLogin,
-        onClearError = onClearError,
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun RegisterContentIdlePreview() {
-    PrivacyAlertTheme {
-        RegisterContent(
-            authState = AuthUiState.Idle,
-            onRegister = { _, _ -> },
-            onNavigateToLogin = {},
-            onClearError = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun RegisterContentErrorPreview() {
-    PrivacyAlertTheme {
-        RegisterContent(
-            authState = AuthUiState.Error("Email already registered"),
-            onRegister = { _, _ -> },
-            onNavigateToLogin = {},
-            onClearError = {},
-        )
     }
 }

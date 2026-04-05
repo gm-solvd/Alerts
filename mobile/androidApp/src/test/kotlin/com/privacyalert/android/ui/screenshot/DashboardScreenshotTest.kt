@@ -4,8 +4,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.privacyalert.android.ui.preview.PreviewData
-import com.privacyalert.android.ui.screen.DashboardContentForTest
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
+import com.privacyalert.presentation.ui.screen.DashboardContent
+import com.privacyalert.presentation.ui.theme.PrivacyAlertTheme
 import com.privacyalert.presentation.viewmodel.DashboardUiState
 import org.junit.Rule
 import org.junit.Test
@@ -24,7 +24,16 @@ class DashboardScreenshotTest {
     fun dashboard_loading() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                DashboardContentForTest(uiState = DashboardUiState.Loading)
+                DashboardContent(
+                    uiState = DashboardUiState.Loading,
+                    onRefresh = {},
+                    onLogout = {},
+                    onViewAllAlerts = {},
+                    onAlertClick = { _ -> },
+                    onScanNow = {},
+                    onFixIt = {},
+                    onDismissAction = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Dashboard_Loading.png")
@@ -34,7 +43,16 @@ class DashboardScreenshotTest {
     fun dashboard_idle() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                DashboardContentForTest(uiState = PreviewData.dashboardIdle)
+                DashboardContent(
+                    uiState = PreviewData.dashboardIdle,
+                    onRefresh = {},
+                    onLogout = {},
+                    onViewAllAlerts = {},
+                    onAlertClick = { _ -> },
+                    onScanNow = {},
+                    onFixIt = {},
+                    onDismissAction = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Dashboard_Idle.png")
@@ -44,7 +62,16 @@ class DashboardScreenshotTest {
     fun dashboard_scanning() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                DashboardContentForTest(uiState = PreviewData.dashboardScanning)
+                DashboardContent(
+                    uiState = PreviewData.dashboardScanning,
+                    onRefresh = {},
+                    onLogout = {},
+                    onViewAllAlerts = {},
+                    onAlertClick = { _ -> },
+                    onScanNow = {},
+                    onFixIt = {},
+                    onDismissAction = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Dashboard_Scanning.png")
@@ -54,7 +81,16 @@ class DashboardScreenshotTest {
     fun dashboard_fixing() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                DashboardContentForTest(uiState = PreviewData.dashboardFixing)
+                DashboardContent(
+                    uiState = PreviewData.dashboardFixing,
+                    onRefresh = {},
+                    onLogout = {},
+                    onViewAllAlerts = {},
+                    onAlertClick = { _ -> },
+                    onScanNow = {},
+                    onFixIt = {},
+                    onDismissAction = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Dashboard_Fixing.png")
@@ -64,7 +100,16 @@ class DashboardScreenshotTest {
     fun dashboard_scan_complete() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                DashboardContentForTest(uiState = PreviewData.dashboardScanComplete)
+                DashboardContent(
+                    uiState = PreviewData.dashboardScanComplete,
+                    onRefresh = {},
+                    onLogout = {},
+                    onViewAllAlerts = {},
+                    onAlertClick = { _ -> },
+                    onScanNow = {},
+                    onFixIt = {},
+                    onDismissAction = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Dashboard_ScanComplete.png")
@@ -74,7 +119,16 @@ class DashboardScreenshotTest {
     fun dashboard_fix_complete() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                DashboardContentForTest(uiState = PreviewData.dashboardFixComplete)
+                DashboardContent(
+                    uiState = PreviewData.dashboardFixComplete,
+                    onRefresh = {},
+                    onLogout = {},
+                    onViewAllAlerts = {},
+                    onAlertClick = { _ -> },
+                    onScanNow = {},
+                    onFixIt = {},
+                    onDismissAction = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Dashboard_FixComplete.png")
@@ -84,8 +138,15 @@ class DashboardScreenshotTest {
     fun dashboard_error() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                DashboardContentForTest(
+                DashboardContent(
                     uiState = DashboardUiState.Error("Failed to load dashboard"),
+                    onRefresh = {},
+                    onLogout = {},
+                    onViewAllAlerts = {},
+                    onAlertClick = { _ -> },
+                    onScanNow = {},
+                    onFixIt = {},
+                    onDismissAction = {},
                 )
             }
         }
@@ -96,7 +157,16 @@ class DashboardScreenshotTest {
     fun dashboard_empty() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                DashboardContentForTest(uiState = PreviewData.dashboardEmpty)
+                DashboardContent(
+                    uiState = PreviewData.dashboardEmpty,
+                    onRefresh = {},
+                    onLogout = {},
+                    onViewAllAlerts = {},
+                    onAlertClick = { _ -> },
+                    onScanNow = {},
+                    onFixIt = {},
+                    onDismissAction = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Dashboard_Empty.png")
@@ -106,7 +176,16 @@ class DashboardScreenshotTest {
     fun dashboard_session_expired() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                DashboardContentForTest(uiState = PreviewData.dashboardSessionExpired)
+                DashboardContent(
+                    uiState = PreviewData.dashboardSessionExpired,
+                    onRefresh = {},
+                    onLogout = {},
+                    onViewAllAlerts = {},
+                    onAlertClick = { _ -> },
+                    onScanNow = {},
+                    onFixIt = {},
+                    onDismissAction = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Dashboard_SessionExpired.png")

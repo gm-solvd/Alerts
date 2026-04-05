@@ -4,8 +4,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.privacyalert.android.ui.preview.PreviewData
-import com.privacyalert.android.ui.screen.AlertDetailContentForTest
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
+import com.privacyalert.presentation.ui.screen.AlertDetailContent
+import com.privacyalert.presentation.ui.theme.PrivacyAlertTheme
 import com.privacyalert.presentation.viewmodel.AlertDetailUiState
 import org.junit.Rule
 import org.junit.Test
@@ -24,7 +24,12 @@ class AlertDetailScreenshotTest {
     fun alertDetail_loading() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                AlertDetailContentForTest(uiState = AlertDetailUiState.Loading)
+                AlertDetailContent(
+                    uiState = AlertDetailUiState.Loading,
+                    onResolve = {},
+                    onRetry = {},
+                    onBack = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/AlertDetail_Loading.png")
@@ -34,7 +39,7 @@ class AlertDetailScreenshotTest {
     fun alertDetail_success_unresolved() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                AlertDetailContentForTest(
+                AlertDetailContent(
                     uiState = AlertDetailUiState.Success(
                         alert = PreviewData.alertCritical,
                         mitigations = listOf(
@@ -42,6 +47,9 @@ class AlertDetailScreenshotTest {
                             PreviewData.mitigationIncomplete2,
                         ),
                     ),
+                    onResolve = {},
+                    onRetry = {},
+                    onBack = {},
                 )
             }
         }
@@ -52,11 +60,14 @@ class AlertDetailScreenshotTest {
     fun alertDetail_success_resolved() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                AlertDetailContentForTest(
+                AlertDetailContent(
                     uiState = AlertDetailUiState.Success(
                         alert = PreviewData.alertLowResolved,
                         mitigations = listOf(PreviewData.mitigationCompleted),
                     ),
+                    onResolve = {},
+                    onRetry = {},
+                    onBack = {},
                 )
             }
         }
@@ -67,8 +78,11 @@ class AlertDetailScreenshotTest {
     fun alertDetail_error() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                AlertDetailContentForTest(
+                AlertDetailContent(
                     uiState = AlertDetailUiState.Error("Alert not found"),
+                    onResolve = {},
+                    onRetry = {},
+                    onBack = {},
                 )
             }
         }
@@ -79,7 +93,12 @@ class AlertDetailScreenshotTest {
     fun alertDetail_session_expired() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                AlertDetailContentForTest(uiState = AlertDetailUiState.SessionExpired)
+                AlertDetailContent(
+                    uiState = AlertDetailUiState.SessionExpired,
+                    onResolve = {},
+                    onRetry = {},
+                    onBack = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/AlertDetail_SessionExpired.png")

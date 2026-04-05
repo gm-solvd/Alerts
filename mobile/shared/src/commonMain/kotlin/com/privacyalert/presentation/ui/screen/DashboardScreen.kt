@@ -1,4 +1,4 @@
-package com.privacyalert.android.ui.screen
+package com.privacyalert.presentation.ui.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +32,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,19 +42,17 @@ import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
-import androidx.compose.ui.tooling.preview.Preview
-import com.privacyalert.android.ui.component.CredentialExposedBadge
-import com.privacyalert.android.ui.component.ProgressCard
-import com.privacyalert.android.ui.component.ScoreGauge
-import com.privacyalert.android.ui.component.SectionHeader
-import com.privacyalert.android.ui.component.SeverityBadge
-import com.privacyalert.android.ui.preview.PreviewData
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
-import com.privacyalert.android.ui.theme.Spacing
-import com.privacyalert.android.ui.navigation.AlertsTab
+import com.privacyalert.presentation.ui.component.CredentialExposedBadge
+import com.privacyalert.presentation.ui.component.ProgressCard
+import com.privacyalert.presentation.ui.component.ScoreGauge
+import com.privacyalert.presentation.ui.component.SectionHeader
+import com.privacyalert.presentation.ui.component.SeverityBadge
+import com.privacyalert.presentation.ui.theme.PrivacyAlertTheme
+import com.privacyalert.presentation.ui.theme.Spacing
+import com.privacyalert.presentation.ui.navigation.AlertsTab
 import com.privacyalert.domain.model.Alert
 import com.privacyalert.presentation.viewmodel.AuthViewModel
-import com.privacyalert.android.ui.theme.AppColors
+import com.privacyalert.presentation.ui.theme.AppColors
 import com.privacyalert.presentation.viewmodel.ActionState
 import com.privacyalert.presentation.viewmodel.DashboardUiState
 import com.privacyalert.presentation.viewmodel.DashboardViewModel
@@ -67,7 +65,7 @@ class DashboardScreen : Screen {
         val authVm = koinScreenModel<AuthViewModel>()
         val navigator = LocalNavigator.currentOrThrow
         val tabNavigator = LocalTabNavigator.current
-        val uiState by dashboardVm.uiState.collectAsStateWithLifecycle()
+        val uiState by dashboardVm.uiState.collectAsState()
 
         DashboardContent(
             uiState = uiState,
@@ -84,7 +82,7 @@ class DashboardScreen : Screen {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DashboardContent(
+fun DashboardContent(
     uiState: DashboardUiState,
     onRefresh: () -> Unit,
     onLogout: () -> Unit,
@@ -408,96 +406,5 @@ private fun AlertSummaryCard(
                 }
             }
         }
-    }
-}
-
-/** Test-only entry point for DashboardContent. */
-@Composable
-fun DashboardContentForTest(
-    uiState: DashboardUiState,
-    onRefresh: () -> Unit = {},
-    onLogout: () -> Unit = {},
-    onViewAllAlerts: () -> Unit = {},
-    onAlertClick: (Alert) -> Unit = {},
-    onScanNow: () -> Unit = {},
-    onFixIt: () -> Unit = {},
-    onDismissAction: () -> Unit = {},
-) {
-    DashboardContent(
-        uiState = uiState,
-        onRefresh = onRefresh,
-        onLogout = onLogout,
-        onViewAllAlerts = onViewAllAlerts,
-        onAlertClick = onAlertClick,
-        onScanNow = onScanNow,
-        onFixIt = onFixIt,
-        onDismissAction = onDismissAction,
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DashboardContentSuccessPreview() {
-    PrivacyAlertTheme {
-        DashboardContent(
-            uiState = DashboardUiState.Success(
-                score = PreviewData.scoreHigh,
-                topAlerts = PreviewData.alertList.take(3),
-            ),
-            onRefresh = {},
-            onLogout = {},
-            onViewAllAlerts = {},
-            onAlertClick = {},
-            onScanNow = {},
-            onFixIt = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DashboardContentScanningPreview() {
-    PrivacyAlertTheme {
-        DashboardContent(
-            uiState = PreviewData.dashboardScanning,
-            onRefresh = {},
-            onLogout = {},
-            onViewAllAlerts = {},
-            onAlertClick = {},
-            onScanNow = {},
-            onFixIt = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DashboardContentFixingPreview() {
-    PrivacyAlertTheme {
-        DashboardContent(
-            uiState = PreviewData.dashboardFixing,
-            onRefresh = {},
-            onLogout = {},
-            onViewAllAlerts = {},
-            onAlertClick = {},
-            onScanNow = {},
-            onFixIt = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DashboardContentErrorPreview() {
-    PrivacyAlertTheme {
-        DashboardContent(
-            uiState = DashboardUiState.Error("Failed to load dashboard"),
-            onRefresh = {},
-            onLogout = {},
-            onViewAllAlerts = {},
-            onAlertClick = {},
-            onScanNow = {},
-            onFixIt = {},
-        )
     }
 }

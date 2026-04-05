@@ -1,4 +1,4 @@
-package com.privacyalert.android.ui.screen
+package com.privacyalert.presentation.ui.screen
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -35,12 +35,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.privacyalert.android.ui.theme.AppColors
-import com.privacyalert.android.ui.theme.ComponentSize
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
-import com.privacyalert.android.ui.theme.Spacing
+import com.privacyalert.presentation.ui.theme.AppColors
+import com.privacyalert.presentation.ui.theme.ComponentSize
+import com.privacyalert.presentation.ui.theme.Spacing
 import kotlinx.coroutines.launch
 
 private data class OnboardingPage(
@@ -418,28 +416,4 @@ private fun DrawScope.drawGetStartedIllustration(
         radius = w * 0.02f,
         center = Offset(w * 0.88f, h * 0.4f),
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OnboardingScreenPreview() {
-    PrivacyAlertTheme {
-        OnboardingScreen(
-            onLoginClick = {},
-            onRegisterClick = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun EmailIllustrationPreview() {
-    PrivacyAlertTheme {
-        Box(
-            modifier = Modifier.size(200.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            EmailIllustration()
-        }
-    }
 }

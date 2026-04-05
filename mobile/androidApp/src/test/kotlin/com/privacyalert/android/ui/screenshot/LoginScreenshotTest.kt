@@ -3,8 +3,8 @@ package com.privacyalert.android.ui.screenshot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.privacyalert.android.ui.screen.LoginContentForTest
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
+import com.privacyalert.presentation.ui.screen.LoginContent
+import com.privacyalert.presentation.ui.theme.PrivacyAlertTheme
 import com.privacyalert.presentation.viewmodel.AuthUiState
 import org.junit.Rule
 import org.junit.Test
@@ -23,7 +23,12 @@ class LoginScreenshotTest {
     fun login_idle() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                LoginContentForTest(authState = AuthUiState.Idle)
+                LoginContent(
+                    authState = AuthUiState.Idle,
+                    onLogin = { _, _ -> },
+                    onNavigateToRegister = {},
+                    onClearError = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Login_Idle.png")
@@ -33,7 +38,12 @@ class LoginScreenshotTest {
     fun login_loading() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                LoginContentForTest(authState = AuthUiState.Loading)
+                LoginContent(
+                    authState = AuthUiState.Loading,
+                    onLogin = { _, _ -> },
+                    onNavigateToRegister = {},
+                    onClearError = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Login_Loading.png")
@@ -43,8 +53,11 @@ class LoginScreenshotTest {
     fun login_error() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                LoginContentForTest(
+                LoginContent(
                     authState = AuthUiState.Error("Invalid email or password"),
+                    onLogin = { _, _ -> },
+                    onNavigateToRegister = {},
+                    onClearError = {},
                 )
             }
         }

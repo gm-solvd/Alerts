@@ -1,4 +1,4 @@
-package com.privacyalert.android.ui.navigation
+package com.privacyalert.presentation.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -10,8 +10,8 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import cafe.adriel.voyager.transitions.SlideTransition
-import com.privacyalert.android.ui.screen.AlertsScreen
-import com.privacyalert.android.ui.screen.DashboardScreen
+import com.privacyalert.presentation.ui.screen.AlertsScreen
+import com.privacyalert.presentation.ui.screen.DashboardScreen
 
 object DashboardTab : Tab {
 

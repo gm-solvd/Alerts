@@ -1,4 +1,4 @@
-package com.privacyalert.android.ui.component
+package com.privacyalert.presentation.ui.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -22,11 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
-import com.privacyalert.android.ui.theme.AppColors
-import com.privacyalert.android.ui.theme.IconSize
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
-import com.privacyalert.android.ui.theme.Spacing
+import com.privacyalert.presentation.ui.theme.IconSize
+import com.privacyalert.presentation.ui.theme.Spacing
 
 @Composable
 fun ProgressCard(
@@ -69,31 +63,5 @@ fun ProgressCard(
                 trackColor = Color.White.copy(alpha = 0.3f),
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ProgressCardScanPreview() {
-    PrivacyAlertTheme {
-        ProgressCard(
-            icon = Icons.Default.Search,
-            title = "Scanning...",
-            containerColor = AppColors.BluePrimary,
-            modifier = Modifier.padding(Spacing.md),
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ProgressCardFixPreview() {
-    PrivacyAlertTheme {
-        ProgressCard(
-            icon = Icons.Default.Build,
-            title = "Fixing...",
-            containerColor = AppColors.FixGreen,
-            modifier = Modifier.padding(Spacing.md),
-        )
     }
 }
