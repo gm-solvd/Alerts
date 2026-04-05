@@ -45,6 +45,13 @@ app:
     rate-limit-per-domain-delay-ms: 3000
     social:
       enabled-platforms: github,stackoverflow,reddit,mastodon
+  comb:
+    enabled: false
+    base-url: https://api.proxynova.com
+  email-rep:
+    enabled: false
+    api-key: ${EMAIL_REP_API_KEY:}
+    base-url: https://emailrep.io
   admin:
     token: ${ADMIN_TOKEN:changeme}
 
