@@ -110,206 +110,258 @@ private fun DashboardContent(
         )
 
         when (uiState) {
-            is DashboardUiState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
+            is DashboardUiState.Loading -> LoadingContent()
+            is DashboardUiState.SessionExpired -> SessionExpiredContent()
+            is DashboardUiState.Error -> ErrorContent(
+                message = uiState.message,
+                onRetry = onRefresh,
+            )
+            is DashboardUiState.Success -> SuccessContent(
+                uiState = uiState,
+                onRefresh = onRefresh,
+                onViewAllAlerts = onViewAllAlerts,
+                onAlertClick = onAlertClick,
+                onScanNow = onScanNow,
+                onFixIt = onFixIt,
+                onDismissAction = onDismissAction,
+            )
+        }
+    }
+}
+
+@Composable
+private fun LoadingContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun SessionExpiredContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "Session expired. Redirecting to login...",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun ErrorContent(message: String, onRetry: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Spacer(modifier = Modifier.height(Spacing.md))
+            Button(onClick = onRetry) {
+                Text("Retry")
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SuccessContent(
+    uiState: DashboardUiState.Success,
+    onRefresh: () -> Unit,
+    onViewAllAlerts: () -> Unit,
+    onAlertClick: (Alert) -> Unit,
+    onScanNow: () -> Unit,
+    onFixIt: () -> Unit,
+    onDismissAction: () -> Unit,
+) {
+    PullToRefreshBox(
+        isRefreshing = false,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(Spacing.md),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(modifier = Modifier.height(Spacing.md))
+
+            ScoreGauge(score = uiState.score.score)
+
+            Spacer(modifier = Modifier.height(Spacing.md))
+
+            val actionState = uiState.actionState
+            when (actionState) {
+                is ActionState.Scanning -> ScanningCard()
+                is ActionState.Fixing -> FixingCard()
+                is ActionState.ScanComplete -> ScanCompleteCard(
+                    newAlerts = actionState.newAlerts,
+                    onDismiss = onDismissAction,
+                )
+                is ActionState.FixComplete -> FixCompleteCard(
+                    resolvedCount = actionState.resolvedCount,
+                    onDismiss = onDismissAction,
+                )
+                is ActionState.ActionError -> ActionErrorCard(
+                    message = actionState.message,
+                    onDismiss = onDismissAction,
+                )
+                is ActionState.Idle -> IdleActionButtons(
+                    onScanNow = onScanNow,
+                    onFixIt = onFixIt,
+                )
             }
 
-            is DashboardUiState.SessionExpired -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
+            Spacer(modifier = Modifier.height(Spacing.xl))
+
+            if (uiState.topAlerts.isNotEmpty()) {
+                SectionHeader(
+                    title = "Recent Alerts",
+                    actionText = "View All",
+                    onAction = onViewAllAlerts,
+                )
+                Spacer(modifier = Modifier.height(Spacing.sm))
+                uiState.topAlerts.forEach { alert ->
+                    AlertSummaryCard(
+                        alert = alert,
+                        onClick = { onAlertClick(alert) },
+                    )
+                    Spacer(modifier = Modifier.height(Spacing.sm))
+                }
+            } else {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
                 ) {
                     Text(
-                        text = "Session expired. Redirecting to login...",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        text = "No alerts. Your privacy looks good!",
+                        modifier = Modifier.padding(Spacing.md),
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
             }
 
-            is DashboardUiState.Error -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = uiState.message,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-                        Spacer(modifier = Modifier.height(Spacing.md))
-                        Button(onClick = onRefresh) {
-                            Text("Retry")
-                        }
-                    }
-                }
+            Spacer(modifier = Modifier.height(Spacing.lg))
+        }
+    }
+}
+
+@Composable
+private fun ScanningCard() {
+    ProgressCard(
+        icon = Icons.Default.Search,
+        title = "Scanning...",
+        containerColor = AppColors.BluePrimary,
+    )
+}
+
+@Composable
+private fun FixingCard() {
+    ProgressCard(
+        icon = Icons.Default.Build,
+        title = "Fixing...",
+        containerColor = AppColors.FixGreen,
+    )
+}
+
+@Composable
+private fun ScanCompleteCard(newAlerts: Int, onDismiss: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
+    ) {
+        Column(modifier = Modifier.padding(Spacing.md)) {
+            Text(
+                text = "Scan complete — $newAlerts new alerts found",
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            Button(onClick = onDismiss) {
+                Text("Done")
             }
+        }
+    }
+}
 
-            is DashboardUiState.Success -> {
-                PullToRefreshBox(
-                    isRefreshing = false,
-                    onRefresh = onRefresh,
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .padding(Spacing.md),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Spacer(modifier = Modifier.height(Spacing.md))
-
-                        ScoreGauge(score = uiState.score.score)
-
-                        Spacer(modifier = Modifier.height(Spacing.md))
-
-                        when (uiState.actionState) {
-                            is ActionState.Scanning -> {
-                                ProgressCard(
-                                    icon = Icons.Default.Search,
-                                    title = "Scanning...",
-                                    containerColor = AppColors.BluePrimary,
-                                )
-                            }
-
-                            is ActionState.Fixing -> {
-                                ProgressCard(
-                                    icon = Icons.Default.Build,
-                                    title = "Fixing...",
-                                    containerColor = AppColors.FixGreen,
-                                )
-                            }
-
-                            is ActionState.ScanComplete -> {
-                                val scanResult = uiState.actionState as ActionState.ScanComplete
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    ),
-                                ) {
-                                    Column(modifier = Modifier.padding(Spacing.md)) {
-                                        Text(
-                                            text = "Scan complete — ${scanResult.newAlerts} new alerts found",
-                                            style = MaterialTheme.typography.titleSmall,
-                                        )
-                                        Spacer(modifier = Modifier.height(Spacing.sm))
-                                        Button(onClick = onDismissAction) {
-                                            Text("Done")
-                                        }
-                                    }
-                                }
-                            }
-
-                            is ActionState.FixComplete -> {
-                                val fixResult = uiState.actionState as ActionState.FixComplete
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    ),
-                                ) {
-                                    Column(modifier = Modifier.padding(Spacing.md)) {
-                                        Text(
-                                            text = "Fix complete — ${fixResult.resolvedCount} mitigations resolved",
-                                            style = MaterialTheme.typography.titleSmall,
-                                        )
-                                        Spacer(modifier = Modifier.height(Spacing.sm))
-                                        Button(onClick = onDismissAction) {
-                                            Text("Done")
-                                        }
-                                    }
-                                }
-                            }
-
-                            is ActionState.ActionError -> {
-                                val actionError = uiState.actionState as ActionState.ActionError
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    ),
-                                ) {
-                                    Column(modifier = Modifier.padding(Spacing.md)) {
-                                        Text(
-                                            text = actionError.message,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onErrorContainer,
-                                        )
-                                        Spacer(modifier = Modifier.height(Spacing.sm))
-                                        Button(onClick = onDismissAction) {
-                                            Text("Dismiss")
-                                        }
-                                    }
-                                }
-                            }
-
-                            is ActionState.Idle -> {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-                                ) {
-                                    FilledTonalButton(onClick = onScanNow) {
-                                        Icon(
-                                            imageVector = Icons.Default.Search,
-                                            contentDescription = null,
-                                        )
-                                        Spacer(modifier = Modifier.width(Spacing.xs))
-                                        Text("Run Scan")
-                                    }
-                                    FilledTonalButton(onClick = onFixIt) {
-                                        Icon(
-                                            imageVector = Icons.Default.Build,
-                                            contentDescription = null,
-                                        )
-                                        Spacer(modifier = Modifier.width(Spacing.xs))
-                                        Text("Fix It")
-                                    }
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(Spacing.xl))
-
-                        if (uiState.topAlerts.isNotEmpty()) {
-                            SectionHeader(
-                                title = "Recent Alerts",
-                                actionText = "View All",
-                                onAction = onViewAllAlerts,
-                            )
-                            Spacer(modifier = Modifier.height(Spacing.sm))
-                            uiState.topAlerts.forEach { alert ->
-                                AlertSummaryCard(
-                                    alert = alert,
-                                    onClick = { onAlertClick(alert) },
-                                )
-                                Spacer(modifier = Modifier.height(Spacing.sm))
-                            }
-                        } else {
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                ),
-                            ) {
-                                Text(
-                                    text = "No alerts. Your privacy looks good!",
-                                    modifier = Modifier.padding(Spacing.md),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(Spacing.lg))
-                    }
-                }
+@Composable
+private fun FixCompleteCard(resolvedCount: Int, onDismiss: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
+    ) {
+        Column(modifier = Modifier.padding(Spacing.md)) {
+            Text(
+                text = "Fix complete — $resolvedCount mitigations resolved",
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            Button(onClick = onDismiss) {
+                Text("Done")
             }
+        }
+    }
+}
+
+@Composable
+private fun ActionErrorCard(message: String, onDismiss: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+        ),
+    ) {
+        Column(modifier = Modifier.padding(Spacing.md)) {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            Button(onClick = onDismiss) {
+                Text("Dismiss")
+            }
+        }
+    }
+}
+
+@Composable
+private fun IdleActionButtons(onScanNow: () -> Unit, onFixIt: () -> Unit) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+    ) {
+        FilledTonalButton(onClick = onScanNow) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+            )
+            Spacer(modifier = Modifier.width(Spacing.xs))
+            Text("Run Scan")
+        }
+        FilledTonalButton(onClick = onFixIt) {
+            Icon(
+                imageVector = Icons.Default.Build,
+                contentDescription = null,
+            )
+            Spacer(modifier = Modifier.width(Spacing.xs))
+            Text("Fix It")
         }
     }
 }

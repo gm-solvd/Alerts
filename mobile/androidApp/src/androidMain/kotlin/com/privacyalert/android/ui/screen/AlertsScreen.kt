@@ -82,92 +82,117 @@ private fun AlertsContent(
         )
 
         when (uiState) {
-            is AlertsUiState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
+            is AlertsUiState.Loading -> LoadingContent()
+            is AlertsUiState.SessionExpired -> SessionExpiredContent()
+            is AlertsUiState.Error -> ErrorContent(
+                message = uiState.message,
+                onRetry = onRefresh,
+            )
+            is AlertsUiState.Success -> SuccessContent(
+                uiState = uiState,
+                onRefresh = onRefresh,
+                onLoadMore = onLoadMore,
+                onFilterSeverity = onFilterSeverity,
+                onAlertClick = onAlertClick,
+            )
+        }
+    }
+}
 
-            is AlertsUiState.SessionExpired -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = "Session expired. Redirecting to login...",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+@Composable
+private fun LoadingContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun SessionExpiredContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "Session expired. Redirecting to login...",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun ErrorContent(message: String, onRetry: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Spacer(modifier = Modifier.height(Spacing.md))
+            Button(onClick = onRetry) {
+                Text("Retry")
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SuccessContent(
+    uiState: AlertsUiState.Success,
+    onRefresh: () -> Unit,
+    onLoadMore: () -> Unit,
+    onFilterSeverity: (Severity?) -> Unit,
+    onAlertClick: (Alert) -> Unit,
+) {
+    PullToRefreshBox(
+        isRefreshing = false,
+        onRefresh = onRefresh,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            SeverityFilterChips(
+                selectedSeverity = uiState.selectedSeverity,
+                onFilterSeverity = onFilterSeverity,
+            )
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = Spacing.md),
+                verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+            ) {
+                items(uiState.alerts, key = { it.id }) { alert ->
+                    AlertCard(
+                        alert = alert,
+                        onClick = { onAlertClick(alert) },
                     )
                 }
-            }
 
-            is AlertsUiState.Error -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = uiState.message,
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-                        Spacer(modifier = Modifier.height(Spacing.md))
-                        Button(onClick = onRefresh) {
-                            Text("Retry")
+                if (uiState.hasMore) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(Spacing.md),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            TextButton(onClick = onLoadMore) {
+                                Text("Load more")
+                            }
                         }
                     }
                 }
-            }
 
-            is AlertsUiState.Success -> {
-                PullToRefreshBox(
-                    isRefreshing = false,
-                    onRefresh = onRefresh,
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        SeverityFilterChips(
-                            selectedSeverity = uiState.selectedSeverity,
-                            onFilterSeverity = onFilterSeverity,
-                        )
-
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = Spacing.md),
-                            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
-                        ) {
-                            items(uiState.alerts, key = { it.id }) { alert ->
-                                AlertCard(
-                                    alert = alert,
-                                    onClick = { onAlertClick(alert) },
-                                )
-                            }
-
-                            if (uiState.hasMore) {
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(Spacing.md),
-                                        contentAlignment = Alignment.Center,
-                                    ) {
-                                        TextButton(onClick = onLoadMore) {
-                                            Text("Load more")
-                                        }
-                                    }
-                                }
-                            }
-
-                            item {
-                                Spacer(modifier = Modifier.height(Spacing.md))
-                            }
-                        }
-                    }
+                item {
+                    Spacer(modifier = Modifier.height(Spacing.md))
                 }
             }
         }
