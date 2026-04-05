@@ -9,7 +9,7 @@ COMMAND=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin
 
 # Only intercept commands where gh pr create is the actual command, not inside quotes/args.
 # Extract just the command portion before any --body or -m flag to avoid matching commit messages.
-CMD_PREFIX=$(echo "$COMMAND" | sed 's/\s*--body\s.*//;s/\s*-m\s.*//')
+CMD_PREFIX=$(echo "$COMMAND" | sed 's/[[:space:]]*--body[[:space:]].*//' | sed 's/[[:space:]]*-m[[:space:]].*//')
 if ! echo "$CMD_PREFIX" | grep -qE '(^|\s|/|;|&&|\|)(/opt/homebrew/bin/)?gh\s+pr\s+create\b'; then
   exit 0
 fi
