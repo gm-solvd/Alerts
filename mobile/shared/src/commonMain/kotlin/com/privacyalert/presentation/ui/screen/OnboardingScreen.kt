@@ -215,6 +215,7 @@ private fun EmailIllustration() {
     }
 }
 
+@Suppress("LongMethod")
 private fun DrawScope.drawEmailIllustration(
     primary: Color,
     secondary: Color,
@@ -284,6 +285,7 @@ private fun PasswordIllustration() {
     }
 }
 
+@Suppress("LongMethod")
 private fun DrawScope.drawPasswordIllustration(
     primary: Color,
     accent: Color,
@@ -364,6 +366,7 @@ private fun GetStartedIllustration() {
     }
 }
 
+@Suppress("LongMethod")
 private fun DrawScope.drawGetStartedIllustration(
     primary: Color,
     success: Color,

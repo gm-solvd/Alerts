@@ -9,7 +9,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.privacyalert.presentation.ui.theme.Spacing
 
 @Composable
 fun SectionHeader(
