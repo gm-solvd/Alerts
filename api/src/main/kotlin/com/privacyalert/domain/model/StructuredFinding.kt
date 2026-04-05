@@ -9,4 +9,5 @@ data class StructuredFinding(
     val severity: String? = null,
     val recordCount: Long? = null,
     val exposedFields: List<String> = emptyList(),
+    val credentialExposed: Boolean = false,
 )
