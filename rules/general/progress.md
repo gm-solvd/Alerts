@@ -30,5 +30,6 @@
 | 8 | Swiss-clean redesign | DONE | 2026-04-04 | Theme overhaul (blue #2563EB primary, white bg), 4→2 tab nav (Dashboard+Alerts), Dashboard 3-state UI (scan/fix progress), dead code cleanup (ScanScreen, MitigationsScreen, ScanViewModel, MitigationsViewModel), TokenStorage email for auto-scan. PR #41 |
 | 9 | Screenshot tests (Roborazzi) | DONE | 2026-04-04 | 23 screenshot tests across 6 screens (Dashboard×8, Alerts×5, AlertDetail×4, Login×3, Register×2, Onboarding×1). JVM-based, no emulator. TestApplication with no Koin. PR #43 |
 | 10 | i18n + SessionExpired | DONE | 2026-04-04 | ErrorMessages i18n via expect/actual ErrorStringKey + errorString(). SessionExpired UiState variant in Dashboard/Alerts/AlertDetail with auto-logout on 401. 3 new screenshot tests. |
+| 11 | iOS via Compose Multiplatform | DONE | 2026-04-05 | Moved 20 UI files from androidApp to shared/commonMain. expect/actual for OnboardingPreferences + PlatformThemeEffect. iOS entry: MainViewController + AppDelegate.swift + xcodegen project.yml. PR #61 |
 
 Status: `-` (not started) | `IN PROGRESS` | `DONE` | `BLOCKED`
