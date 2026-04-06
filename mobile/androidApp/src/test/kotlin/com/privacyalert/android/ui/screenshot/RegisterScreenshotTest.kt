@@ -3,8 +3,8 @@ package com.privacyalert.android.ui.screenshot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.privacyalert.android.ui.screen.RegisterContentForTest
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
+import com.privacyalert.presentation.ui.screen.RegisterContent
+import com.privacyalert.presentation.ui.theme.PrivacyAlertTheme
 import com.privacyalert.presentation.viewmodel.AuthUiState
 import org.junit.Rule
 import org.junit.Test
@@ -23,7 +23,12 @@ class RegisterScreenshotTest {
     fun register_idle() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                RegisterContentForTest(authState = AuthUiState.Idle)
+                RegisterContent(
+                    authState = AuthUiState.Idle,
+                    onRegister = { _, _ -> },
+                    onNavigateToLogin = {},
+                    onClearError = {},
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Register_Idle.png")
@@ -33,8 +38,11 @@ class RegisterScreenshotTest {
     fun register_error() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                RegisterContentForTest(
+                RegisterContent(
                     authState = AuthUiState.Error("Email already registered"),
+                    onRegister = { _, _ -> },
+                    onNavigateToLogin = {},
+                    onClearError = {},
                 )
             }
         }

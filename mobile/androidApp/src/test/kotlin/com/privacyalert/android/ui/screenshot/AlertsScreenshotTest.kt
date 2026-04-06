@@ -4,8 +4,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.privacyalert.android.ui.preview.PreviewData
-import com.privacyalert.android.ui.screen.AlertsContentForTest
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
+import com.privacyalert.presentation.ui.screen.AlertsContent
+import com.privacyalert.presentation.ui.theme.PrivacyAlertTheme
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.presentation.viewmodel.AlertsUiState
 import org.junit.Rule
@@ -25,7 +25,13 @@ class AlertsScreenshotTest {
     fun alerts_loading() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                AlertsContentForTest(uiState = AlertsUiState.Loading)
+                AlertsContent(
+                    uiState = AlertsUiState.Loading,
+                    onRefresh = {},
+                    onLoadMore = {},
+                    onFilterSeverity = { _ -> },
+                    onAlertClick = { _ -> },
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Alerts_Loading.png")
@@ -35,12 +41,16 @@ class AlertsScreenshotTest {
     fun alerts_success() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                AlertsContentForTest(
+                AlertsContent(
                     uiState = AlertsUiState.Success(
                         alerts = PreviewData.alertList,
                         hasMore = true,
                         selectedSeverity = null,
                     ),
+                    onRefresh = {},
+                    onLoadMore = {},
+                    onFilterSeverity = { _ -> },
+                    onAlertClick = { _ -> },
                 )
             }
         }
@@ -51,12 +61,16 @@ class AlertsScreenshotTest {
     fun alerts_filtered_critical() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                AlertsContentForTest(
+                AlertsContent(
                     uiState = AlertsUiState.Success(
                         alerts = listOf(PreviewData.alertCritical),
                         hasMore = false,
                         selectedSeverity = Severity.CRITICAL,
                     ),
+                    onRefresh = {},
+                    onLoadMore = {},
+                    onFilterSeverity = { _ -> },
+                    onAlertClick = { _ -> },
                 )
             }
         }
@@ -67,12 +81,16 @@ class AlertsScreenshotTest {
     fun alerts_empty() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                AlertsContentForTest(
+                AlertsContent(
                     uiState = AlertsUiState.Success(
                         alerts = emptyList(),
                         hasMore = false,
                         selectedSeverity = null,
                     ),
+                    onRefresh = {},
+                    onLoadMore = {},
+                    onFilterSeverity = { _ -> },
+                    onAlertClick = { _ -> },
                 )
             }
         }
@@ -83,8 +101,12 @@ class AlertsScreenshotTest {
     fun alerts_error() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                AlertsContentForTest(
+                AlertsContent(
                     uiState = AlertsUiState.Error("Failed to load alerts"),
+                    onRefresh = {},
+                    onLoadMore = {},
+                    onFilterSeverity = { _ -> },
+                    onAlertClick = { _ -> },
                 )
             }
         }
@@ -95,7 +117,13 @@ class AlertsScreenshotTest {
     fun alerts_session_expired() {
         composeTestRule.setContent {
             PrivacyAlertTheme {
-                AlertsContentForTest(uiState = AlertsUiState.SessionExpired)
+                AlertsContent(
+                    uiState = AlertsUiState.SessionExpired,
+                    onRefresh = {},
+                    onLoadMore = {},
+                    onFilterSeverity = { _ -> },
+                    onAlertClick = { _ -> },
+                )
             }
         }
         composeTestRule.onRoot().captureRoboImage("src/test/screenshots/Alerts_SessionExpired.png")

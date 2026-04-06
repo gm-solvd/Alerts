@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.android.library)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
@@ -25,6 +27,14 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            // Compose Multiplatform
+            api(compose.runtime)
+            api(compose.foundation)
+            api(compose.material3)
+            api(compose.ui)
+            api(compose.components.resources)
+            api(compose.materialIconsExtended)
+
             // Networking
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
@@ -34,18 +44,20 @@ kotlin {
 
             // DI
             implementation(libs.koin.core)
+            api(libs.koin.compose)
+            api(libs.koin.compose.viewmodel)
 
             // Navigation
-            implementation(libs.voyager.navigator)
-            implementation(libs.voyager.screenmodel)
-            implementation(libs.voyager.tab.navigator)
-            implementation(libs.voyager.transitions)
-            implementation(libs.voyager.koin)
+            api(libs.voyager.navigator)
+            api(libs.voyager.screenmodel)
+            api(libs.voyager.tab.navigator)
+            api(libs.voyager.transitions)
+            api(libs.voyager.koin)
 
             // Kotlinx
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kotlinx.datetime)
+            api(libs.kotlinx.datetime)
 
             // SQLDelight
             implementation(libs.sqldelight.coroutines)
@@ -63,6 +75,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.sqldelight.android.driver)
             implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.androidx.core.ktx)
         }
 
         iosMain.dependencies {

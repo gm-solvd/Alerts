@@ -3,8 +3,8 @@ package com.privacyalert.android.ui.screenshot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.privacyalert.android.ui.screen.OnboardingScreen
-import com.privacyalert.android.ui.theme.PrivacyAlertTheme
+import com.privacyalert.presentation.ui.screen.OnboardingScreen
+import com.privacyalert.presentation.ui.theme.PrivacyAlertTheme
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
