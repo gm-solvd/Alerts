@@ -60,6 +60,7 @@ class DataBrokerScannerImpl(
                     }
                 },
             detectionMethod = "heuristic_credit_bureau",
+            dataAccessUrl = site.dataAccessUrl,
         )
     }
 
@@ -111,6 +112,7 @@ class DataBrokerScannerImpl(
                 severity = severity,
                 exposedFields = exposedFields,
                 detectionMethod = "web_scrape",
+                dataAccessUrl = site.dataAccessUrl,
             )
         } catch (e: Exception) {
             log.debug("Data broker scan failed for {}: {}", site.name, e.message)
@@ -140,6 +142,7 @@ class DataBrokerScannerImpl(
                     }
                 },
             detectionMethod = "heuristic_marketing",
+            dataAccessUrl = site.dataAccessUrl,
         )
     }
 
@@ -166,6 +169,7 @@ class DataBrokerScannerImpl(
                     }
                 },
             detectionMethod = "heuristic_aggregator",
+            dataAccessUrl = site.dataAccessUrl,
         )
     }
 

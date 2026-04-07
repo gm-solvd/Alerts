@@ -12,6 +12,7 @@ data class DataBrokerExposureResult(
     val severity: Severity,
     val exposedFields: List<String>,
     val detectionMethod: String,
+    val dataAccessUrl: String? = null,
 )
 
 interface DataBrokerScanner {

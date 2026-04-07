@@ -711,7 +711,7 @@ class ScanServiceTest {
     }
 
     @Test
-    fun `dataBrokerScan creates mitigation per broker`() {
+    fun `dataBrokerScan creates mitigation per broker with actionUrl`() {
         val results =
             listOf(
                 DataBrokerExposureResult(
@@ -721,6 +721,7 @@ class ScanServiceTest {
                     severity = Severity.HIGH,
                     exposedFields = listOf("name", "address"),
                     detectionMethod = "heuristic_credit_bureau",
+                    dataAccessUrl = "https://www.experian.com/consumer-products/free-credit-report",
                 ),
             )
         val mitigationSlot = slot<Mitigation>()
@@ -735,6 +736,7 @@ class ScanServiceTest {
         val saved = mitigationSlot.captured
         assertTrue(saved.title.contains("credit report"))
         assertTrue(saved.title.contains("Experian"))
+        assertEquals("https://www.experian.com/consumer-products/free-credit-report", saved.actionUrl)
     }
 
     @Test

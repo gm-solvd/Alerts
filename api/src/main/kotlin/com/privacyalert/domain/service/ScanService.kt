@@ -370,6 +370,7 @@ class ScanService(
                         alertId = alert.id,
                         title = mitigationTitle,
                         description = "Visit ${result.brokerName}'s data access portal to review and request removal of your data.",
+                        actionUrl = result.dataAccessUrl,
                     ),
                 )
 
