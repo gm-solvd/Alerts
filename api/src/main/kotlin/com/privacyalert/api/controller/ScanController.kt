@@ -49,6 +49,14 @@ class ScanController(
         return ResponseEntity.ok(alerts.map { it.toResponse() })
     }
 
+    @PostMapping("/data-broker")
+    fun dataBrokerScan(
+        @Valid @RequestBody request: ScanProfileRequest,
+    ): ResponseEntity<List<AlertResponse>> {
+        val alerts = scanService.dataBrokerScan(authenticatedUserId(), request.toProfile())
+        return ResponseEntity.ok(alerts.map { it.toResponse() })
+    }
+
     @PostMapping("/full")
     fun fullScan(
         @Valid @RequestBody request: ScanProfileRequest,
