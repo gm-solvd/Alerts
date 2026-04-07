@@ -3,9 +3,9 @@ package com.privacyalert.data.entity
 import com.privacyalert.domain.model.DataBrokerCategory
 import com.privacyalert.domain.model.DataBrokerSite
 import jakarta.persistence.Column
+import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.PostLoad
 import jakarta.persistence.PostPersist

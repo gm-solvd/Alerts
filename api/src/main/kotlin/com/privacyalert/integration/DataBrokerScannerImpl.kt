@@ -49,15 +49,16 @@ class DataBrokerScannerImpl(
             brokerName = site.name,
             category = site.category,
             severity = Severity.HIGH,
-            exposedFields = site.piiFields.filter { field ->
-                when (field) {
-                    "name" -> profile.fullName != null
-                    "address" -> profile.homeAddress != null
-                    "phone" -> profile.phoneNumber != null
-                    "email" -> true
-                    else -> true
-                }
-            },
+            exposedFields =
+                site.piiFields.filter { field ->
+                    when (field) {
+                        "name" -> profile.fullName != null
+                        "address" -> profile.homeAddress != null
+                        "phone" -> profile.phoneNumber != null
+                        "email" -> true
+                        else -> true
+                    }
+                },
             detectionMethod = "heuristic_credit_bureau",
         )
     }
@@ -84,22 +85,24 @@ class DataBrokerScannerImpl(
 
             if (!nameMatches) return null
 
-            val exposedFields = site.piiFields.filter { field ->
-                when (field) {
-                    "name" -> true
-                    "phone" -> profile.phoneNumber != null
-                    "address" -> profile.homeAddress != null
-                    "email" -> true
-                    "age" -> profile.dateOfBirth != null
-                    else -> false
+            val exposedFields =
+                site.piiFields.filter { field ->
+                    when (field) {
+                        "name" -> true
+                        "phone" -> profile.phoneNumber != null
+                        "address" -> profile.homeAddress != null
+                        "email" -> true
+                        "age" -> profile.dateOfBirth != null
+                        else -> false
+                    }
                 }
-            }
 
-            val severity = when {
-                exposedFields.containsAll(listOf("phone", "address")) -> Severity.HIGH
-                exposedFields.containsAll(listOf("name", "address")) -> Severity.MEDIUM
-                else -> Severity.LOW
-            }
+            val severity =
+                when {
+                    exposedFields.containsAll(listOf("phone", "address")) -> Severity.HIGH
+                    exposedFields.containsAll(listOf("name", "address")) -> Severity.MEDIUM
+                    else -> Severity.LOW
+                }
 
             DataBrokerExposureResult(
                 brokerId = site.id,
@@ -126,15 +129,16 @@ class DataBrokerScannerImpl(
             brokerName = site.name,
             category = site.category,
             severity = Severity.MEDIUM,
-            exposedFields = site.piiFields.filter { field ->
-                when (field) {
-                    "name" -> profile.fullName != null
-                    "address" -> profile.homeAddress != null
-                    "phone" -> profile.phoneNumber != null
-                    "email" -> true
-                    else -> true
-                }
-            },
+            exposedFields =
+                site.piiFields.filter { field ->
+                    when (field) {
+                        "name" -> profile.fullName != null
+                        "address" -> profile.homeAddress != null
+                        "phone" -> profile.phoneNumber != null
+                        "email" -> true
+                        else -> true
+                    }
+                },
             detectionMethod = "heuristic_marketing",
         )
     }
@@ -151,15 +155,16 @@ class DataBrokerScannerImpl(
             brokerName = site.name,
             category = site.category,
             severity = Severity.HIGH,
-            exposedFields = site.piiFields.filter { field ->
-                when (field) {
-                    "name" -> true
-                    "address" -> profile.homeAddress != null
-                    "phone" -> profile.phoneNumber != null
-                    "email" -> true
-                    else -> true
-                }
-            },
+            exposedFields =
+                site.piiFields.filter { field ->
+                    when (field) {
+                        "name" -> true
+                        "address" -> profile.homeAddress != null
+                        "phone" -> profile.phoneNumber != null
+                        "email" -> true
+                        else -> true
+                    }
+                },
             detectionMethod = "heuristic_aggregator",
         )
     }
