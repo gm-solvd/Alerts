@@ -1,12 +1,15 @@
 package com.privacyalert.domain.service
 
 import com.privacyalert.domain.model.Alert
+import com.privacyalert.domain.model.DataBrokerCategory
+import com.privacyalert.domain.model.Mitigation
 import com.privacyalert.domain.model.ScanResult
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.model.StructuredFinding
 import com.privacyalert.domain.model.ThreatCategory
 import com.privacyalert.domain.model.UserScanProfile
 import com.privacyalert.domain.repository.AlertRepository
+import com.privacyalert.domain.repository.MitigationRepository
 import com.privacyalert.domain.repository.ScanResultRepository
 import org.springframework.stereotype.Service
 import java.util.Optional
@@ -24,6 +27,8 @@ class ScanService(
     private val breachRiskClassifier: BreachRiskClassifier,
     private val scanResultRepository: ScanResultRepository,
     private val emailReputationScanner: Optional<EmailReputationScanner>,
+    private val dataBrokerScanner: DataBrokerScanner,
+    private val mitigationRepository: MitigationRepository,
 ) {
     fun breachScan(
         userId: UUID,
@@ -323,6 +328,76 @@ class ScanService(
         return listOf(alert)
     }
 
+    fun dataBrokerScan(
+        userId: UUID,
+        profile: UserScanProfile,
+    ): List<Alert> {
+        val results = dataBrokerScanner.scan(profile)
+
+        val structuredFindings = mutableListOf<StructuredFinding>()
+
+        val alerts =
+            results.map { result ->
+                structuredFindings +=
+                    StructuredFinding(
+                        type = "data_broker",
+                        name = result.brokerName,
+                        severity = result.severity.name,
+                        exposedFields = result.exposedFields,
+                    )
+                val alert =
+                    alertRepository.save(
+                        Alert(
+                            userId = userId,
+                            category = ThreatCategory.DATA_BROKER_EXPOSURE,
+                            severity = result.severity,
+                            title = "Data held by ${result.brokerName}",
+                            description =
+                                "${result.brokerName} (${result.category.name.lowercase().replace('_', ' ')}) " +
+                                    "likely holds your data. Exposed fields: ${result.exposedFields.joinToString(", ")}.",
+                            tags = listOf("data_broker", result.category.name.lowercase()),
+                        ),
+                    )
+
+                val mitigationTitle =
+                    when (result.category) {
+                        DataBrokerCategory.CREDIT_BUREAU ->
+                            "Request your credit report from ${result.brokerName}"
+                        else -> "Request data removal from ${result.brokerName}"
+                    }
+                mitigationRepository.save(
+                    Mitigation(
+                        alertId = alert.id,
+                        title = mitigationTitle,
+                        description = "Visit ${result.brokerName}'s data access portal to review and request removal of your data.",
+                        actionUrl = result.dataAccessUrl,
+                    ),
+                )
+
+                alert
+            }
+
+        scanResultRepository.save(
+            ScanResult(
+                userId = userId,
+                scanType = "data_broker",
+                scanInput = profile.email,
+                findings =
+                    results
+                        .joinToString("; ") {
+                            "${it.brokerName} (${it.category}) - ${it.exposedFields.joinToString(", ")}"
+                        }.ifEmpty { "No data broker exposures found" },
+                findingsJson = structuredFindings,
+            ),
+        )
+
+        if (alerts.isNotEmpty()) {
+            scoreService.recalculate(userId)
+        }
+
+        return alerts
+    }
+
     fun fullScan(
         userId: UUID,
         profile: UserScanProfile,
@@ -334,6 +409,7 @@ class ScanService(
         alerts += piiExposureScan(userId, profile)
         alerts += socialFootprintScan(userId, profile, username)
         alerts += emailReputationScan(userId, profile)
+        alerts += dataBrokerScan(userId, profile)
         return alerts
     }
 }

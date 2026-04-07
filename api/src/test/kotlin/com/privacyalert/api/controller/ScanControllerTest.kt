@@ -274,6 +274,53 @@ class ScanControllerTest(
             }
     }
 
+    // ── data-broker scan ────────────────────────────────────────────────
+
+    @Test
+    fun `POST data-broker scan returns 200 with alerts`() {
+        authenticateAs(userId)
+        val alerts =
+            listOf(
+                Alert(
+                    userId = userId,
+                    category = ThreatCategory.DATA_BROKER_EXPOSURE,
+                    severity = Severity.HIGH,
+                    title = "Data held by Experian",
+                    description = "Experian likely holds your data",
+                    tags = listOf("data_broker", "credit_bureau"),
+                ),
+            )
+        every { scanService.dataBrokerScan(userId, any<UserScanProfile>()) } returns alerts
+
+        mockMvc
+            .post("/api/v1/scan/data-broker") {
+                header("Authorization", "Bearer test-token")
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(ScanProfileRequest("user@example.com"))
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$[0].title") { value("Data held by Experian") }
+                jsonPath("$[0].category") { value("DATA_BROKER_EXPOSURE") }
+            }
+    }
+
+    @Test
+    fun `POST data-broker scan returns 200 with empty list when no brokers found`() {
+        authenticateAs(userId)
+        every { scanService.dataBrokerScan(userId, any<UserScanProfile>()) } returns emptyList()
+
+        mockMvc
+            .post("/api/v1/scan/data-broker") {
+                header("Authorization", "Bearer test-token")
+                contentType = MediaType.APPLICATION_JSON
+                content = objectMapper.writeValueAsString(ScanProfileRequest("user@example.com"))
+            }.andExpect {
+                status { isOk() }
+                jsonPath("$") { isArray() }
+                jsonPath("$.length()") { value(0) }
+            }
+    }
+
     // ── full scan ───────────────────────────────────────────────────────
 
     @Test

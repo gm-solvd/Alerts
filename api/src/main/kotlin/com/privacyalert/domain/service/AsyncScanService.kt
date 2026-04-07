@@ -73,6 +73,9 @@ class AsyncScanService(
             updateProgress(jobId, "reputation")
 
             alerts += scanService.emailReputationScan(userId, profile)
+            updateProgress(jobId, "data_broker")
+
+            alerts += scanService.dataBrokerScan(userId, profile)
 
             scanJobRepository.save(
                 scanJobRepository.findById(jobId)!!.copy(

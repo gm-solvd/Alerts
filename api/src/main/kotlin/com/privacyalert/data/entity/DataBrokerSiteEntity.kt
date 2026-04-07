@@ -1,8 +1,11 @@
 package com.privacyalert.data.entity
 
+import com.privacyalert.domain.model.DataBrokerCategory
 import com.privacyalert.domain.model.DataBrokerSite
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.PostLoad
 import jakarta.persistence.PostPersist
@@ -29,6 +32,11 @@ class DataBrokerSiteEntity(
     @Column(name = "pii_fields", columnDefinition = "text[]")
     @JdbcTypeCode(SqlTypes.ARRAY)
     var piiFields: Array<String> = emptyArray(),
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    val category: DataBrokerCategory = DataBrokerCategory.PEOPLE_SEARCH,
+    val privacyPolicyUrl: String? = null,
+    val dataAccessUrl: String? = null,
     @Column(nullable = false)
     val active: Boolean = true,
     @Column(nullable = false)
@@ -56,6 +64,9 @@ fun DataBrokerSiteEntity.toDomain(): DataBrokerSite =
         searchUrlTemplate = searchUrlTpl,
         resultSelector = resultSelector,
         piiFields = piiFields.toList(),
+        category = category,
+        privacyPolicyUrl = privacyPolicyUrl,
+        dataAccessUrl = dataAccessUrl,
         active = active,
     )
 
@@ -67,5 +78,8 @@ fun DataBrokerSite.toEntity(): DataBrokerSiteEntity =
         searchUrlTpl = searchUrlTemplate,
         resultSelector = resultSelector,
         piiFields = piiFields.toTypedArray(),
+        category = category,
+        privacyPolicyUrl = privacyPolicyUrl,
+        dataAccessUrl = dataAccessUrl,
         active = active,
     )

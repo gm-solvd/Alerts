@@ -1,11 +1,14 @@
 package com.privacyalert.domain.service
 
 import com.privacyalert.domain.model.Alert
+import com.privacyalert.domain.model.DataBrokerCategory
+import com.privacyalert.domain.model.Mitigation
 import com.privacyalert.domain.model.ScanResult
 import com.privacyalert.domain.model.Severity
 import com.privacyalert.domain.model.ThreatCategory
 import com.privacyalert.domain.model.UserScanProfile
 import com.privacyalert.domain.repository.AlertRepository
+import com.privacyalert.domain.repository.MitigationRepository
 import com.privacyalert.domain.repository.ScanResultRepository
 import io.mockk.every
 import io.mockk.mockk
@@ -29,6 +32,8 @@ class ScanServiceTest {
     private val breachRiskClassifier = BreachRiskClassifier()
     private val scanResultRepository = mockk<ScanResultRepository>(relaxed = true)
     private val emailReputationScanner = mockk<EmailReputationScanner>()
+    private val dataBrokerScanner = mockk<DataBrokerScanner>()
+    private val mitigationRepository = mockk<MitigationRepository>(relaxed = true)
     private val service =
         ScanService(
             alertRepository,
@@ -41,6 +46,8 @@ class ScanServiceTest {
             breachRiskClassifier,
             scanResultRepository,
             Optional.of(emailReputationScanner),
+            dataBrokerScanner,
+            mitigationRepository,
         )
 
     private val userId = UUID.randomUUID()
@@ -636,6 +643,8 @@ class ScanServiceTest {
                 breachRiskClassifier,
                 scanResultRepository,
                 Optional.empty(),
+                dataBrokerScanner,
+                mitigationRepository,
             )
 
         val alerts = serviceWithoutEmailRep.emailReputationScan(userId, profile)
@@ -670,10 +679,137 @@ class ScanServiceTest {
         assertTrue(saved.findingsJson[0].credentialExposed)
     }
 
+    // ── dataBrokerScan ────────────────────────────────────────────────────
+
+    @Test
+    fun `dataBrokerScan creates alerts for each broker found`() {
+        val results =
+            listOf(
+                DataBrokerExposureResult(
+                    brokerId = UUID.randomUUID(),
+                    brokerName = "Experian",
+                    category = DataBrokerCategory.CREDIT_BUREAU,
+                    severity = Severity.HIGH,
+                    exposedFields = listOf("name", "address", "ssn"),
+                    detectionMethod = "heuristic_credit_bureau",
+                ),
+            )
+
+        every { dataBrokerScanner.scan(profile) } returns results
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+
+        val alerts = service.dataBrokerScan(userId, profile)
+
+        assertEquals(1, alerts.size)
+        assertEquals(ThreatCategory.DATA_BROKER_EXPOSURE, alerts[0].category)
+        assertEquals(Severity.HIGH, alerts[0].severity)
+        assertTrue(alerts[0].title.contains("Experian"))
+        assertTrue(alerts[0].tags.contains("data_broker"))
+        assertTrue(alerts[0].tags.contains("credit_bureau"))
+        verify { scoreService.recalculate(userId) }
+    }
+
+    @Test
+    fun `dataBrokerScan creates mitigation per broker with actionUrl`() {
+        val results =
+            listOf(
+                DataBrokerExposureResult(
+                    brokerId = UUID.randomUUID(),
+                    brokerName = "Experian",
+                    category = DataBrokerCategory.CREDIT_BUREAU,
+                    severity = Severity.HIGH,
+                    exposedFields = listOf("name", "address"),
+                    detectionMethod = "heuristic_credit_bureau",
+                    dataAccessUrl = "https://www.experian.com/consumer-products/free-credit-report",
+                ),
+            )
+        val mitigationSlot = slot<Mitigation>()
+
+        every { dataBrokerScanner.scan(profile) } returns results
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+        every { mitigationRepository.save(capture(mitigationSlot)) } answers { firstArg() }
+
+        service.dataBrokerScan(userId, profile)
+
+        val saved = mitigationSlot.captured
+        assertTrue(saved.title.contains("credit report"))
+        assertTrue(saved.title.contains("Experian"))
+        assertEquals("https://www.experian.com/consumer-products/free-credit-report", saved.actionUrl)
+    }
+
+    @Test
+    fun `dataBrokerScan creates removal mitigation for non-credit brokers`() {
+        val results =
+            listOf(
+                DataBrokerExposureResult(
+                    brokerId = UUID.randomUUID(),
+                    brokerName = "Acxiom",
+                    category = DataBrokerCategory.MARKETING_DATA,
+                    severity = Severity.MEDIUM,
+                    exposedFields = listOf("name", "email"),
+                    detectionMethod = "heuristic_marketing",
+                ),
+            )
+        val mitigationSlot = slot<Mitigation>()
+
+        every { dataBrokerScanner.scan(profile) } returns results
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+        every { mitigationRepository.save(capture(mitigationSlot)) } answers { firstArg() }
+
+        service.dataBrokerScan(userId, profile)
+
+        val saved = mitigationSlot.captured
+        assertTrue(saved.title.contains("data removal"))
+        assertTrue(saved.title.contains("Acxiom"))
+    }
+
+    @Test
+    fun `dataBrokerScan returns empty list when no brokers found`() {
+        every { dataBrokerScanner.scan(profile) } returns emptyList()
+
+        val alerts = service.dataBrokerScan(userId, profile)
+
+        assertTrue(alerts.isEmpty())
+        verify(exactly = 0) { scoreService.recalculate(any()) }
+    }
+
+    @Test
+    fun `dataBrokerScan populates findingsJson with structured findings`() {
+        val results =
+            listOf(
+                DataBrokerExposureResult(
+                    brokerId = UUID.randomUUID(),
+                    brokerName = "LexisNexis",
+                    category = DataBrokerCategory.DATA_AGGREGATOR,
+                    severity = Severity.HIGH,
+                    exposedFields = listOf("name", "address", "court_records"),
+                    detectionMethod = "heuristic_aggregator",
+                ),
+            )
+        val scanResultSlot = slot<ScanResult>()
+
+        every { dataBrokerScanner.scan(profile) } returns results
+        every { alertRepository.save(any()) } answers { firstArg() }
+        every { scoreService.recalculate(userId) } returns mockk()
+        every { scanResultRepository.save(capture(scanResultSlot)) } answers { firstArg() }
+
+        service.dataBrokerScan(userId, profile)
+
+        val saved = scanResultSlot.captured
+        assertEquals(1, saved.findingsJson.size)
+        assertEquals("data_broker", saved.findingsJson[0].type)
+        assertEquals("LexisNexis", saved.findingsJson[0].name)
+        assertEquals("HIGH", saved.findingsJson[0].severity)
+        assertEquals(listOf("name", "address", "court_records"), saved.findingsJson[0].exposedFields)
+    }
+
     // ── fullScan ────────────────────────────────────────────────────────
 
     @Test
-    fun `fullScan aggregates results from all five scans`() {
+    fun `fullScan aggregates results from all six scans`() {
         val breaches =
             listOf(
                 BreachResult("LinkedIn", "linkedin.com", "2012-05-05", listOf("Emails")),
@@ -699,6 +835,17 @@ class ScanServiceTest {
                 dataBreachCount = 1,
                 profilesFound = 0,
             )
+        val dataBrokerResults =
+            listOf(
+                DataBrokerExposureResult(
+                    brokerId = UUID.randomUUID(),
+                    brokerName = "Experian",
+                    category = DataBrokerCategory.CREDIT_BUREAU,
+                    severity = Severity.HIGH,
+                    exposedFields = listOf("name", "ssn"),
+                    detectionMethod = "heuristic_credit_bureau",
+                ),
+            )
 
         every { breachScanner.scanEmail("user@example.com") } returns breaches
         every { breachScanner.scanPhone("+1234567890") } returns emptyList()
@@ -706,16 +853,18 @@ class ScanServiceTest {
         every { piiExposureScanner.scan(profile) } returns piiResults
         every { socialFootprintScanner.scan("user@example.com", "John Doe", "johndoe") } returns socialResults
         every { emailReputationScanner.scan("user@example.com") } returns emailRepResult
+        every { dataBrokerScanner.scan(profile) } returns dataBrokerResults
         every { alertRepository.save(any()) } answers { firstArg() }
         every { scoreService.recalculate(userId) } returns mockk()
 
         val alerts = service.fullScan(userId, profile, "johndoe")
 
-        assertEquals(5, alerts.size)
+        assertEquals(6, alerts.size)
         assertTrue(alerts.any { it.category == ThreatCategory.DATA_BREACH })
         assertTrue(alerts.any { it.category == ThreatCategory.IDENTITY_EXPOSURE })
         assertTrue(alerts.any { it.category == ThreatCategory.TRACKER_EXPOSURE })
         assertTrue(alerts.any { it.category == ThreatCategory.SOCIAL_FOOTPRINT })
+        assertTrue(alerts.any { it.category == ThreatCategory.DATA_BROKER_EXPOSURE })
     }
 
     @Test
@@ -727,6 +876,7 @@ class ScanServiceTest {
         every { piiExposureScanner.scan(emptyProfile) } returns emptyList()
         every { socialFootprintScanner.scan("clean@example.com", null, null) } returns emptyList()
         every { emailReputationScanner.scan("clean@example.com") } returns null
+        every { dataBrokerScanner.scan(emptyProfile) } returns emptyList()
 
         val alerts = service.fullScan(userId, emptyProfile, null)
 

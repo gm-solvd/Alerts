@@ -9,5 +9,15 @@ data class DataBrokerSite(
     val searchUrlTemplate: String? = null,
     val resultSelector: String? = null,
     val piiFields: List<String>,
+    val category: DataBrokerCategory = DataBrokerCategory.PEOPLE_SEARCH,
+    val privacyPolicyUrl: String? = null,
+    val dataAccessUrl: String? = null,
     val active: Boolean = true,
 )
+
+enum class DataBrokerCategory {
+    PEOPLE_SEARCH,
+    CREDIT_BUREAU,
+    MARKETING_DATA,
+    DATA_AGGREGATOR,
+}
